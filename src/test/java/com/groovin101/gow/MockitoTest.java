@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 
 /**
- * Class to show us how the heck to use this Mockito thing.
+ * Class to demonstrate Mockito usage
  * <p/>
  * These examples were stolen verbatim from: http://gojko.net/2009/10/23/mockito-in-six-easy-examples/
  */
