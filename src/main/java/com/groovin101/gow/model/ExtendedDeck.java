@@ -8,5 +8,6 @@ import java.util.List;
  */
 public interface ExtendedDeck extends Deck {
 
-    public List<Card> getCards();
+    public int countAvailableCards();
+    public int countDealtCards();
 }
