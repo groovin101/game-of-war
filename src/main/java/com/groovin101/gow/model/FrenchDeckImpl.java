@@ -1,13 +1,11 @@
 package com.groovin101.gow.model;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.List;
 
 /**
  * Represents a standard 52 card "French Style" deck
- *
+ * <p/>
  * See <a href="http://en.wikipedia.org/wiki/French_deck">French Deck</a>
  */
 public class FrenchDeckImpl implements ExtendedDeck {
@@ -23,9 +21,10 @@ public class FrenchDeckImpl implements ExtendedDeck {
      * Will do the expected if a typical 52 card deck (french style) is intended. This implementation does not support
      * partial decks. If anything other than a 52 card deck is attempted to be created, an IllegalArgumentException will
      * be thrown
+     *
      * @param numberOfSuits - the number of suits desired
      * @param numberOfRanks - the number of ranks desired
-     * @exception IllegalArgumentException - thrown if a client attempts to instantiate a non-french-style deck
+     * @throws IllegalArgumentException - thrown if a client attempts to instantiate a non-french-style deck
      */
     @Override
     public void create(int numberOfSuits, int numberOfRanks) {
@@ -41,11 +40,9 @@ public class FrenchDeckImpl implements ExtendedDeck {
 
     private void initializeAvailableCards() {
         availableCards = new ArrayDeque<Card>();
-        CardRank[] ranks = CardRank.values();
-        CardSuit[] suits = CardSuit.values();
-        for (int i=0;i<suits.length;i++) {
-            for (int j=0;j<ranks.length;j++) {
-                availableCards.push(new Card(ranks[j], suits[i]));
+        for (CardSuit suit : CardSuit.values()) {
+            for (CardRank rank : CardRank.values()) {
+                availableCards.push(new Card(rank, suit));
             }
         }
     }

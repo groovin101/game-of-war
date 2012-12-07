@@ -2,12 +2,9 @@ package com.groovin101.gow;
 
 import com.groovin101.gow.model.*;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
@@ -30,7 +27,8 @@ public class FrenchDeckTest {
             cardDeck.create(0, 13);
             fail("Expected an IllegalArgumentException to be thrown since this is an invalid number of suits for a French Deck");
         }
-        catch (IllegalArgumentException e) {}
+        catch (IllegalArgumentException e) {
+        }
     }
 
     @Test
@@ -39,7 +37,8 @@ public class FrenchDeckTest {
             cardDeck.create(4, 0);
             fail("Expected an IllegalArgumentException to be thrown since this is an invalid number of suits for a French Deck");
         }
-        catch (IllegalArgumentException e) {}
+        catch (IllegalArgumentException e) {
+        }
     }
 
     @Test

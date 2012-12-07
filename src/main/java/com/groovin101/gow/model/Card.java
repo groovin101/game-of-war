@@ -1,6 +1,5 @@
 package com.groovin101.gow.model;
 
-import com.google.common.base.CaseFormat;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -28,6 +27,7 @@ public class Card {
         this.suit = suit;
     }
 
+
     @Override
     public String toString() {
         return StringUtils.capitalize(rank.toString().toLowerCase())
@@ -37,13 +37,21 @@ public class Card {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Card card = (Card) o;
 
-        if (rank != card.rank) return false;
-        if (suit != card.suit) return false;
+        if (rank != card.rank) {
+            return false;
+        }
+        if (suit != card.suit) {
+            return false;
+        }
 
         return true;
     }

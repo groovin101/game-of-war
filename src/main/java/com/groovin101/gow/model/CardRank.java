@@ -22,6 +22,7 @@ public enum CardRank {
 
     /**
      * Constructor
+     *
      * @param cardValue
      */
     private CardRank(int cardValue) {

@@ -116,6 +116,7 @@ public class MockitoTest {
             public void describeTo(Description description) {
                 // nothing
             }
+
             // check that first character is A
             @Override
             public boolean matches(Object item) {
