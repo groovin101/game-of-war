@@ -9,6 +9,8 @@ import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  */
@@ -18,7 +20,7 @@ public class FrenchDeckTest {
 
     @Before
     public void setup() {
-        cardDeck = new FrenchDeckImpl(4, 13);
+        cardDeck = new FrenchDeckImpl();
     }
 
     @Test
@@ -83,11 +85,19 @@ public class FrenchDeckTest {
         assertEquals("Should be one less card available in the deck", 51, cardDeck.countAvailableCards());
     }
 
-//    @Test
-//    public void testDeal_incrementsDealtCards() {
-//        cardDeck.deal();
-//        assertEquals("Should have dealt a card", 1, cardDeck.countDealtCards());
-//    }
+    @Test
+    public void testDeal_incrementsDealtCards() {
+        cardDeck.deal();
+        assertEquals("Should have dealt a card", 1, cardDeck.countDealtCards());
+    }
+
+    @Test
+    public void testShuffle_usesAppropriateShuffleStrategy() {
+        Shuffler mockedShuffler = mock(ShufflerImplNoShuffle.class);
+        cardDeck.setShuffler(mockedShuffler);
+        cardDeck.shuffle();
+        verify(mockedShuffler).shuffle(cardDeck);
+    }
 
     private void callCreateOnFrenchDeckAppropriately() {
         cardDeck.create(4, 13);

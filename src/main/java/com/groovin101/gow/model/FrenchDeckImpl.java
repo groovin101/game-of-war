@@ -1,7 +1,9 @@
 package com.groovin101.gow.model;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 
 /**
  * Represents a standard 52 card "French Style" deck
@@ -12,9 +14,13 @@ public class FrenchDeckImpl implements ExtendedDeck {
 
     private Deque<Card> availableCards;
     private Deque<Card> dealtCards;
+    private Shuffler shuffler;
 
-    public FrenchDeckImpl(int numberOfSuits, int numberOfRanks) {
-        create(numberOfSuits, numberOfRanks);
+    /**
+     * CONSTRUCTOR
+     */
+    public FrenchDeckImpl() {
+        create(4, 13);
     }
 
     /**
@@ -49,12 +55,14 @@ public class FrenchDeckImpl implements ExtendedDeck {
 
     @Override
     public void shuffle() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        shuffler.shuffle(this);
     }
 
     @Override
     public Card deal() {
-        return availableCards.pop();
+        Card dealt = availableCards.pop();
+        dealtCards.push(dealt);
+        return dealt;
     }
 
     @Override
@@ -65,5 +73,28 @@ public class FrenchDeckImpl implements ExtendedDeck {
     @Override
     public int countDealtCards() {
         return dealtCards.size();
+    }
+
+    @Override
+    public void setShuffler(Shuffler shuffler) {
+        this.shuffler = shuffler;
+    }
+
+    @Override
+    public Card[] deal(int numberOfCardsToDeal) {
+        Card[] dealt = new Card[52];
+        int cardIndex = 0;
+        while (numberOfCardsToDeal > 0) {
+            dealt[cardIndex++] = this.deal();
+        }
+        return dealt;
+    }
+
+    public List<Card> asList() {
+        List<Card> cardsAsList = new ArrayList<Card>();
+        while (availableCards.iterator().hasNext()) {
+            cardsAsList.add(availableCards.iterator().next());
+        }
+        return cardsAsList;
     }
 }
