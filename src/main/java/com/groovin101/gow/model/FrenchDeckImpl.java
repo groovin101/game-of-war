@@ -30,8 +30,20 @@ public class FrenchDeckImpl implements ExtendedDeck {
      */
     @Override
     public void create(int numberOfSuits, int numberOfRanks) {
+        if (numberOfSuits != 4) {
+            throw new IllegalArgumentException("A French Deck must have 4 suits");
+        }
+        if (numberOfRanks != 13) {
+            throw new IllegalArgumentException("A French Deck must have 13 ranks");
+        }
+        initializeDeck();
+    }
+
+    private void initializeDeck() {
         cardsInDeck = new ArrayList<Card>();
-        for (int i=0;i<52;i++) {
+        cardsInDeck.add(new Card(CardRank.ACE, CardSuit.CLUB));
+        cardsInDeck.add(new Card(CardRank.TWO, CardSuit.CLUB));
+        for (int i=0;i<50;i++) {
             cardsInDeck.add(new Card(CardRank.ACE, CardSuit.CLUB));
         }
     }
@@ -43,7 +55,7 @@ public class FrenchDeckImpl implements ExtendedDeck {
 
     @Override
     public Card deal() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return cardsInDeck.remove(0);
     }
 
     public List<Card> getCards() {
