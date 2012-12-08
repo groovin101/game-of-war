@@ -1,13 +1,15 @@
-package com.groovin101.gow;
+package com.groovin101.gow.model;
 
 import com.groovin101.gow.model.Card;
 import com.groovin101.gow.model.CardRank;
 import com.groovin101.gow.model.CardSuit;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.fail;
 
 /**
  */
@@ -44,4 +46,12 @@ public class CardTest {
     public void testToString() {
         assertEquals("Five of Diamonds", new Card(CardRank.FIVE, CardSuit.DIAMOND).toString());
     }
+
+    @Ignore
+    @Test
+    public void testCompareTo_faceCardIsGreaterThanNumber() {
+        fail();
+    }
+
+    // test equal ranks are equal; 2nd thought, this should be configurable and not a fn of the card object itself - consider strategy pattern
 }

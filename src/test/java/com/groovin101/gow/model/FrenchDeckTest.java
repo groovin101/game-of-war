@@ -1,14 +1,13 @@
-package com.groovin101.gow;
+package com.groovin101.gow.model;
 
 import com.groovin101.gow.model.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -16,7 +15,7 @@ import static org.mockito.Mockito.verify;
  */
 public class FrenchDeckTest {
 
-    private ExtendedDeck cardDeck;
+    private FrenchDeckImpl cardDeck;
 
     @Before
     public void setup() {
@@ -92,11 +91,32 @@ public class FrenchDeckTest {
     }
 
     @Test
-    public void testShuffle_usesAppropriateShuffleStrategy() {
-        Shuffler mockedShuffler = mock(ShufflerImplNoShuffle.class);
-        cardDeck.setShuffler(mockedShuffler);
+    public void testAvailableCardsAsList_returnsCorrectNumberOfCards() {
+        assertEquals(52, cardDeck.availableCardsAsList().size());
+    }
+
+    @Test
+    public void testAvailableCardsAsList_returnsCorrectNumberOfCardsAfterDealing() {
+        cardDeck.deal();
+        assertEquals(51, cardDeck.availableCardsAsList().size());
+    }
+
+    @Test
+    public void testShuffle_listsAreInDifferentOrderAfterShuffling() {
+        List<Card> originalList = cardDeck.availableCardsAsList();
         cardDeck.shuffle();
-        verify(mockedShuffler).shuffle(cardDeck);
+        List<Card> shuffledList = cardDeck.availableCardsAsList();
+        assertNotSame(originalList, shuffledList);
+        assertFalse("Lists of available cards should not be in same order after shuffling", originalList.equals(shuffledList));
+    }
+
+    @Test
+    public void testShuffle_listsContainSameContentsAfterShuffling() {
+        List<Card> originalList = cardDeck.availableCardsAsList();
+        cardDeck.shuffle();
+        List<Card> shuffledList = cardDeck.availableCardsAsList();
+        assertNotSame(originalList, shuffledList);
+        assertTrue("Lists should have same content after shuffling", originalList.containsAll(shuffledList));
     }
 
     private void callCreateOnFrenchDeckAppropriately() {

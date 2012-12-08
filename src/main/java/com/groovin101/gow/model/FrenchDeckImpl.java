@@ -1,20 +1,16 @@
 package com.groovin101.gow.model;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a standard 52 card "French Style" deck
  * <p/>
  * See <a href="http://en.wikipedia.org/wiki/French_deck">French Deck</a>
  */
-public class FrenchDeckImpl implements ExtendedDeck {
+public class FrenchDeckImpl implements Deck {
 
     private Deque<Card> availableCards;
     private Deque<Card> dealtCards;
-    private Shuffler shuffler;
 
     /**
      * CONSTRUCTOR
@@ -44,18 +40,11 @@ public class FrenchDeckImpl implements ExtendedDeck {
         dealtCards = new ArrayDeque<Card>();
     }
 
-    private void initializeAvailableCards() {
-        availableCards = new ArrayDeque<Card>();
-        for (CardSuit suit : CardSuit.values()) {
-            for (CardRank rank : CardRank.values()) {
-                availableCards.push(new Card(rank, suit));
-            }
-        }
-    }
-
     @Override
     public void shuffle() {
-        shuffler.shuffle(this);
+        List<Card> availableCardsInDeck = availableCardsAsList();
+        Collections.shuffle(availableCardsInDeck);
+        setAvailableCardsAfterShuffling(availableCardsInDeck);
     }
 
     @Override
@@ -65,36 +54,41 @@ public class FrenchDeckImpl implements ExtendedDeck {
         return dealt;
     }
 
-    @Override
-    public int countAvailableCards() {
+    protected int countAvailableCards() {
         return availableCards.size();
     }
 
-    @Override
-    public int countDealtCards() {
+    protected int countDealtCards() {
         return dealtCards.size();
     }
 
-    @Override
-    public void setShuffler(Shuffler shuffler) {
-        this.shuffler = shuffler;
-    }
+//    public Card[] deal(int numberOfCardsToDeal) {
+//        Card[] dealt = new Card[52];
+//        int cardIndex = 0;
+//        while (numberOfCardsToDeal > 0) {
+//            dealt[cardIndex++] = this.deal();
+//        }
+//        return dealt;
+//    }
 
-    @Override
-    public Card[] deal(int numberOfCardsToDeal) {
-        Card[] dealt = new Card[52];
-        int cardIndex = 0;
-        while (numberOfCardsToDeal > 0) {
-            dealt[cardIndex++] = this.deal();
-        }
-        return dealt;
-    }
-
-    public List<Card> asList() {
+    protected List<Card> availableCardsAsList() {
         List<Card> cardsAsList = new ArrayList<Card>();
-        while (availableCards.iterator().hasNext()) {
-            cardsAsList.add(availableCards.iterator().next());
+        for (Card availableCard : availableCards) {
+            cardsAsList.add(availableCard);
         }
         return cardsAsList;
+    }
+
+    private void initializeAvailableCards() {
+        availableCards = new ArrayDeque<Card>();
+        for (CardSuit suit : CardSuit.values()) {
+            for (CardRank rank : CardRank.values()) {
+                availableCards.push(new Card(rank, suit));
+            }
+        }
+    }
+
+    private void setAvailableCardsAfterShuffling(List<Card> availableCardsInShuffledForm) {
+        availableCards = new ArrayDeque<Card>(availableCardsInShuffledForm);
     }
 }
