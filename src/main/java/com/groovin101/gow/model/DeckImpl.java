@@ -7,7 +7,7 @@ import java.util.*;
  * <p/>
  * See <a href="http://en.wikipedia.org/wiki/French_deck">French Deck</a>
  */
-public class FrenchDeckImpl implements Deck {
+public class DeckImpl implements DeckExtended {
 
     private Deque<Card> availableCards;
     private Deque<Card> dealtCards;
@@ -15,29 +15,49 @@ public class FrenchDeckImpl implements Deck {
     /**
      * CONSTRUCTOR
      */
-    public FrenchDeckImpl() {
+    public DeckImpl() {
         create(4, 13);
     }
 
-    /**
-     * Will do the expected if a typical 52 card deck (french style) is intended. This implementation does not support
-     * partial decks. If anything other than a 52 card deck is attempted to be created, an IllegalArgumentException will
-     * be thrown
-     *
-     * @param numberOfSuits - the number of suits desired
-     * @param numberOfRanks - the number of ranks desired
-     * @throws IllegalArgumentException - thrown if a client attempts to instantiate a non-french-style deck
-     */
     @Override
     public void create(int numberOfSuits, int numberOfRanks) {
-        if (numberOfSuits != 4) {
-            throw new IllegalArgumentException("A French Deck must have 4 suits");
-        }
-        if (numberOfRanks != 13) {
-            throw new IllegalArgumentException("A French Deck must have 13 ranks");
-        }
-        initializeAvailableCards();
+        availableCards = new ArrayDeque<Card>();
         dealtCards = new ArrayDeque<Card>();
+        for (CardSuit suit : determineWhichSuitsToCreate(numberOfSuits)) {
+            for (CardRank rank : determineWhichRanksToCreate(numberOfRanks)) {
+                    availableCards.push(new Card(rank, suit));
+            }
+        }
+    }
+
+    protected List<CardSuit> determineWhichSuitsToCreate(int numberOfSuitsToCreate) {
+        List<CardSuit> suits = new ArrayList<CardSuit>();
+        int i = 0;
+        for (CardSuit suit : CardSuit.values()) {
+            if (i < numberOfSuitsToCreate) {
+                suits.add(suit);
+            }
+            else {
+                break;
+            }
+            i++;
+        }
+        return suits;
+    }
+
+    protected List<CardRank> determineWhichRanksToCreate(int numberOfRanksToCreate) {
+        List<CardRank> ranks = new ArrayList<CardRank>();
+        int i = 0;
+        for (CardRank rank : CardRank.values()) {
+            if (i < numberOfRanksToCreate) {
+                ranks.add(rank);
+            }
+            else {
+                break;
+            }
+            i++;
+        }
+        return ranks;
     }
 
     @Override
@@ -54,6 +74,11 @@ public class FrenchDeckImpl implements Deck {
         return dealt;
     }
 
+    @Override
+    public boolean hasNext() {
+        return true;
+    }
+
     protected int countAvailableCards() {
         return availableCards.size();
     }
@@ -68,15 +93,6 @@ public class FrenchDeckImpl implements Deck {
             cardsAsList.add(availableCard);
         }
         return cardsAsList;
-    }
-
-    private void initializeAvailableCards() {
-        availableCards = new ArrayDeque<Card>();
-        for (CardSuit suit : CardSuit.values()) {
-            for (CardRank rank : CardRank.values()) {
-                availableCards.push(new Card(rank, suit));
-            }
-        }
     }
 
     private void setAvailableCardsAfterShuffling(List<Card> availableCardsInShuffledForm) {

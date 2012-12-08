@@ -1,6 +1,5 @@
 package com.groovin101.gow.model;
 
-import com.groovin101.gow.model.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -8,44 +7,43 @@ import org.junit.Test;
 import java.util.*;
 
 import static junit.framework.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  */
-public class FrenchDeckTest {
+public class DeckTest {
 
-    private FrenchDeckImpl cardDeck;
+    private DeckImpl cardDeck;
 
     @Before
     public void setup() {
-        cardDeck = new FrenchDeckImpl();
-    }
-
-    @Test
-    public void testCreate_invalidNumberOfSuitsThrowsException() {
-        try {
-            cardDeck.create(0, 13);
-            fail("Expected an IllegalArgumentException to be thrown since this is an invalid number of suits for a French Deck");
-        }
-        catch (IllegalArgumentException e) {
-        }
-    }
-
-    @Test
-    public void testCreate_invalidNumberOfRanksThrowsException() {
-        try {
-            cardDeck.create(4, 0);
-            fail("Expected an IllegalArgumentException to be thrown since this is an invalid number of suits for a French Deck");
-        }
-        catch (IllegalArgumentException e) {
-        }
+        cardDeck = new DeckImpl();
     }
 
     @Test
     public void testCreate_has52AvailableCards() {
         callCreateOnFrenchDeckAppropriately();
         assertEquals("Not right amount of cards", 52, cardDeck.countAvailableCards());
+    }
+
+    @Test
+    public void testDetermineWhichSuitsToCreate_returnsCorrectNumberOfSuits() {
+        assertEquals(2, (cardDeck.determineWhichSuitsToCreate(2)).size());
+    }
+
+    @Test
+    public void testDetermineWhichRanksToCreate_returnsCorrectNumberOfRanks() {
+        assertEquals(9, cardDeck.determineWhichRanksToCreate(9).size());
+    }
+
+    @Test
+    public void testDetermineWhichRanksToCreate_returnsActualRanks() {
+        assertTrue("Should contain an Eight", cardDeck.determineWhichRanksToCreate(9).contains(CardRank.EIGHT));
+    }
+
+    @Test
+    public void testCreate_hasCorrectNumberOfSuits() {
+        cardDeck.create(1, 1);
+        assertEquals("Should have a single suit with one card", 1, cardDeck.countAvailableCards());
     }
 
     @Test
@@ -117,6 +115,18 @@ public class FrenchDeckTest {
         List<Card> shuffledList = cardDeck.availableCardsAsList();
         assertNotSame(originalList, shuffledList);
         assertTrue("Lists should have same content after shuffling", originalList.containsAll(shuffledList));
+    }
+
+    @Test
+    public void testHasNext_yesWithFullDeck() {
+        assertTrue("Full deck should have a next card", cardDeck.hasNext());
+    }
+
+    @Ignore
+    @Test
+    public void testHasNext_noWithEmptyDeck() {
+        cardDeck.create(0, 0);
+        assertFalse("Empty deck should not have a next card", cardDeck.hasNext());
     }
 
     private void callCreateOnFrenchDeckAppropriately() {

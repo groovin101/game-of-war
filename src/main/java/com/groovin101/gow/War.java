@@ -1,10 +1,8 @@
 package com.groovin101.gow;
 
 import com.groovin101.gow.model.Deck;
-import com.groovin101.gow.model.FrenchDeckImpl;
+import com.groovin101.gow.model.DeckImpl;
 import com.groovin101.gow.model.Player;
-
-import java.util.List;
 
 /**
  */
@@ -15,7 +13,7 @@ public class War {
     //todo: assume standard play first, then explore alternative scenarios: 52 card, 2 players
     public void play(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
         players = new Player[numberOfPlayers];
-        Deck deck = new FrenchDeckImpl();
+        Deck deck = new DeckImpl();
         deck.shuffle();
 
         //deal cards to players
