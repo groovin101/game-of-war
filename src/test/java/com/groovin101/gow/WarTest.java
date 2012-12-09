@@ -3,6 +3,7 @@ package com.groovin101.gow;
 import com.groovin101.gow.model.Player;
 import com.groovin101.gow.model.Table;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -71,6 +73,31 @@ public class WarTest {
         game.playCardsFromAllPlayers(2);
         verify(tableMock).receiveCardsFrom(nikola, nikola.playCards(2));
     }
+
+//    @Test
+//    public void testComparePlayedCards_highestRankedCardWins() {
+//        //determine best of card match
+//        //map card winnder to player winner
+//        Card ace = new Card(Rank.ACE, Suit.CLUB);
+//        assertEquals("Highest card should win",  ace, game.compare(ace, new Card(Rank.KING, Suit.CLUB)));
+//    }
+
+    @Ignore
+    @Test
+    public void testGetWinner_twoPlayersHighestRankedCardWins() throws Exception {
+        fail();
+        //assertEquals("The Dude had the highest card so should've won", new Player("Dude A. Bides"), game.determineWinner(table.getPlayerPiles()));
+    }
+
+//    @Test
+//    public void testGetWinner_twoPlayersHighestRankedCardWins() throws Exception {
+//        dealTo(oscar, ace, expectedCardsFromOscarsHand);
+//        dealTo(felix, king, expectedCardsFromFelixsHand);
+//        table.receiveCardsFrom(oscar, oscar.playCards(1));
+//        table.receiveCardsFrom(felix, felix.playCards(1));
+//        assertEquals("Oscar had the highest hand so should've won", oscar, table.determineWinner());
+//    }
+
 //    @Test
 //    public void testFlipTopCards_singlePlayersTopCardsAreAddedToTheEvaluationArea() {
 //        game.initializePlay(1, 1, 1);

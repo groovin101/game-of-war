@@ -36,11 +36,14 @@ public class War {
 
     public void play(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
 
-        initializeGame(numberOfSuits, numberOfRanks, numberOfPlayers);
+        startTheGame(numberOfSuits, numberOfRanks, numberOfPlayers);
+
+        //first lets pretend theres only a single round of play.........
 
         playCardsFromAllPlayers(1);
 
         //flipped cards are compared
+//        comparePlayedCards();
             //player with highest card adds all cards to bottom of their pile
 
         //randomize pickups to ensure no endless games
@@ -53,7 +56,7 @@ public class War {
         }
     }
 
-    private void initializeGame(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
+    private void startTheGame(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
         players = buildPlayerList(numberOfPlayers);
         deck = new DeckImpl();
         deck.shuffle();

@@ -5,28 +5,31 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  */
 public class TableTest {
 
     private Table table;
+    private Player felix;
     private Player oscar;
     private Card ace;
     private Card king;
     private List<Card> expectedCardsFromOscarsHand;
+    private List<Card> expectedCardsFromFelixsHand;
 
     @Before
     public void setup() throws Exception {
         table = new Table();
         oscar = new Player("oscar");
+        felix = new Player("felix");
         ace = new Card(Rank.ACE, Suit.CLUB);
         king = new Card(Rank.KING, Suit.HEART);
         expectedCardsFromOscarsHand = new ArrayList<Card>();
+        expectedCardsFromFelixsHand = new ArrayList<Card>();
     }
 
     @Test
@@ -52,8 +55,6 @@ public class TableTest {
 
     @Test
     public void testReceiveCardFrom_canHoldASingleCardPlayedByEachOfTwoPlayers() throws Exception {
-        Player felix = new Player("felix");
-        List<Card> expectedCardsFromFelixsHand = new ArrayList<Card>();
         dealTo(oscar, ace, expectedCardsFromOscarsHand);
         dealTo(felix, king, expectedCardsFromFelixsHand);
         table.receiveCardsFrom(oscar, oscar.playCards(1));
@@ -64,8 +65,6 @@ public class TableTest {
 
     @Test
     public void testReceiveCardFrom_canHoldMultipleCardsPlayedByEachOfTwoPlayers() throws Exception {
-        Player felix = new Player("felix");
-        List<Card> expectedCardsFromFelixsHand = new ArrayList<Card>();
         dealTo(oscar, ace, expectedCardsFromOscarsHand);
         dealTo(oscar, new Card(Rank.THREE, Suit.DIAMOND), expectedCardsFromOscarsHand);
         dealTo(felix, king, expectedCardsFromFelixsHand);
@@ -74,6 +73,16 @@ public class TableTest {
         table.receiveCardsFrom(felix, felix.playCards(2));
         assertTrue("Should have all of Oscar's cards", table.retrieveCardsDealtFrom(oscar).containsAll(expectedCardsFromOscarsHand));
         assertTrue("Should have all of Felix's cards", table.retrieveCardsDealtFrom(felix).containsAll(expectedCardsFromFelixsHand));
+    }
+
+    @Test
+    public void testGetPlayerPiles_incorporatesPlayedCardsFromSinglePlayer() {
+        dealTo(oscar, ace, expectedCardsFromOscarsHand);
+        table.receiveCardsFrom(oscar, oscar.playCards(1));
+        Map<Player, PlayerPile> playerPiles = table.getPlayerPiles();
+        PlayerPile oscarsPile = playerPiles.get(oscar);
+        assertEquals(oscar, oscarsPile.getPlayer());
+        assertEquals(ace, oscarsPile.getCards().get(0));
     }
 
     private void dealTo(Player player, Card card, List<Card> expectedCardsToUseInTest) {
