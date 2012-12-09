@@ -3,8 +3,7 @@ package com.groovin101.gow.model;
 import com.groovin101.gow.exception.InvalidUsernameException;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Deque;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  */
@@ -35,7 +34,7 @@ public class Player {
         playerDeck.addLast(card);
     }
 
-    public void addToTopOfPlayerDeck(Card card) {
+    public void dealToTopOfPlayersDeck(Card card) {
         playerDeck.addFirst(card);
     }
 
@@ -44,7 +43,22 @@ public class Player {
     }
 
     public Card playACard() {
-        return playerDeck.pop();
+        List<Card> playedCards = playACard(1);
+        return playedCards.isEmpty() ? null : playedCards.get(0);
+    }
+
+    public List<Card> playACard(int howMany) {
+        List<Card> playedCards = new ArrayList<Card>();
+        try {
+            while (howMany > 0) {
+                playedCards.add(playerDeck.pop());
+                howMany--;
+            }
+        }
+        catch (NoSuchElementException e) {
+            System.out.println(toString() + " is out of cards");
+        }
+        return playedCards;
     }
 
     @Override

@@ -10,7 +10,7 @@ public class Dealer {
         while (deckToDealFrom.hasMoreCards()) {
             for (Player player : players) {
                 if (deckToDealFrom.hasMoreCards()) {
-                    player.addToTopOfPlayerDeck(deckToDealFrom.deal());
+                    player.dealToTopOfPlayersDeck(deckToDealFrom.deal());
                 }
                 else {
                     break;

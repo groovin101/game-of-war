@@ -4,8 +4,10 @@ import com.groovin101.gow.exception.InvalidUsernameException;
 import org.junit.Before;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.Assert.*;
 
 /**
  */
@@ -55,14 +57,14 @@ public class PlayerTest {
 
     @Test
     public void testAddToTopOfPlayerDeck_incrementsDeckSize() {
-        player.addToTopOfPlayerDeck(cardForTestA);
+        player.dealToTopOfPlayersDeck(cardForTestA);
         assertEquals(1, player.getPlayerDeckSize());
     }
 
     @Test
     public void testAddToTopOfPlayerDeck_orderIsCorrect() {
-        player.addToTopOfPlayerDeck(cardForTestB);
-        player.addToTopOfPlayerDeck(cardForTestA);
+        player.dealToTopOfPlayersDeck(cardForTestB);
+        player.dealToTopOfPlayersDeck(cardForTestA);
         assertEquals(cardForTestA, player.playACard());
     }
 
@@ -75,7 +77,30 @@ public class PlayerTest {
 
     @Test
     public void testPlayACard_singleCard() {
-        player.addToTopOfPlayerDeck(cardForTestA);
+        player.dealToTopOfPlayersDeck(cardForTestA);
         assertEquals(cardForTestA, player.playACard());
+    }
+
+    @Test
+    public void testPlayACard_emptyHandReturnsNoCard() {
+        assertNull(player.playACard());
+    }
+
+    @Test
+    public void testPlayACard_multipleCards() {
+        player.dealToTopOfPlayersDeck(cardForTestA);
+        player.dealToTopOfPlayersDeck(cardForTestB);
+        List<Card> cardsThatWereExpectedToBePlayed = new ArrayList<Card>();
+        cardsThatWereExpectedToBePlayed.add(cardForTestA);
+        cardsThatWereExpectedToBePlayed.add(cardForTestB);
+        assertTrue("Should contain all two of our cards since we played both", player.playACard(2).containsAll(cardsThatWereExpectedToBePlayed));
+    }
+
+    @Test
+    public void testPlayACard_requestingMoreCardsThanWeHaveReturnsWhatWeDoHave() {
+        player.dealToTopOfPlayersDeck(cardForTestA);
+        List<Card> cardsThatWereExpectedToBePlayed = new ArrayList<Card>();
+        cardsThatWereExpectedToBePlayed.add(cardForTestA);
+        assertTrue("Should contain a single card even though we specified to deal 2", player.playACard(2).containsAll(cardsThatWereExpectedToBePlayed));
     }
 }

@@ -79,7 +79,7 @@ public class TableTest {
     }
 
     private void dealTo(Player player, Card card, List<Card> expectedCardsToUseInTest) {
-        player.addToTopOfPlayerDeck(card);
+        player.dealToTopOfPlayersDeck(card);
         expectedCardsToUseInTest.add(card);
     }
 }
