@@ -1,10 +1,11 @@
 package com.groovin101.gow.model;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static junit.framework.Assert.*;
 
@@ -37,7 +38,7 @@ public class DeckTest {
 
     @Test
     public void testDetermineWhichRanksToCreate_returnsActualRanks() {
-        assertTrue("Should contain an Eight", cardDeck.determineWhichRanksToCreate(9).contains(CardRank.EIGHT));
+        assertTrue("Should contain an Eight", cardDeck.determineWhichRanksToCreate(9).contains(Rank.EIGHT));
     }
 
     @Test
@@ -57,7 +58,46 @@ public class DeckTest {
     }
 
     @Test
-    public void testCreate_hasNoDealtCards() {
+    public void testCreate_moreThank13Ranks() {
+        try {
+            cardDeck.create(4, 14);
+            fail("Should have thrown an exception; there were too many ranks specified");
+        }
+        catch (IllegalArgumentException e) {
+        }
+    }
+
+    @Test
+    public void testCreate_allowUpTo13Ranks() {
+        try {
+            cardDeck.create(4, 13);
+        }
+        catch (IllegalArgumentException e) {
+            fail("Should have allowed creation because ranks specified was <= 13");
+        }
+    }
+
+    @Test
+    public void testCreate_moreThanFourSuits() {
+        try {
+            cardDeck.create(5, 1);
+            fail("Should have thrown an exception; there were too many suits specified");
+        }
+        catch (IllegalArgumentException e) {
+        }
+    }
+
+    @Test
+    public void testCreate_allowUpToFourSuits() {
+        try {
+            cardDeck.create(4, 1);
+        }
+        catch (IllegalArgumentException e) {
+            fail("Should have allowed creation because suits specified was <= 13");
+        }
+    }
+    @Test
+    public void testCreate_hasNoDealtCardsOnInit() {
         callCreateOnFrenchDeckAppropriately();
         assertEquals(0, cardDeck.countDealtCards());
     }
@@ -65,14 +105,14 @@ public class DeckTest {
     @Test
     public void testDeal_unshuffledDeckFirstCard() {
         Card firstCardInDeck = cardDeck.deal();
-        assertEquals("The ace of clubs should be the first card", new Card(CardRank.ACE, CardSuit.CLUB), firstCardInDeck);
+        assertEquals("The ace of clubs should be the first card", new Card(Rank.ACE, Suit.CLUB), firstCardInDeck);
     }
 
     @Test
     public void testDeal_unshuffledDeckSecondCard() {
         cardDeck.deal();
         Card secondCard = cardDeck.deal();
-        assertEquals("The two of clubs should be the second card", new Card(CardRank.TWO, CardSuit.CLUB), secondCard);
+        assertEquals("The two of clubs should be the second card", new Card(Rank.TWO, Suit.CLUB), secondCard);
     }
 
     @Test
@@ -118,16 +158,22 @@ public class DeckTest {
     }
 
     @Test
-    public void testHasNext_yesWithFullDeck() {
-        assertTrue("Full deck should have a next card", cardDeck.hasNext());
+    public void testHasMoreCards_yesWhenUsingAFullDeck() {
+        assertTrue("Full deck should have a next card", cardDeck.hasMoreCards());
     }
 
-    @Ignore
     @Test
-    public void testHasNext_noWithEmptyDeck() {
+    public void testHasMoreCards_shouldNotWhenUsingAnEmptyDeck() {
         cardDeck.create(0, 0);
-        assertFalse("Empty deck should not have a next card", cardDeck.hasNext());
+        assertFalse("Empty deck should not have a next card", cardDeck.hasMoreCards());
     }
+
+//    @Test
+//    public void testDeal_whenWeHaveNoCardsLeft() {
+//        cardDeck.create(1, 1);
+//        cardDeck.deal();
+//        assertNull(cardDeck.deal());
+//    }
 
     private void callCreateOnFrenchDeckAppropriately() {
         cardDeck.create(4, 13);

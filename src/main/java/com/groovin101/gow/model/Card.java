@@ -6,24 +6,24 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Card {
 
-    private CardRank rank;
-    private CardSuit suit;
+    private Rank rank;
+    private Suit suit;
 
-    public Card(CardRank rank, CardSuit suit) {
+    public Card(Rank rank, Suit suit) {
         this.rank = rank;
         this.suit = suit;
     }
 
-    public CardRank getRank() {
+    public Rank getRank() {
         return rank;
     }
-    public void setRank(CardRank rank) {
+    public void setRank(Rank rank) {
         this.rank = rank;
     }
-    public CardSuit getSuit() {
+    public Suit getSuit() {
         return suit;
     }
-    public void setSuit(CardSuit suit) {
+    public void setSuit(Suit suit) {
         this.suit = suit;
     }
 
@@ -43,17 +43,8 @@ public class Card {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         Card card = (Card) o;
-
-        if (rank != card.rank) {
-            return false;
-        }
-        if (suit != card.suit) {
-            return false;
-        }
-
-        return true;
+        return rank == card.rank && suit == card.suit;
     }
 
     @Override

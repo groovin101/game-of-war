@@ -1,5 +1,7 @@
 package com.groovin101.gow.model;
 
+import com.groovin101.gow.exception.NoCardsLeftException;
+
 import java.util.*;
 
 /**
@@ -21,19 +23,41 @@ public class DeckImpl implements DeckExtended {
 
     @Override
     public void create(int numberOfSuits, int numberOfRanks) {
+        validateNumberOfSuitsToCreate(numberOfSuits);
+        validateNumberOfRanksToCreate(numberOfRanks);
+        initializeAvailableCards(numberOfSuits, numberOfRanks);
+        initializeDealtCards();
+    }
+
+    private void validateNumberOfSuitsToCreate(int numberOfSuits) {
+        if (numberOfSuits > 4) {
+            throw new IllegalArgumentException("Can only have up to 4 suits in a single deck");
+        }
+    }
+
+    private void validateNumberOfRanksToCreate(int numberOfRanks) {
+        if (numberOfRanks > 13) {
+            throw new IllegalArgumentException("Can only have up to 13 ranks in a single deck");
+        }
+    }
+
+    private void initializeAvailableCards(int numberOfSuits, int numberOfRanks) {
         availableCards = new ArrayDeque<Card>();
-        dealtCards = new ArrayDeque<Card>();
-        for (CardSuit suit : determineWhichSuitsToCreate(numberOfSuits)) {
-            for (CardRank rank : determineWhichRanksToCreate(numberOfRanks)) {
+        for (Suit suit : determineWhichSuitsToCreate(numberOfSuits)) {
+            for (Rank rank : determineWhichRanksToCreate(numberOfRanks)) {
                     availableCards.push(new Card(rank, suit));
             }
         }
     }
 
-    protected List<CardSuit> determineWhichSuitsToCreate(int numberOfSuitsToCreate) {
-        List<CardSuit> suits = new ArrayList<CardSuit>();
+    private void initializeDealtCards() {
+        dealtCards = new ArrayDeque<Card>();
+    }
+
+    protected List<Suit> determineWhichSuitsToCreate(int numberOfSuitsToCreate) {
+        List<Suit> suits = new ArrayList<Suit>();
         int i = 0;
-        for (CardSuit suit : CardSuit.values()) {
+        for (Suit suit : Suit.values()) {
             if (i < numberOfSuitsToCreate) {
                 suits.add(suit);
             }
@@ -45,10 +69,10 @@ public class DeckImpl implements DeckExtended {
         return suits;
     }
 
-    protected List<CardRank> determineWhichRanksToCreate(int numberOfRanksToCreate) {
-        List<CardRank> ranks = new ArrayList<CardRank>();
+    protected List<Rank> determineWhichRanksToCreate(int numberOfRanksToCreate) {
+        List<Rank> ranks = new ArrayList<Rank>();
         int i = 0;
-        for (CardRank rank : CardRank.values()) {
+        for (Rank rank : Rank.values()) {
             if (i < numberOfRanksToCreate) {
                 ranks.add(rank);
             }
@@ -69,14 +93,19 @@ public class DeckImpl implements DeckExtended {
 
     @Override
     public Card deal() {
-        Card dealt = availableCards.pop();
-        dealtCards.push(dealt);
-        return dealt;
+        try {
+            Card dealt = availableCards.pop();
+            dealtCards.push(dealt);
+            return dealt;
+        }
+        catch (NoSuchElementException e) {
+            throw new NoCardsLeftException("There are no more cards left in the deck");
+        }
     }
 
     @Override
-    public boolean hasNext() {
-        return true;
+    public boolean hasMoreCards() {
+        return !availableCards.isEmpty();
     }
 
     protected int countAvailableCards() {

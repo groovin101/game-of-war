@@ -2,10 +2,10 @@ package com.groovin101.gow.model;
 
 /**
  */
-public enum CardSuit {
+public enum Suit {
 
     SPADE,
     HEART,
     DIAMOND,
-    CLUB;
+    CLUB
 }

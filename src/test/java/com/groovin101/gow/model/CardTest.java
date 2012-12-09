@@ -1,8 +1,5 @@
 package com.groovin101.gow.model;
 
-import com.groovin101.gow.model.Card;
-import com.groovin101.gow.model.CardRank;
-import com.groovin101.gow.model.CardSuit;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,32 +16,32 @@ public class CardTest {
 
     @Before
     public void setup() {
-        card = new Card(CardRank.ACE, CardSuit.CLUB);
+        card = new Card(Rank.ACE, Suit.CLUB);
     }
 
     @Test
     public void testGetRank_returnsValueCardWasInstantiatedWith() {
-        assertEquals("Should have identified rank properly", CardRank.ACE, card.getRank());
+        assertEquals("Should have identified rank properly", Rank.ACE, card.getRank());
     }
 
     @Test
     public void testGetSuit_returnsValueCardWasInstantiatedWith() {
-        assertEquals("Should have identified suit properly", CardSuit.CLUB, card.getSuit());
+        assertEquals("Should have identified suit properly", Suit.CLUB, card.getSuit());
     }
 
     @Test
     public void testEquals_positive() {
-        assertEquals("Should be same card", card, new Card(CardRank.ACE, CardSuit.CLUB));
+        assertEquals("Should be same card", card, new Card(Rank.ACE, Suit.CLUB));
     }
 
     @Test
     public void testEquals_negative() {
-        assertFalse("Should not be same card", card.equals(new Card(CardRank.ACE, CardSuit.DIAMOND)));
+        assertFalse("Should not be same card", card.equals(new Card(Rank.ACE, Suit.DIAMOND)));
     }
 
     @Test
     public void testToString() {
-        assertEquals("Five of Diamonds", new Card(CardRank.FIVE, CardSuit.DIAMOND).toString());
+        assertEquals("Five of Diamonds", new Card(Rank.FIVE, Suit.DIAMOND).toString());
     }
 
     @Ignore

@@ -2,7 +2,7 @@ package com.groovin101.gow.model;
 
 /**
  */
-public enum CardRank {
+public enum Rank {
 
     KING(13),
     QUEEN(12),
@@ -25,7 +25,7 @@ public enum CardRank {
      *
      * @param cardValue
      */
-    private CardRank(int cardValue) {
+    private Rank(int cardValue) {
         this.cardValue = cardValue;
     }
 

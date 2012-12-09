@@ -18,8 +18,8 @@ public class PlayerTest {
     @Before
     public void setup() throws Exception {
         player = new Player("Chewbacca");
-        cardForTestA = new Card(CardRank.ACE, CardSuit.CLUB);
-        cardForTestB = new Card(CardRank.EIGHT, CardSuit.SPADE);
+        cardForTestA = new Card(Rank.ACE, Suit.CLUB);
+        cardForTestB = new Card(Rank.EIGHT, Suit.SPADE);
     }
 
     @Test
