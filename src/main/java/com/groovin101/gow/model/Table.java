@@ -11,9 +11,9 @@ public class Table {
 
     private Map<Player, List<Card>> playedCards = new HashMap<Player, List<Card>>();
 
-    public void receiveCardFrom(Player player) {
+    public void receiveCardsFrom(Player player, List<Card> card) {
         List<Card> cards = playedCards.get(player) == null ? new ArrayList<Card>() : playedCards.get(player);
-        cards.add(player.playACard());
+        cards.addAll(card);
         playedCards.put(player, cards);
     }
 

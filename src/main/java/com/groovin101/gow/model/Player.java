@@ -43,11 +43,11 @@ public class Player {
     }
 
     public Card playACard() {
-        List<Card> playedCards = playACard(1);
+        List<Card> playedCards = playCards(1);
         return playedCards.isEmpty() ? null : playedCards.get(0);
     }
 
-    public List<Card> playACard(int howMany) {
+    public List<Card> playCards(int howMany) {
         List<Card> playedCards = new ArrayList<Card>();
         try {
             while (howMany > 0) {

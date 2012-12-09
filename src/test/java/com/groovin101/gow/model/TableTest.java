@@ -37,7 +37,7 @@ public class TableTest {
     @Test
     public void testReceiveCardFrom_canHoldASingleCardPlayedByASinglePlayer() throws Exception {
         dealTo(oscar, ace, expectedCardsFromOscarsHand);
-        table.receiveCardFrom(oscar);
+        table.receiveCardsFrom(oscar, oscar.playCards(1));
         assertEquals("Should have the only card that was played by Oscar", expectedCardsFromOscarsHand, table.retrieveCardsDealtFrom(oscar));
     }
 
@@ -45,8 +45,8 @@ public class TableTest {
     public void testReceiveCardFrom_canHoldMultipleCardsPlayedByASinglePlayer() throws Exception {
         dealTo(oscar, ace, expectedCardsFromOscarsHand);
         dealTo(oscar, king, expectedCardsFromOscarsHand);
-        table.receiveCardFrom(oscar);
-        table.receiveCardFrom(oscar);
+        table.receiveCardsFrom(oscar, oscar.playCards(1));
+        table.receiveCardsFrom(oscar, oscar.playCards(1));
         assertTrue("Should have all cards played by Oscar", table.retrieveCardsDealtFrom(oscar).containsAll(expectedCardsFromOscarsHand));
     }
 
@@ -56,8 +56,8 @@ public class TableTest {
         List<Card> expectedCardsFromFelixsHand = new ArrayList<Card>();
         dealTo(oscar, ace, expectedCardsFromOscarsHand);
         dealTo(felix, king, expectedCardsFromFelixsHand);
-        table.receiveCardFrom(oscar);
-        table.receiveCardFrom(felix);
+        table.receiveCardsFrom(oscar, oscar.playCards(1));
+        table.receiveCardsFrom(felix, felix.playCards(1));
         assertEquals("Should have Oscar's card", expectedCardsFromOscarsHand, table.retrieveCardsDealtFrom(oscar));
         assertEquals("Should have Felix's card", expectedCardsFromFelixsHand, table.retrieveCardsDealtFrom(felix));
     }
@@ -70,10 +70,8 @@ public class TableTest {
         dealTo(oscar, new Card(Rank.THREE, Suit.DIAMOND), expectedCardsFromOscarsHand);
         dealTo(felix, king, expectedCardsFromFelixsHand);
         dealTo(felix, new Card(Rank.NINE, Suit.SPADE), expectedCardsFromFelixsHand);
-        table.receiveCardFrom(oscar);
-        table.receiveCardFrom(oscar);
-        table.receiveCardFrom(felix);
-        table.receiveCardFrom(felix);
+        table.receiveCardsFrom(oscar, oscar.playCards(2));
+        table.receiveCardsFrom(felix, felix.playCards(2));
         assertTrue("Should have all of Oscar's cards", table.retrieveCardsDealtFrom(oscar).containsAll(expectedCardsFromOscarsHand));
         assertTrue("Should have all of Felix's cards", table.retrieveCardsDealtFrom(felix).containsAll(expectedCardsFromFelixsHand));
     }

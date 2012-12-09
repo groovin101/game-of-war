@@ -93,7 +93,7 @@ public class PlayerTest {
         List<Card> cardsThatWereExpectedToBePlayed = new ArrayList<Card>();
         cardsThatWereExpectedToBePlayed.add(cardForTestA);
         cardsThatWereExpectedToBePlayed.add(cardForTestB);
-        assertTrue("Should contain all two of our cards since we played both", player.playACard(2).containsAll(cardsThatWereExpectedToBePlayed));
+        assertTrue("Should contain all two of our cards since we played both", player.playCards(2).containsAll(cardsThatWereExpectedToBePlayed));
     }
 
     @Test
@@ -101,6 +101,6 @@ public class PlayerTest {
         player.dealToTopOfPlayersDeck(cardForTestA);
         List<Card> cardsThatWereExpectedToBePlayed = new ArrayList<Card>();
         cardsThatWereExpectedToBePlayed.add(cardForTestA);
-        assertTrue("Should contain a single card even though we specified to deal 2", player.playACard(2).containsAll(cardsThatWereExpectedToBePlayed));
+        assertTrue("Should contain a single card even though we specified to deal 2", player.playCards(2).containsAll(cardsThatWereExpectedToBePlayed));
     }
 }

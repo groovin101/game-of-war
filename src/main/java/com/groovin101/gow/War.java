@@ -13,6 +13,7 @@ public class War {
     private List<Player> players;
     private Dealer dealer;
     private DeckExtended deck;
+    private Table table;
 
     //todo: add a play method that takes a list of usernames so that we have a chance to throw our InvalidUsernameException, allowing it to bubble
 
@@ -20,16 +21,24 @@ public class War {
     public void setPlayers(List<Player> players) {
         this.players = players;
     }
+    public void setTable(Table table) {
+        this.table = table;
+    }
 
     public Dealer getDealer() {
         return dealer;
+    }
+
+    public War() {
+        dealer = new Dealer();
+        table = new Table();
     }
 
     public void play(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
 
         initializeGame(numberOfSuits, numberOfRanks, numberOfPlayers);
 
-        playCardFromAllPlayers(1);
+        playCardsFromAllPlayers(1);
 
         //flipped cards are compared
             //player with highest card adds all cards to bottom of their pile
@@ -38,15 +47,13 @@ public class War {
 
     }
 
-    //todo: send these to the table
-    protected void playCardFromAllPlayers(int howMany) {
+    protected void playCardsFromAllPlayers(int howMany) {
         for (Player player : players) {
-            player.playACard(howMany);
+            table.receiveCardsFrom(player, player.playCards(howMany));
         }
     }
 
     private void initializeGame(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
-        dealer = new Dealer();
         players = buildPlayerList(numberOfPlayers);
         deck = new DeckImpl();
         deck.shuffle();
