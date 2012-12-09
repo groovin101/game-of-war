@@ -63,19 +63,19 @@ public class PlayerTest {
     public void testAddToTopOfPlayerDeck_orderIsCorrect() {
         player.addToTopOfPlayerDeck(cardForTestB);
         player.addToTopOfPlayerDeck(cardForTestA);
-        assertEquals(cardForTestA, player.revealTopCardOfPlayerDeck());
+        assertEquals(cardForTestA, player.playACard());
     }
 
     @Test
     public void testAddToBottomOfPlayerDeck_orderIsCorrect() {
         player.addToBottomOfPlayerDeck(cardForTestB);
         player.addToBottomOfPlayerDeck(cardForTestA);
-        assertEquals(cardForTestB, player.revealTopCardOfPlayerDeck());
+        assertEquals(cardForTestB, player.playACard());
     }
 
     @Test
-    public void testRevealTopCard_singleCard() {
+    public void testPlayACard_singleCard() {
         player.addToTopOfPlayerDeck(cardForTestA);
-        assertEquals(cardForTestA, player.revealTopCardOfPlayerDeck());
+        assertEquals(cardForTestA, player.playACard());
     }
 }

@@ -13,6 +13,16 @@ public class Player {
     private Deque<Card> playerDeck;
     private String name;
 
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) throws InvalidUsernameException {
+        if (StringUtils.isBlank(name)) {
+            throw new InvalidUsernameException("Player's name must not be blank");
+        }
+        this.name = name;
+    }
+
     public Player(String name) throws InvalidUsernameException {
         if (StringUtils.isBlank(name)) {
             throw new InvalidUsernameException("Player's name must not be blank");
@@ -33,7 +43,7 @@ public class Player {
         return playerDeck.size();
     }
 
-    public Card revealTopCardOfPlayerDeck() {
+    public Card playACard() {
         return playerDeck.pop();
     }
 

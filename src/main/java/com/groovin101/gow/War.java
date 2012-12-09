@@ -1,24 +1,31 @@
 package com.groovin101.gow;
 
-import com.groovin101.gow.model.Deck;
-import com.groovin101.gow.model.DeckImpl;
-import com.groovin101.gow.model.Player;
+import com.groovin101.gow.exception.InvalidUsernameException;
+import com.groovin101.gow.model.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  */
 public class War {
 
-    private Player[] players;
+    private List<Player> players;
+    private Dealer dealer;
+    private DeckExtended deck;
 
-    //todo: assume standard play first, then explore alternative scenarios: 52 card, 2 players
+    //todo: add a play method that takes a list of usernames so that we have a chance to throw our InvalidUsernameException, allowing it to bubble
+
+
+    public Dealer getDealer() {
+        return dealer;
+    }
+
     public void play(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
-        players = new Player[numberOfPlayers];
-        Deck deck = new DeckImpl();
-        deck.shuffle();
 
-        //deal cards to players
+        initializeGame(numberOfSuits, numberOfRanks, numberOfPlayers);
 
-        //all players flip their top card
+        flipAllPlayerTopCards();
 
         //flipped cards are compared
             //player with highest card adds all cards to bottom of their pile
@@ -27,4 +34,35 @@ public class War {
 
     }
 
+    //todo: send these to the table
+    private void flipAllPlayerTopCards() {
+        for (Player player : players) {
+            player.playACard();
+        }
+    }
+
+    private void initializeGame(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
+        dealer = new Dealer();
+        players = buildPlayerList(numberOfPlayers);
+        deck = new DeckImpl();
+        deck.shuffle();
+        dealToPlayers();
+    }
+
+    protected void dealToPlayers() {
+        dealer.deal(deck, players);
+    }
+
+    protected List<Player> buildPlayerList(int numberOfPlayers) {
+        List<Player> players = new ArrayList<Player>();
+        while (numberOfPlayers > 0) {
+            try {
+                players.add(new Player("Player " + numberOfPlayers--));
+            }
+            catch (InvalidUsernameException e) {
+                e.printStackTrace();
+            }
+        }
+        return players;
+    }
 }
