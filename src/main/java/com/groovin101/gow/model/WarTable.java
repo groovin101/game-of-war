@@ -3,8 +3,9 @@ package com.groovin101.gow.model;
 import java.util.*;
 
 /**
+ * Serves as the context for gameplay, where all current rounds are played out
  */
-public class Table {
+public class WarTable implements GameContext {
 
     private Map<Player, PlayerPile> allPilesOnTheTable = new HashMap<Player, PlayerPile>();
 
@@ -33,15 +34,11 @@ public class Table {
         allPilesOnTheTable.clear();
     }
 
-    public boolean areThereTiesPresent() {
+    public boolean areThereTiesPresent(List<PlayerPile> pilesToInspectForTies) {
         Set<Rank> ranksOfTheSignificantCardsFromEachPile = new HashSet<Rank>();
-        for (PlayerPile pile : getAllPilesOnTheTable()) {
+        for (PlayerPile pile : pilesToInspectForTies) {
             ranksOfTheSignificantCardsFromEachPile.add(pile.fetchLastCardDealt().getRank());
         }
-        return (ranksOfTheSignificantCardsFromEachPile.size() < getAllPilesOnTheTable().size());
-    }
-
-    void putAPlayerPileOnTheTable(PlayerPile pile) {
-        allPilesOnTheTable.put(pile.getPlayer(), pile);
+        return (ranksOfTheSignificantCardsFromEachPile.size() < pilesToInspectForTies.size());
     }
 }

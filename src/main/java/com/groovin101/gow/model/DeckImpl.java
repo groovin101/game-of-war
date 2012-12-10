@@ -1,7 +1,5 @@
 package com.groovin101.gow.model;
 
-import com.groovin101.gow.exception.NoCardsLeftException;
-
 import java.util.*;
 
 /**
@@ -95,14 +93,9 @@ public class DeckImpl implements DeckExtended {
 
     @Override
     public Card deal() {
-        try {
-            Card dealt = availableCards.pop();
-            dealtCards.push(dealt);
-            return dealt;
-        }
-        catch (NoSuchElementException e) {
-            throw new NoCardsLeftException("There are no more cards left in the deck");
-        }
+        Card dealt = availableCards.pop();
+        dealtCards.push(dealt);
+        return dealt;
     }
 
     @Override

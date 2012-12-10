@@ -1,7 +1,7 @@
 package com.groovin101.gow;
 
 import com.groovin101.gow.model.*;
-import com.groovin101.gow.test.utils.BaseTest;
+import com.groovin101.gow.test.utils.BaseModelTest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import static org.mockito.Mockito.*;
 
 /**
  */
-public class WarTest extends BaseTest {
+public class WarTest extends BaseModelTest {
 
     private War game;
     private List<Player> players;
@@ -41,7 +41,7 @@ public class WarTest extends BaseTest {
     }
 
     @Test
-    public void testPlayCardFromAllPlayers_singlePlayerCallForSingleCardInvokesPlayersPlayACardOnce() {
+    public void testPlayCardFromAllPlayers_singlePlayerCallForSingleCardInvokesPlayersPlayACardOnce() throws Exception {
         Player playerMock = mock(Player.class);
         players.add(playerMock);
         game.setPlayers(players);
@@ -50,7 +50,7 @@ public class WarTest extends BaseTest {
     }
 
     @Test
-    public void testPlayCardFromAllPlayers_callForTwoCardsInvokesPlayersPlayACardTwice() {
+    public void testPlayCardFromAllPlayers_callForTwoCardsInvokesPlayersPlayACardTwice() throws Exception {
         Player playerOneMock = mock(Player.class);
         Player playerTwoMock = mock(Player.class);
         players.add(playerOneMock);
@@ -63,12 +63,22 @@ public class WarTest extends BaseTest {
 
     @Test
     public void testPlayCardFromAllPlayers_sendsCardsToTheTable() throws Exception {
-        Table tableMock = mock(Table.class);
+        WarTable warTableMock = mock(WarTable.class);
+        TESLA.dealToTopOfPlayersDeck(ACE_OF_CLUBS);
+        TESLA.dealToTopOfPlayersDeck(KING_OF_SPADES);
         players.add(TESLA);
         game.setPlayers(players);
-        game.setTable(tableMock);
+        game.setWarTable(warTableMock);
         game.playCardsFromAllPlayers(2);
-        verify(tableMock).receiveCardsFrom(TESLA, TESLA.playCards(2));
+        verify(warTableMock).receiveCardsFrom(TESLA, buildCardList(new Card[] {KING_OF_SPADES, ACE_OF_CLUBS}));
+    }
+
+    @Test
+    public void testPlayCardFromAllPlayers_removesPlayersThatRunOutOfCards() throws Exception {
+        players.add(TESLA);
+        game.setPlayers(players);
+        game.playCardsFromAllPlayers(1);
+        assertFalse("Should have removed Tesla after trying to play cards since he has no cards to play", game.getPlayers().contains(TESLA));
     }
 
     @Test
@@ -111,32 +121,15 @@ public class WarTest extends BaseTest {
         assertEquals("King pile should've won", pileWithKingHigh, game.identifyWinningPile(playerPiles));
     }
 
-    @Ignore
-    @Test
-    public void testPlayARound_playerWithWinningHandReceivesCards() {
-        Player playerMock = mock(Player.class);
-        game.setPlayers(buildPlayerList(new Player[]{playerMock, JABBA}));
-        game.playARound();
-        //verify winning player get cards
-//verify(playerMock).addToBottomOfPlayerDeck();
-    }
-
-//    public void testDecideNextAction_oneCardHigherThanOther() {
-//        game = mock(War.class);
-//        game.dealAHand();
-//        game.decideNextAction();
-//        verify(game).addAllCardsToPlayersDeck(GILDENSTERN);
-//    }
-
     @Test
     public void testDetermineWinner_returnsOwnerOfWinningPile() {
 
         List<PlayerPile> allPilesOnTable = new ArrayList<PlayerPile>();
         allPilesOnTable.add(new PlayerPile(CHEWY, ACE_OF_CLUBS));
 
-        Table tableMock = mock(Table.class);
-        when(tableMock.getAllPilesOnTheTable()).thenReturn(allPilesOnTable);
-        game.setTable(tableMock);
+        WarTable warTableMock = mock(WarTable.class);
+        when(warTableMock.getAllPilesOnTheTable()).thenReturn(allPilesOnTable);
+        game.setWarTable(warTableMock);
 
         assertEquals("Owner of winning pile should have been identified as winner", CHEWY, game.determineWinnerOfRound());
     }
@@ -149,9 +142,9 @@ public class WarTest extends BaseTest {
         allPilesOnTheTable.add(buildPlayerPile(ROSENCRANTZ, 10));
         allPilesOnTheTable.add(buildPlayerPile(GILDENSTERN, 15));
 
-        Table tableMock = mock(Table.class);
-        when(tableMock.getAllPilesOnTheTable()).thenReturn(allPilesOnTheTable);
-        game.setTable(tableMock);
+        WarTable warTableMock = mock(WarTable.class);
+        when(warTableMock.getAllPilesOnTheTable()).thenReturn(allPilesOnTheTable);
+        game.setWarTable(warTableMock);
 
         assertEquals("Should start off with no cards (presume they're all on the table)", 0, GILDENSTERN.getPlayerDeckSize());
         game.divyWonCardsToWinner(GILDENSTERN);
@@ -161,35 +154,24 @@ public class WarTest extends BaseTest {
     @Test
     public void testDivyWonCardsToWinner_noCardsLeftOnTable() {
 
-        Table tableMock = mock(Table.class);
-        game.setTable(tableMock);
+        WarTable warTableMock = mock(WarTable.class);
+        game.setWarTable(warTableMock);
         game.divyWonCardsToWinner(GILDENSTERN);
-        verify(tableMock).clearAllPilesFromTheTable();
+        verify(warTableMock).clearAllPilesFromTheTable();
     }
 
     @Test
     public void testDivyWonCardsToWinner_shufflesPilesBeforeDivyingOut() {
-        Table tableMock = mock(Table.class);
+        WarTable warTableMock = mock(WarTable.class);
         PlayerPile pileMock = mock(PlayerPile.class);
         List<PlayerPile> piles = new ArrayList<PlayerPile>();
         piles.add(pileMock);
-        when(tableMock.getAllPilesOnTheTable()).thenReturn(piles);
-        game.setTable(tableMock);
+        when(warTableMock.getAllPilesOnTheTable()).thenReturn(piles);
+        game.setWarTable(warTableMock);
         game.divyWonCardsToWinner(GILDENSTERN);
         verify(pileMock).shuffle();
 
     }
-
-//    protected void divyWonCardsToWinner(Player winner) {
-//        List<PlayerPile> allPilesFromTable = table.getAllPilesOnTheTable();
-//        for (PlayerPile pileFromTable : allPilesFromTable) {
-//            for (Card card : pileFromTable.getCards()) {
-//                winner.addToBottomOfPlayerDeck(card);
-//            }
-//        }
-//        table.clearAllPilesFromTheTable();
-//    }
-
 
     @Test
     public void testDoesOnePlayerHaveAllCards_noBecauseNoPlayersHaveAnyCardsYet() {
@@ -218,11 +200,20 @@ public class WarTest extends BaseTest {
                 game.doesOnePlayerHaveAllTheCards(deck, players));
     }
 
+    @Ignore
     @Test
     public void testShouldGotoWar_noIfNoTiesPresent() {
-        Table tableMock = mock(Table.class);
-        when(tableMock.areThereTiesPresent()).thenReturn(false);
-        game.setTable(tableMock);
+        WarTable warTableMock = mock(WarTable.class);
+        when(warTableMock.areThereTiesPresent(anyListOf(PlayerPile.class))).thenReturn(false);
+        game.setWarTable(warTableMock);
         assertFalse("No reason to go to war if nobody has tied", game.shouldGotoWar());
+    }
+
+    @Test
+    public void testShouldGotoWar_yesIfTiesArePresentInCurrentPileLaying_asOpposedToCurrentRound() { //todo: change the name of this - dont offer detail of impl
+        WarTable warTableMock = mock(WarTable.class);
+        when(warTableMock.areThereTiesPresent(anyListOf(PlayerPile.class))).thenReturn(false);
+        game.setWarTable(warTableMock);
+        assertTrue("Had a tie so should have gone to war", game.shouldGotoWar());
     }
 }

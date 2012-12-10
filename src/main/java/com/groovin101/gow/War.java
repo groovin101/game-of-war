@@ -1,10 +1,12 @@
 package com.groovin101.gow;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
+import com.groovin101.gow.exception.NoCardsToPlayException;
 import com.groovin101.gow.model.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -14,7 +16,7 @@ public class War {
     private List<Player> players;
     private Dealer dealer;
     private DeckExtended deck;
-    private Table table;
+    private WarTable warTable;
     private Player winner;
 
     //todo: add a play method that takes a list of usernames so that we have a chance to throw our InvalidUsernameException, allowing it to bubble
@@ -23,26 +25,28 @@ public class War {
     //todo: validate args
     public static void main(String[] args) {
         War game = new War();
-        game.play(1, 2, 2);
+//        game.play(4, 14, 5); //doesnt like these inputs for some reason...
+                game.play(4, 13, 2);
     }
 
+    public List<Player> getPlayers() {
+        return players;
+    }
     public void setPlayers(List<Player> players) {
         this.players = players;
     }
-    public void setTable(Table table) {
-        this.table = table;
+    public void setWarTable(WarTable warTable) {
+        this.warTable = warTable;
     }
 
     public War() {
         dealer = new Dealer();
-        table = new Table();
+        warTable = new WarTable();
     }
 
     public void play(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
 
         startTheGame(numberOfSuits, numberOfRanks, numberOfPlayers);
-
-        //first lets pretend theres only a single round of play.........
 
         while (!gameOver()) {
             playARound();
@@ -52,57 +56,56 @@ public class War {
     }
 
     private void announceWinner() {
+        System.out.println("*************************************/n");
         System.out.println(winner.getName() + " has won the game!");
+        System.out.println("*************************************/n");
     }
 
     void startTheGame(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
         winner = null;
         players = buildPlayerList(numberOfPlayers);
         deck = new DeckImpl(); //todo - instantiate deck properly using args from above
+        deck.create(numberOfSuits, numberOfRanks);
         deck.shuffle();
         dealer.dealAllCards(deck, players);
     }
 
     protected void playARound() {
 
-        playCardsFromAllPlayers(1);
+        playAHand(HandType.SINGLE_CARD_HAND);
 
+        RuleEnforcer enforcer = new RuleEnforcer();
+//        enforcer.processRules()
         while (shouldGotoWar()) {
             playAHand(HandType.WAR_STYLE_HAND);
+            logRound(null);
         }
 
         Player winnerOfRound = determineWinnerOfRound();
 
-        logRound(winnerOfRound);
+//logRound(winnerOfRound);
 
         divyWonCardsToWinner(winnerOfRound);
     }
 
-    private int logStopper = 1;
-
     private void logRound(Player winnerOfTheRound) {
-        if (logStopper > 0) {
-
-            System.out.println("---------------------------------------");
-            for (PlayerPile pileOnTable : table.getAllPilesOnTheTable()) {
-                System.out.println(pileOnTable + " ; cards left: " + pileOnTable.getPlayer().getPlayerDeckSize());
-            }
-            System.out.println(winnerOfTheRound.getName() + " wins the round");
-            System.out.println("---------------------------------------\n");
-
-//            logStopper--;
+        System.out.println("---------------------------------------");
+        for (PlayerPile pileOnTable : warTable.getAllPilesOnTheTable()) {
+            System.out.println(pileOnTable + " ; cards left: " + pileOnTable.getPlayer().getPlayerDeckSize());
         }
+//System.out.println(winnerOfTheRound.getName() + " wins the round");
+        System.out.println("---------------------------------------\n");
     }
 
     protected void divyWonCardsToWinner(Player winner) {
-        List<PlayerPile> allPilesFromTable = table.getAllPilesOnTheTable();
+        List<PlayerPile> allPilesFromTable = warTable.getAllPilesOnTheTable();
         for (PlayerPile pileFromTable : allPilesFromTable) {
             pileFromTable.shuffle();
             for (Card card : pileFromTable.getCards()) {
                 winner.addToBottomOfPlayerDeck(card);
             }
         }
-        table.clearAllPilesFromTheTable();
+        warTable.clearAllPilesFromTheTable();
     }
 
     protected PlayerPile identifyWinningPile(List<PlayerPile> piles) {
@@ -111,12 +114,20 @@ public class War {
     }
 
     protected Player determineWinnerOfRound() {
-        return identifyWinningPile(table.getAllPilesOnTheTable()).getPlayer();
+        return identifyWinningPile(warTable.getAllPilesOnTheTable()).getPlayer();
     }
 
     protected void playCardsFromAllPlayers(int howMany) {
-        for (Player player : players) {
-            table.receiveCardsFrom(player, player.playCards(howMany));
+        Iterator<Player> it = players.iterator();
+        while (it.hasNext()) {
+            try {
+                Player player = it.next();
+                warTable.receiveCardsFrom(player, player.playCards(howMany));
+            }
+            catch (NoCardsToPlayException e) {
+                System.out.println(e.getMessage());
+                it.remove();
+            }
         }
     }
 
@@ -135,6 +146,7 @@ public class War {
 
     public void playAHand(HandType handType) {
         if (handType.equals(HandType.SINGLE_CARD_HAND)) {
+            playCardsFromAllPlayers(1);
         }
         else {
             playCardsFromAllPlayers(4);
@@ -156,7 +168,8 @@ public class War {
     }
 
     boolean shouldGotoWar() {
-        return table.areThereTiesPresent();
+        //return warTable.areThereTiesPresent(warTable.getPilesFromMostRecentPlay());
+        return true;
     }
 
     public enum HandType {

@@ -1,6 +1,7 @@
 package com.groovin101.gow.model;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
+import com.groovin101.gow.exception.NoCardsToPlayException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -42,12 +43,12 @@ public class Player {
         return playerDeck.size();
     }
 
-    public Card playACard() {
+    public Card playACard() throws NoCardsToPlayException {
         List<Card> playedCards = playCards(1);
         return playedCards.isEmpty() ? null : playedCards.get(0);
     }
 
-    public List<Card> playCards(int howMany) {
+    public List<Card> playCards(int howMany) throws NoCardsToPlayException {
         List<Card> playedCards = new ArrayList<Card>();
         try {
             while (howMany > 0) {
@@ -56,7 +57,9 @@ public class Player {
             }
         }
         catch (NoSuchElementException e) {
-            System.out.println(toString() + " is out of cards");
+            if (playedCards.isEmpty()) {
+                throw new NoCardsToPlayException(getName() + " is out of cards");
+            }
         }
         return playedCards;
     }

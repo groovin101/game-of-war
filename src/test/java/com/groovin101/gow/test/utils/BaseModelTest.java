@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  */
-public class BaseTest {
+public class BaseModelTest {
 
     public static Player TESLA;
     public static Player THE_DUDE;

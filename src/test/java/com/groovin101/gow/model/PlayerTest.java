@@ -1,7 +1,8 @@
 package com.groovin101.gow.model;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
-import com.groovin101.gow.test.utils.BaseTest;
+import com.groovin101.gow.exception.NoCardsToPlayException;
+import com.groovin101.gow.test.utils.BaseModelTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ import static junit.framework.Assert.*;
 
 /**
  */
-public class PlayerTest extends BaseTest {
+public class PlayerTest extends BaseModelTest {
 
     private Player player;
     private Card cardForTestA;
@@ -67,32 +68,27 @@ public class PlayerTest extends BaseTest {
     }
 
     @Test
-    public void testAddToTopOfPlayerDeck_orderIsCorrect() {
+    public void testAddToTopOfPlayerDeck_orderIsCorrect() throws Exception {
         player.dealToTopOfPlayersDeck(cardForTestB);
         player.dealToTopOfPlayersDeck(cardForTestA);
         assertEquals(cardForTestA, player.playACard());
     }
 
     @Test
-    public void testAddToBottomOfPlayerDeck_orderIsCorrect() {
+    public void testAddToBottomOfPlayerDeck_orderIsCorrect() throws Exception {
         player.addToBottomOfPlayerDeck(cardForTestB);
         player.addToBottomOfPlayerDeck(cardForTestA);
         assertEquals(cardForTestB, player.playACard());
     }
 
     @Test
-    public void testPlayACard_singleCard() {
+    public void testPlayACard_singleCard() throws Exception {
         player.dealToTopOfPlayersDeck(cardForTestA);
         assertEquals(cardForTestA, player.playACard());
     }
 
     @Test
-    public void testPlayACard_emptyHandReturnsNoCard() {
-        assertNull(player.playACard());
-    }
-
-    @Test
-    public void testPlayACard_multipleCards() {
+    public void testPlayACard_multipleCards() throws Exception {
         player.dealToTopOfPlayersDeck(cardForTestA);
         player.dealToTopOfPlayersDeck(cardForTestB);
         List<Card> cardsThatWereExpectedToBePlayed = new ArrayList<Card>();
@@ -102,10 +98,20 @@ public class PlayerTest extends BaseTest {
     }
 
     @Test
-    public void testPlayACard_requestingMoreCardsThanWeHaveReturnsWhatWeDoHave() {
+    public void testPlayACard_requestingMoreCardsThanWeHaveReturnsWhatWeDoHave() throws Exception {
         player.dealToTopOfPlayersDeck(cardForTestA);
         List<Card> cardsThatWereExpectedToBePlayed = new ArrayList<Card>();
         cardsThatWereExpectedToBePlayed.add(cardForTestA);
         assertTrue("Should contain a single card even though we specified to deal 2", player.playCards(2).containsAll(cardsThatWereExpectedToBePlayed));
+    }
+
+    @Test
+    public void testPlayACard_emptyHandThrowsANoCardsException() {
+        try {
+            player.playCards(1);
+            fail("Should have thrown an exception to indicate that we can't play a single card");
+        }
+        catch (NoCardsToPlayException e) {
+        }
     }
 }

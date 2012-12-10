@@ -1,6 +1,6 @@
 package com.groovin101.gow.model;
 
-import com.groovin101.gow.test.utils.BaseTest;
+import com.groovin101.gow.test.utils.BaseModelTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,7 +12,7 @@ import static junit.framework.Assert.*;
 
 /**
  */
-public class DeckTest extends BaseTest {
+public class DeckTest extends BaseModelTest {
 
     private DeckImpl cardDeck;
 
