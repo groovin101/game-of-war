@@ -26,10 +26,6 @@ public class War {
         this.table = table;
     }
 
-    public Dealer getDealer() {
-        return dealer;
-    }
-
     public War() {
         dealer = new Dealer();
         table = new Table();
@@ -41,7 +37,7 @@ public class War {
 
         //first lets pretend theres only a single round of play.........
 
-        playCardsFromAllPlayers(1);
+        playARound();
 
         //flipped cards are compared
 //        comparePlayedCards();
@@ -51,13 +47,17 @@ public class War {
 
     }
 
+    protected void playARound() {
+        playCardsFromAllPlayers(1);
+    }
+
     protected PlayerPile identifyWinningPile(List<PlayerPile> piles) {
         Collections.sort(piles);
         return piles.get(piles.size()-1);
     }
 
     protected Player determineWinner() {
-        return null;
+        return identifyWinningPile(table.getAllPilesOnTheTable()).getPlayer();
     }
 
     protected void playCardsFromAllPlayers(int howMany) {
@@ -88,5 +88,19 @@ public class War {
             }
         }
         return players;
+    }
+
+    public void playAHand(HandType handType) {
+        if (handType.equals(HandType.SINGLE_CARD_HAND)) {
+            playCardsFromAllPlayers(1);
+        }
+        else {
+            playCardsFromAllPlayers(4);
+        }
+    }
+
+    public enum HandType {
+        SINGLE_CARD_HAND,
+        WAR_STYLE_HAND
     }
 }

@@ -5,7 +5,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static junit.framework.Assert.*;
 
@@ -34,7 +33,7 @@ public class TableTest {
 
     @Test
     public void testRetrieveCardsDealtFrom_returnsNoCardsWhenNobodyHasPlayedACardYet() throws Exception {
-        assertNull("No hands have been played yet, so table should have none", table.retrieveCardsDealtFrom(oscar));
+        assertTrue("No hands have been played yet, so table should have none", table.retrieveCardsDealtFrom(oscar).isEmpty());
     }
 
     @Test
@@ -79,10 +78,7 @@ public class TableTest {
     public void testGetPlayerPiles_incorporatesPlayedCardsFromSinglePlayer() {
         dealTo(oscar, ace, expectedCardsFromOscarsHand);
         table.receiveCardsFrom(oscar, oscar.playCards(1));
-        Map<Player, PlayerPile> playerPiles = table.getPlayerPiles();
-        PlayerPile oscarsPile = playerPiles.get(oscar);
-        assertEquals(oscar, oscarsPile.getPlayer());
-        assertEquals(ace, oscarsPile.getCards().get(0));
+        assertEquals(ace, table.retrieveCardsDealtFrom(oscar).get(0));
     }
 
     private void dealTo(Player player, Card card, List<Card> expectedCardsToUseInTest) {

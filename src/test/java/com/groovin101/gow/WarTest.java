@@ -7,6 +7,7 @@ import com.groovin101.gow.model.Table;
 import com.groovin101.gow.test.utils.CardBuilder;
 import com.groovin101.gow.test.utils.PlayerBuilder;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -14,8 +15,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  */
@@ -112,5 +112,35 @@ public class WarTest {
         playerPiles.add(pileWithQueenHigh);
         playerPiles.add(pileWithKingHigh);
         assertEquals("King pile should've won", pileWithKingHigh, game.identifyWinningPile(playerPiles));
+    }
+
+    @Ignore
+    @Test
+    public void testPlayARound_playerWithWinningHandReceivesCards() {
+        Player playerMock = mock(Player.class);
+        game.setPlayers(PlayerBuilder.buildPlayerList(new Player[] {playerMock, PlayerBuilder.JABBA}));
+        game.playARound();
+        //verify winning player get cards
+//verify(playerMock).addToBottomOfPlayerDeck();
+    }
+
+//    public void testDecideNextAction_oneCardHigherThanOther() {
+//        game = mock(War.class);
+//        game.dealAHand();
+//        game.decideNextAction();
+//        verify(game).addAllCardsToPlayersDeck(PlayerBuilder.GILDENSTERN);
+//    }
+
+    @Test
+    public void testDetermineWinner_returnsOwnerOfWinningPile() {
+
+        List<PlayerPile> allPilesOnTable = new ArrayList<PlayerPile>();
+        allPilesOnTable.add(new PlayerPile(PlayerBuilder.CHEWY, CardBuilder.ACE_OF_CLUBS));
+
+        Table tableMock = mock(Table.class);
+        when(tableMock.getAllPilesOnTheTable()).thenReturn(allPilesOnTable);
+        game.setTable(tableMock);
+
+        assertEquals("Owner of winning pile should have been identified as winner", PlayerBuilder.CHEWY, game.determineWinner());
     }
 }
