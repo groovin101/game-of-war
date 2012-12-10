@@ -4,6 +4,7 @@ import com.groovin101.gow.exception.InvalidUsernameException;
 import com.groovin101.gow.model.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,6 +49,15 @@ public class War {
 
         //randomize pickups to ensure no endless games
 
+    }
+
+    protected PlayerPile identifyWinningPile(List<PlayerPile> piles) {
+        Collections.sort(piles);
+        return piles.get(piles.size()-1);
+    }
+
+    protected Player determineWinner() {
+        return null;
     }
 
     protected void playCardsFromAllPlayers(int howMany) {

@@ -11,9 +11,14 @@ public class Table {
     private Map<Player, PlayerPile> playerPiles = new HashMap<Player, PlayerPile>();
 
     public void receiveCardsFrom(Player player, List<Card> cardsPassed) {
-        PlayerPile pile = playerPiles.get(player) == null ? new PlayerPile(player) : playerPiles.get(player);
-        pile.getCards().addAll(cardsPassed);
-        playerPiles.put(player, pile);
+        PlayerPile pile = playerPiles.get(player);
+        if (pile != null) {
+            pile.getCards().addAll(cardsPassed);
+        }
+        else {
+            pile = new PlayerPile(player, cardsPassed);
+            playerPiles.put(player, pile);
+        }
     }
 
     public List<Card> retrieveCardsDealtFrom(Player player) {

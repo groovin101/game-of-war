@@ -1,9 +1,12 @@
 package com.groovin101.gow;
 
+import com.groovin101.gow.model.Card;
 import com.groovin101.gow.model.Player;
+import com.groovin101.gow.model.PlayerPile;
 import com.groovin101.gow.model.Table;
+import com.groovin101.gow.test.utils.CardBuilder;
+import com.groovin101.gow.test.utils.PlayerBuilder;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -11,7 +14,6 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -66,43 +68,49 @@ public class WarTest {
     @Test
     public void testPlayCardFromAllPlayers_sendsCardsToTheTable() throws Exception {
         Table tableMock = mock(Table.class);
-        Player nikola = new Player("tesla");
-        players.add(nikola);
+        players.add(PlayerBuilder.TESLA);
         game.setPlayers(players);
         game.setTable(tableMock);
         game.playCardsFromAllPlayers(2);
-        verify(tableMock).receiveCardsFrom(nikola, nikola.playCards(2));
+        verify(tableMock).receiveCardsFrom(PlayerBuilder.TESLA, PlayerBuilder.TESLA.playCards(2));
     }
 
-//    @Test
-//    public void testComparePlayedCards_highestRankedCardWins() {
-//        //determine best of card match
-//        //map card winnder to player winner
-//        Card ace = new Card(Rank.ACE, Suit.CLUB);
-//        assertEquals("Highest card should win",  ace, game.compare(ace, new Card(Rank.KING, Suit.CLUB)));
-//    }
-
-    @Ignore
     @Test
-    public void testGetWinner_twoPlayersHighestRankedCardWins() throws Exception {
-        fail();
-        //assertEquals("The Dude had the highest card so should've won", new Player("Dude A. Bides"), game.determineWinner(table.getPlayerPiles()));
+    public void testIdentifyWinningPile_twoSingleCardPiles() throws Exception {
+        List<PlayerPile> playerPiles = new ArrayList<PlayerPile>();
+        PlayerPile pileWithAce = new PlayerPile(PlayerBuilder.TESLA, CardBuilder.ACE_OF_CLUBS);
+        PlayerPile pileWithKing = new PlayerPile(PlayerBuilder.THE_DUDE, CardBuilder.KING_OF_SPADES);
+        playerPiles.add(pileWithAce);
+        playerPiles.add(pileWithKing);
+        assertEquals("Ace pile should've won", pileWithAce, game.identifyWinningPile(playerPiles));
     }
 
-//    @Test
-//    public void testGetWinner_twoPlayersHighestRankedCardWins() throws Exception {
-//        dealTo(oscar, ace, expectedCardsFromOscarsHand);
-//        dealTo(felix, king, expectedCardsFromFelixsHand);
-//        table.receiveCardsFrom(oscar, oscar.playCards(1));
-//        table.receiveCardsFrom(felix, felix.playCards(1));
-//        assertEquals("Oscar had the highest hand so should've won", oscar, table.determineWinner());
-//    }
+    @Test
+    public void testIdentifyWinningPile_singleCardPileVsEmptyPile() throws Exception {
+        List<PlayerPile> playerPiles = new ArrayList<PlayerPile>();
+        List<Card> nullCardList = null;
+        PlayerPile emptyPile = new PlayerPile(PlayerBuilder.THE_DUDE, nullCardList);
+        PlayerPile pileWithAce = new PlayerPile(PlayerBuilder.TESLA, CardBuilder.ACE_OF_CLUBS);
+        playerPiles.add(emptyPile);
+        playerPiles.add(pileWithAce);
+        assertEquals("Ace pile should've won", pileWithAce, game.identifyWinningPile(playerPiles));
+    }
 
-//    @Test
-//    public void testFlipTopCards_singlePlayersTopCardsAreAddedToTheEvaluationArea() {
-//        game.initializePlay(1, 1, 1);
-//        game.flipTopCards();
-//        assertTrue("Should contain player 1 cards", game.evaluationArea().containsAll());
-//    }
+    @Test
+    public void testIdentifyWinningPile_singleCardPileVsNoPile() throws Exception {
+        List<PlayerPile> playerPiles = new ArrayList<PlayerPile>();
+        PlayerPile pileWithAce = new PlayerPile(PlayerBuilder.TESLA, CardBuilder.ACE_OF_CLUBS);
+        playerPiles.add(pileWithAce);
+        assertEquals("Ace pile should've won since it is competing with nothing", pileWithAce, game.identifyWinningPile(playerPiles));
+    }
 
+    @Test
+    public void testIdentifyWinningPile_twoMultiCardPiles() {
+        List<PlayerPile> playerPiles = new ArrayList<PlayerPile>();
+        PlayerPile pileWithQueenHigh = new PlayerPile(PlayerBuilder.TESLA, CardBuilder.buildCardList(new Card[] {CardBuilder.ACE_OF_CLUBS, CardBuilder.QUEEN_OF_HEARTS}));
+        PlayerPile pileWithKingHigh = new PlayerPile(PlayerBuilder.CHEWY, CardBuilder.buildCardList(new Card[] {CardBuilder.KING_OF_SPADES}));
+        playerPiles.add(pileWithQueenHigh);
+        playerPiles.add(pileWithKingHigh);
+        assertEquals("King pile should've won", pileWithKingHigh, game.identifyWinningPile(playerPiles));
+    }
 }
