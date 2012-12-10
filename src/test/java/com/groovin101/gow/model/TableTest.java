@@ -97,6 +97,20 @@ public class TableTest extends BaseTest {
         assertEquals("Should be no more piles on the table", 0, table.getAllPilesOnTheTable().size());
     }
 
+    @Test
+    public void testAreThereTiesPresent_noBecauseAllCardsAreDifferent() {
+        table.putAPlayerPileOnTheTable(new PlayerPile(TESLA, ACE_OF_CLUBS));
+        table.putAPlayerPileOnTheTable(new PlayerPile(THE_DUDE, KING_OF_SPADES));
+        assertFalse("All cards are different; there should not be a tie", table.areThereTiesPresent());
+    }
+
+    @Test
+    public void testAreThereTiesPresent_yesBecauseWeHaveTwoCardsWithTheSameRank() {
+        table.putAPlayerPileOnTheTable(new PlayerPile(ROSENCRANTZ, ACE_OF_CLUBS));
+        table.putAPlayerPileOnTheTable(new PlayerPile(GILDENSTERN, ACE_OF_SPADES));
+        assertTrue("Ranks match; there should be a tie", table.areThereTiesPresent());
+    }
+
     private void dealTo(Player player, Card card, List<Card> expectedCardsToUseInTest) {
         player.dealToTopOfPlayersDeck(card);
         expectedCardsToUseInTest.add(card);

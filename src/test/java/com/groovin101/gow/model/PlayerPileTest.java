@@ -21,17 +21,14 @@ public class PlayerPileTest extends BaseTest {
     }
 
     @Test
-    public void testCompareTo_playerPileWithASingleCardUsesCardCompareToForSorting() {
-        Card cardMock = mock(Card.class);
-        cardMock.setRank(Rank.ACE);
-        cardMock.setSuit(Suit.CLUB);
-        PlayerPile pileWithAce = new PlayerPile(CHEWY, cardMock);
-//        PlayerPile pileWithKing = new PlayerPile(JABBA, KING_OF_SPADES);
-        pileWithAce.compareTo(null);
-//        verify(cardMock).compareTo(KING_OF_SPADES);
-        verify(cardMock).compareTo(null);
+    public void instantiation_mustHaveAPlayerAssociatedWithAPile() {
+        try {
+            PlayerPile pile = new PlayerPile(null, JACK_OF_DIAMONDS);
+            fail("Must have a person associated with a pile");
+        }
+        catch (IllegalArgumentException e) {
+        }
     }
-
 
     @Test
     public void testCompareTo_usesHighestRankedCardInPileplayerPileWithASingleCardUsesCardCompareToForSorting() {
@@ -65,7 +62,13 @@ public class PlayerPileTest extends BaseTest {
         pile.compareTo(new PlayerPile(JABBA, JACK_OF_DIAMONDS));
         verify(lastCardDealtInThePile).compareTo(JACK_OF_DIAMONDS);
     }
-    
+
+    @Test
+    public void testCompareTo_handlesNullProperly() {
+        PlayerPile pileWithAce = new PlayerPile(CHEWY, KING_OF_SPADES);
+        assertEquals(1, pileWithAce.compareTo(null));
+    }
+
     @Test
     public void testFetchLastCardDealt_emptyPileReturnsNullCard() {
         PlayerPile pile = new PlayerPile(CHEWY, new ArrayList<Card>());

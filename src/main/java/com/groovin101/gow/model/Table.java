@@ -32,4 +32,16 @@ public class Table {
     public void clearAllPilesFromTheTable() {
         allPilesOnTheTable.clear();
     }
+
+    public boolean areThereTiesPresent() {
+        Set<Rank> ranksOfTheSignificantCardsFromEachPile = new HashSet<Rank>();
+        for (PlayerPile pile : getAllPilesOnTheTable()) {
+            ranksOfTheSignificantCardsFromEachPile.add(pile.fetchLastCardDealt().getRank());
+        }
+        return (ranksOfTheSignificantCardsFromEachPile.size() < getAllPilesOnTheTable().size());
+    }
+
+    void putAPlayerPileOnTheTable(PlayerPile pile) {
+        allPilesOnTheTable.put(pile.getPlayer(), pile);
+    }
 }

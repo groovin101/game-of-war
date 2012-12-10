@@ -81,6 +81,7 @@ public class WarTest extends BaseTest {
         assertEquals("Ace pile should've won", pileWithAce, game.identifyWinningPile(playerPiles));
     }
 
+
     @Test
     public void testIdentifyWinningPile_singleCardPileVsEmptyPile() throws Exception {
         List<PlayerPile> playerPiles = new ArrayList<PlayerPile>();
@@ -215,5 +216,13 @@ public class WarTest extends BaseTest {
         dealer.dealAllCards(deck, players);
         assertTrue("Jabba the Hut is holding all of the cards after the dealer Solo'd him out ;)",
                 game.doesOnePlayerHaveAllTheCards(deck, players));
+    }
+
+    @Test
+    public void testShouldGotoWar_noIfNoTiesPresent() {
+        Table tableMock = mock(Table.class);
+        when(tableMock.areThereTiesPresent()).thenReturn(false);
+        game.setTable(tableMock);
+        assertFalse("No reason to go to war if nobody has tied", game.shouldGotoWar());
     }
 }

@@ -65,25 +65,33 @@ public class War {
 
     protected void playARound() {
 
-        //players play a card
         playCardsFromAllPlayers(1);
+
+        while (shouldGotoWar()) {
+            playAHand(HandType.WAR_STYLE_HAND);
+        }
 
         Player winnerOfRound = determineWinnerOfRound();
 
         logRound(winnerOfRound);
 
         divyWonCardsToWinner(winnerOfRound);
-            //randomize pickups to ensure no endless games
-        //play next round
     }
 
+    private int logStopper = 1;
+
     private void logRound(Player winnerOfTheRound) {
-        System.out.println("-------------");
-        for (PlayerPile pileOnTable : table.getAllPilesOnTheTable()) {
-            System.out.println(pileOnTable);
+        if (logStopper > 0) {
+
+            System.out.println("---------------------------------------");
+            for (PlayerPile pileOnTable : table.getAllPilesOnTheTable()) {
+                System.out.println(pileOnTable + " ; cards left: " + pileOnTable.getPlayer().getPlayerDeckSize());
+            }
+            System.out.println(winnerOfTheRound.getName() + " wins the round");
+            System.out.println("---------------------------------------\n");
+
+//            logStopper--;
         }
-        System.out.println(winnerOfTheRound.getName() + " wins the round");
-        System.out.println("-------------\n");
     }
 
     protected void divyWonCardsToWinner(Player winner) {
@@ -127,7 +135,6 @@ public class War {
 
     public void playAHand(HandType handType) {
         if (handType.equals(HandType.SINGLE_CARD_HAND)) {
-            playCardsFromAllPlayers(1);
         }
         else {
             playCardsFromAllPlayers(4);
@@ -146,6 +153,10 @@ public class War {
 
     boolean gameOver() {
         return doesOnePlayerHaveAllTheCards(deck, players);
+    }
+
+    boolean shouldGotoWar() {
+        return table.areThereTiesPresent();
     }
 
     public enum HandType {

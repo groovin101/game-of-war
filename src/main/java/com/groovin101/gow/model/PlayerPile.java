@@ -15,13 +15,15 @@ public class PlayerPile implements Comparable<PlayerPile>, Deck {
     private List<Card> cards;
 
     public PlayerPile(Player player, List<Card> cards) {
+        if (player == null) {
+            throw new IllegalArgumentException("You must have a person associated with a pile");
+        }
         this.player = player;
         this.cards = cards;
     }
 
     public PlayerPile(Player player, Card card) {
-        this.player = player;
-        cards = new ArrayList<Card>();
+        this(player, new ArrayList<Card>());
         cards.add(card);
     }
 
