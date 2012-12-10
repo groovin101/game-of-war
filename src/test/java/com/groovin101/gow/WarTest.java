@@ -1,11 +1,7 @@
 package com.groovin101.gow;
 
-import com.groovin101.gow.model.Card;
-import com.groovin101.gow.model.Player;
-import com.groovin101.gow.model.PlayerPile;
-import com.groovin101.gow.model.Table;
-import com.groovin101.gow.test.utils.CardBuilder;
-import com.groovin101.gow.test.utils.PlayerBuilder;
+import com.groovin101.gow.model.*;
+import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,13 +15,14 @@ import static org.mockito.Mockito.*;
 
 /**
  */
-public class WarTest {
+public class WarTest extends BaseTest {
 
     private War game;
     private List<Player> players;
 
     @Before
     public void setup() {
+        super.setup();
         game = new War();
         players = new ArrayList<Player>();
     }
@@ -68,18 +65,18 @@ public class WarTest {
     @Test
     public void testPlayCardFromAllPlayers_sendsCardsToTheTable() throws Exception {
         Table tableMock = mock(Table.class);
-        players.add(PlayerBuilder.TESLA);
+        players.add(TESLA);
         game.setPlayers(players);
         game.setTable(tableMock);
         game.playCardsFromAllPlayers(2);
-        verify(tableMock).receiveCardsFrom(PlayerBuilder.TESLA, PlayerBuilder.TESLA.playCards(2));
+        verify(tableMock).receiveCardsFrom(TESLA, TESLA.playCards(2));
     }
 
     @Test
     public void testIdentifyWinningPile_twoSingleCardPiles() throws Exception {
         List<PlayerPile> playerPiles = new ArrayList<PlayerPile>();
-        PlayerPile pileWithAce = new PlayerPile(PlayerBuilder.TESLA, CardBuilder.ACE_OF_CLUBS);
-        PlayerPile pileWithKing = new PlayerPile(PlayerBuilder.THE_DUDE, CardBuilder.KING_OF_SPADES);
+        PlayerPile pileWithAce = new PlayerPile(TESLA, ACE_OF_CLUBS);
+        PlayerPile pileWithKing = new PlayerPile(THE_DUDE, KING_OF_SPADES);
         playerPiles.add(pileWithAce);
         playerPiles.add(pileWithKing);
         assertEquals("Ace pile should've won", pileWithAce, game.identifyWinningPile(playerPiles));
@@ -89,8 +86,8 @@ public class WarTest {
     public void testIdentifyWinningPile_singleCardPileVsEmptyPile() throws Exception {
         List<PlayerPile> playerPiles = new ArrayList<PlayerPile>();
         List<Card> nullCardList = null;
-        PlayerPile emptyPile = new PlayerPile(PlayerBuilder.THE_DUDE, nullCardList);
-        PlayerPile pileWithAce = new PlayerPile(PlayerBuilder.TESLA, CardBuilder.ACE_OF_CLUBS);
+        PlayerPile emptyPile = new PlayerPile(THE_DUDE, nullCardList);
+        PlayerPile pileWithAce = new PlayerPile(TESLA, ACE_OF_CLUBS);
         playerPiles.add(emptyPile);
         playerPiles.add(pileWithAce);
         assertEquals("Ace pile should've won", pileWithAce, game.identifyWinningPile(playerPiles));
@@ -99,7 +96,7 @@ public class WarTest {
     @Test
     public void testIdentifyWinningPile_singleCardPileVsNoPile() throws Exception {
         List<PlayerPile> playerPiles = new ArrayList<PlayerPile>();
-        PlayerPile pileWithAce = new PlayerPile(PlayerBuilder.TESLA, CardBuilder.ACE_OF_CLUBS);
+        PlayerPile pileWithAce = new PlayerPile(TESLA, ACE_OF_CLUBS);
         playerPiles.add(pileWithAce);
         assertEquals("Ace pile should've won since it is competing with nothing", pileWithAce, game.identifyWinningPile(playerPiles));
     }
@@ -107,8 +104,8 @@ public class WarTest {
     @Test
     public void testIdentifyWinningPile_twoMultiCardPiles() {
         List<PlayerPile> playerPiles = new ArrayList<PlayerPile>();
-        PlayerPile pileWithQueenHigh = new PlayerPile(PlayerBuilder.TESLA, CardBuilder.buildCardList(new Card[] {CardBuilder.ACE_OF_CLUBS, CardBuilder.QUEEN_OF_HEARTS}));
-        PlayerPile pileWithKingHigh = new PlayerPile(PlayerBuilder.CHEWY, CardBuilder.buildCardList(new Card[] {CardBuilder.KING_OF_SPADES}));
+        PlayerPile pileWithQueenHigh = new PlayerPile(TESLA, buildCardList(new Card[]{ACE_OF_CLUBS, QUEEN_OF_HEARTS}));
+        PlayerPile pileWithKingHigh = new PlayerPile(CHEWY, buildCardList(new Card[]{KING_OF_SPADES}));
         playerPiles.add(pileWithQueenHigh);
         playerPiles.add(pileWithKingHigh);
         assertEquals("King pile should've won", pileWithKingHigh, game.identifyWinningPile(playerPiles));
@@ -118,7 +115,7 @@ public class WarTest {
     @Test
     public void testPlayARound_playerWithWinningHandReceivesCards() {
         Player playerMock = mock(Player.class);
-        game.setPlayers(PlayerBuilder.buildPlayerList(new Player[] {playerMock, PlayerBuilder.JABBA}));
+        game.setPlayers(buildPlayerList(new Player[]{playerMock, JABBA}));
         game.playARound();
         //verify winning player get cards
 //verify(playerMock).addToBottomOfPlayerDeck();
@@ -128,19 +125,45 @@ public class WarTest {
 //        game = mock(War.class);
 //        game.dealAHand();
 //        game.decideNextAction();
-//        verify(game).addAllCardsToPlayersDeck(PlayerBuilder.GILDENSTERN);
+//        verify(game).addAllCardsToPlayersDeck(GILDENSTERN);
 //    }
 
     @Test
     public void testDetermineWinner_returnsOwnerOfWinningPile() {
 
         List<PlayerPile> allPilesOnTable = new ArrayList<PlayerPile>();
-        allPilesOnTable.add(new PlayerPile(PlayerBuilder.CHEWY, CardBuilder.ACE_OF_CLUBS));
+        allPilesOnTable.add(new PlayerPile(CHEWY, ACE_OF_CLUBS));
 
         Table tableMock = mock(Table.class);
         when(tableMock.getAllPilesOnTheTable()).thenReturn(allPilesOnTable);
         game.setTable(tableMock);
 
-        assertEquals("Owner of winning pile should have been identified as winner", PlayerBuilder.CHEWY, game.determineWinner());
+        assertEquals("Owner of winning pile should have been identified as winner", CHEWY, game.determineWinner());
+    }
+
+
+    @Test
+    public void testDivyWonCardsToWinner_allCardsPlayedAreGivenToWinner() {
+
+        List<PlayerPile> allPilesOnTheTable = new ArrayList<PlayerPile>();
+        allPilesOnTheTable.add(buildPlayerPile(ROSENCRANTZ, 10));
+        allPilesOnTheTable.add(buildPlayerPile(GILDENSTERN, 15));
+
+        Table tableMock = mock(Table.class);
+        when(tableMock.getAllPilesOnTheTable()).thenReturn(allPilesOnTheTable);
+        game.setTable(tableMock);
+
+        assertEquals("Should start off with no cards (presume they're all on the table)", 0, GILDENSTERN.getPlayerDeckSize());
+        game.divyWonCardsToWinner(GILDENSTERN);
+        assertEquals("Should have divied all cards from both piles to Gildenstern", 25, GILDENSTERN.getPlayerDeckSize());
+    }
+
+    @Test
+    public void testDivyWonCardsToWinner_noCardsLeftOnTable() {
+
+        Table tableMock = mock(Table.class);
+        game.setTable(tableMock);
+        game.divyWonCardsToWinner(GILDENSTERN);
+        verify(tableMock).clearAllPilesFromTheTable();
     }
 }

@@ -1,5 +1,7 @@
 package com.groovin101.gow.model;
 
+import com.groovin101.gow.exception.InvalidUsernameException;
+import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,7 +12,7 @@ import static junit.framework.Assert.assertEquals;
 
 /**
  */
-public class DealerTest {
+public class DealerTest extends BaseTest {
 
     private Dealer dealer;
     private DeckExtended deck;
@@ -18,17 +20,21 @@ public class DealerTest {
     private Player rosencrantz;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
+        super.setup();
         dealer = new Dealer();
         deck = new DeckImpl();
-        rosencrantz = new Player("rosencrantz");
+        try {
+            rosencrantz = new Player("rosencrantz");
+        }
+        catch (InvalidUsernameException e) {}
         players = new ArrayList<Player>();
         players.add(rosencrantz);
     }
 
     @Test
     public void testDealCardsToPlayers_singlePlayerGetsAllCards() {
-        dealer.deal(deck, players);
+        dealer.dealAllCards(deck, players);
         assertEquals("Single player should have all the cards", 52, rosencrantz.getPlayerDeckSize());
     }
 
@@ -37,7 +43,7 @@ public class DealerTest {
         deck.create(1,1);
         Card onlyCardInSingleCardDeck = deck.deal();
         deck.create(1,1);
-        dealer.deal(deck, players);
+        dealer.dealAllCards(deck, players);
         assertEquals("Single player should have the same card as was in a single-card deck", onlyCardInSingleCardDeck, rosencrantz.playACard());
     }
 
@@ -46,7 +52,7 @@ public class DealerTest {
         Player guildenstern = new Player("guildenstern");
         players.add(guildenstern);
         deck.create(2,13);
-        dealer.deal(deck, players);
+        dealer.dealAllCards(deck, players);
         assertEquals("Players should have same number of cards", rosencrantz.getPlayerDeckSize(), guildenstern.getPlayerDeckSize());
     }
 
@@ -57,7 +63,7 @@ public class DealerTest {
         players.add(guildenstern);
         players.add(enzo);
         deck.create(1,13);
-        dealer.deal(deck, players);
+        dealer.dealAllCards(deck, players);
         assertEquals("First player should have 5 cards", 5, rosencrantz.getPlayerDeckSize());
         assertEquals("Second player should have 4 cards", 4, guildenstern.getPlayerDeckSize());
         assertEquals("Third player should have 4 cards", 4, enzo.getPlayerDeckSize());

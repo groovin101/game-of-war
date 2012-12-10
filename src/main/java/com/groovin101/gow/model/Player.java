@@ -38,7 +38,7 @@ public class Player {
         playerDeck.addFirst(card);
     }
 
-    protected int getPlayerDeckSize() {
+    public int getPlayerDeckSize() {
         return playerDeck.size();
     }
 

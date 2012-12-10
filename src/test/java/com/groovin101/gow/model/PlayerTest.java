@@ -1,6 +1,7 @@
 package com.groovin101.gow.model;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
+import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,15 +12,19 @@ import static junit.framework.Assert.*;
 
 /**
  */
-public class PlayerTest {
+public class PlayerTest extends BaseTest {
 
     private Player player;
     private Card cardForTestA;
     private Card cardForTestB;
 
     @Before
-    public void setup() throws Exception {
-        player = new Player("Chewbacca");
+    public void setup() {
+        super.setup();
+        try {
+            player = new Player("Chewbacca");
+        }
+        catch (InvalidUsernameException e) {}
         cardForTestA = new Card(Rank.ACE, Suit.CLUB);
         cardForTestB = new Card(Rank.EIGHT, Suit.SPADE);
     }

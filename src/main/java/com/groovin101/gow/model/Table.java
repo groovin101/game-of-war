@@ -1,9 +1,6 @@
 package com.groovin101.gow.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  */
@@ -27,6 +24,12 @@ public class Table {
     }
 
     public List<PlayerPile> getAllPilesOnTheTable() {
-        return (List<PlayerPile>) allPilesOnTheTable.values();
+        List<PlayerPile> playerPiles = new ArrayList<PlayerPile>();
+        playerPiles.addAll(allPilesOnTheTable.values());
+        return playerPiles;
+    }
+
+    public void clearAllPilesFromTheTable() {
+        allPilesOnTheTable.clear();
     }
 }

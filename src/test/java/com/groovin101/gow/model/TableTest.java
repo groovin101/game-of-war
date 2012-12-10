@@ -1,5 +1,7 @@
 package com.groovin101.gow.model;
 
+import com.groovin101.gow.exception.InvalidUsernameException;
+import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,7 +12,7 @@ import static junit.framework.Assert.*;
 
 /**
  */
-public class TableTest {
+public class TableTest extends BaseTest {
 
     private Table table;
     private Player felix;
@@ -21,10 +23,14 @@ public class TableTest {
     private List<Card> expectedCardsFromFelixsHand;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
+        super.setup();
         table = new Table();
-        oscar = new Player("oscar");
-        felix = new Player("felix");
+        try {
+            oscar = new Player("oscar");
+            felix = new Player("felix");
+        }
+        catch (InvalidUsernameException e) {}
         ace = new Card(Rank.ACE, Suit.CLUB);
         king = new Card(Rank.KING, Suit.HEART);
         expectedCardsFromOscarsHand = new ArrayList<Card>();
@@ -79,6 +85,16 @@ public class TableTest {
         dealTo(oscar, ace, expectedCardsFromOscarsHand);
         table.receiveCardsFrom(oscar, oscar.playCards(1));
         assertEquals(ace, table.retrieveCardsDealtFrom(oscar).get(0));
+    }
+
+    @Test
+    public void testClearAllPilesFromTheTable_leavesNoPiles() {
+        DeckImpl deck = new DeckImpl();
+        table.receiveCardsFrom(CHEWY, deck.deal(11)); //pile 1
+        table.receiveCardsFrom(JABBA, deck.deal(12)); //pile 2
+        assertEquals("Should be 2 piles on the table before clearing", 2, table.getAllPilesOnTheTable().size());
+        table.clearAllPilesFromTheTable();
+        assertEquals("Should be no more piles on the table", 0, table.getAllPilesOnTheTable().size());
     }
 
     private void dealTo(Player player, Card card, List<Card> expectedCardsToUseInTest) {

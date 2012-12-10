@@ -1,6 +1,6 @@
 package com.groovin101.gow.model;
 
-import com.groovin101.gow.test.utils.CardBuilder;
+import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,12 +8,13 @@ import static junit.framework.Assert.*;
 
 /**
  */
-public class CardTest {
+public class CardTest extends BaseTest {
 
     private Card card;
 
     @Before
     public void setup() {
+        super.setup();
         card = new Card(Rank.ACE, Suit.CLUB);
     }
 
@@ -65,7 +66,7 @@ public class CardTest {
 
     @Test
     public void testCompareTo_cardThatIsNotNullIsGreaterThanNullCard() {
-        assertEquals("Card that is not null should be greater than nothing", 1, CardBuilder.KING_OF_SPADES.compareTo(null));
+        assertEquals("Card that is not null should be greater than nothing", 1, KING_OF_SPADES.compareTo(null));
     }
 
     // test equal ranks are equal; 2nd thought, this should be configurable and not a fn of the card object itself - consider strategy pattern

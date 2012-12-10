@@ -1,5 +1,6 @@
 package com.groovin101.gow.model;
 
+import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,12 +12,13 @@ import static junit.framework.Assert.*;
 
 /**
  */
-public class DeckTest {
+public class DeckTest extends BaseTest {
 
     private DeckImpl cardDeck;
 
     @Before
     public void setup() {
+        super.setup();
         cardDeck = new DeckImpl();
     }
 
@@ -126,6 +128,12 @@ public class DeckTest {
     public void testDeal_incrementsDealtCards() {
         cardDeck.deal();
         assertEquals("Should have dealt a card", 1, cardDeck.countDealtCards());
+    }
+
+    @Test
+    public void testDeal_multipleCards() {
+        List<Card> dealtCards = cardDeck.deal(10);
+        assertEquals(10, dealtCards.size());
     }
 
     @Test

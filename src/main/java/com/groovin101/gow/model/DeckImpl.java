@@ -108,6 +108,16 @@ public class DeckImpl implements DeckExtended {
         return !availableCards.isEmpty();
     }
 
+    public List<Card> deal(int howMany) {
+
+        List<Card> dealt = new ArrayList<Card>();
+        while (howMany > 0) {
+            dealt.add(deal());
+            howMany--;
+        }
+        return dealt;
+    }
+
     protected int countAvailableCards() {
         return availableCards.size();
     }

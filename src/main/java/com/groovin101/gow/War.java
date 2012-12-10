@@ -37,18 +37,39 @@ public class War {
 
         //first lets pretend theres only a single round of play.........
 
-        playARound();
+//        while (!gameOver()) {
+            playARound();
+//        }
 
-        //flipped cards are compared
-//        comparePlayedCards();
-            //player with highest card adds all cards to bottom of their pile
+        //announceWinner();
+    }
 
-        //randomize pickups to ensure no endless games
-
+    private void startTheGame(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
+        players = buildPlayerList(numberOfPlayers);
+        deck = new DeckImpl(); //todo - instantiate deck properly using args from above
+        deck.shuffle();
+        dealer.dealAllCards(deck, players);
     }
 
     protected void playARound() {
+
+        //players play a card
         playCardsFromAllPlayers(1);
+
+        //clear the table (pass dealt cards to winner)
+        divyWonCardsToWinner(determineWinner());
+            //randomize pickups to ensure no endless games
+        //play next round
+    }
+
+    protected void divyWonCardsToWinner(Player winner) {
+        List<PlayerPile> allPilesFromTable = table.getAllPilesOnTheTable();
+        for (PlayerPile pileFromTable : allPilesFromTable) {
+            for (Card card : pileFromTable.getCards()) {
+                winner.addToBottomOfPlayerDeck(card);
+            }
+        }
+        table.clearAllPilesFromTheTable();
     }
 
     protected PlayerPile identifyWinningPile(List<PlayerPile> piles) {
@@ -64,17 +85,6 @@ public class War {
         for (Player player : players) {
             table.receiveCardsFrom(player, player.playCards(howMany));
         }
-    }
-
-    private void startTheGame(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
-        players = buildPlayerList(numberOfPlayers);
-        deck = new DeckImpl();
-        deck.shuffle();
-        dealToPlayers();
-    }
-
-    protected void dealToPlayers() {
-        dealer.deal(deck, players);
     }
 
     protected List<Player> buildPlayerList(int numberOfPlayers) {
