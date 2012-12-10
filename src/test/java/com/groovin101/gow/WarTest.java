@@ -9,8 +9,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -138,7 +137,7 @@ public class WarTest extends BaseTest {
         when(tableMock.getAllPilesOnTheTable()).thenReturn(allPilesOnTable);
         game.setTable(tableMock);
 
-        assertEquals("Owner of winning pile should have been identified as winner", CHEWY, game.determineWinner());
+        assertEquals("Owner of winning pile should have been identified as winner", CHEWY, game.determineWinnerOfRound());
     }
 
 
@@ -165,5 +164,56 @@ public class WarTest extends BaseTest {
         game.setTable(tableMock);
         game.divyWonCardsToWinner(GILDENSTERN);
         verify(tableMock).clearAllPilesFromTheTable();
+    }
+
+    @Test
+    public void testDivyWonCardsToWinner_shufflesPilesBeforeDivyingOut() {
+        Table tableMock = mock(Table.class);
+        PlayerPile pileMock = mock(PlayerPile.class);
+        List<PlayerPile> piles = new ArrayList<PlayerPile>();
+        piles.add(pileMock);
+        when(tableMock.getAllPilesOnTheTable()).thenReturn(piles);
+        game.setTable(tableMock);
+        game.divyWonCardsToWinner(GILDENSTERN);
+        verify(pileMock).shuffle();
+
+    }
+
+//    protected void divyWonCardsToWinner(Player winner) {
+//        List<PlayerPile> allPilesFromTable = table.getAllPilesOnTheTable();
+//        for (PlayerPile pileFromTable : allPilesFromTable) {
+//            for (Card card : pileFromTable.getCards()) {
+//                winner.addToBottomOfPlayerDeck(card);
+//            }
+//        }
+//        table.clearAllPilesFromTheTable();
+//    }
+
+
+    @Test
+    public void testDoesOnePlayerHaveAllCards_noBecauseNoPlayersHaveAnyCardsYet() {
+        DeckExtended deck = new DeckImpl();
+        assertFalse("No player should have all the cards at the start of the game",
+                game.doesOnePlayerHaveAllTheCards(deck, buildPlayerList(new Player[]{ROSENCRANTZ, GILDENSTERN})));
+    }
+
+    @Test
+    public void testDoesOnePlayerHaveAllCards_noBecauseCardsAreEvenlySplit() {
+        DeckExtended deck = new DeckImpl();
+        Dealer dealer = new Dealer();
+        players = buildPlayerList(new Player[] {ROSENCRANTZ, GILDENSTERN});
+        dealer.dealAllCards(deck, players);
+        assertFalse("No player should have all the cards right after dealing",
+                game.doesOnePlayerHaveAllTheCards(deck, players));
+    }
+
+    @Test
+    public void testDoesOnePlayerHaveAllCards_yesBecauseDealerJustDealtThemAllToASinglePlayer() {
+        DeckExtended deck = new DeckImpl();
+        Dealer dealer = new Dealer();
+        players = buildPlayerList(new Player[] {JABBA});
+        dealer.dealAllCards(deck, players);
+        assertTrue("Jabba the Hut is holding all of the cards after the dealer Solo'd him out ;)",
+                game.doesOnePlayerHaveAllTheCards(deck, players));
     }
 }

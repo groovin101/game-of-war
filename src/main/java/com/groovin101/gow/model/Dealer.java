@@ -7,9 +7,9 @@ import java.util.List;
 public class Dealer {
 
     public void dealAllCards(DeckExtended deckToDealFrom, List<Player> players) {
-        while (deckToDealFrom.hasMoreCards()) {
+        while (deckToDealFrom.hasMoreCardsAvailable()) {
             for (Player player : players) {
-                if (deckToDealFrom.hasMoreCards()) {
+                if (deckToDealFrom.hasMoreCardsAvailable()) {
                     player.dealToTopOfPlayersDeck(deckToDealFrom.deal());
                 }
                 else {

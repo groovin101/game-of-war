@@ -167,13 +167,13 @@ public class DeckTest extends BaseTest {
 
     @Test
     public void testHasMoreCards_yesWhenUsingAFullDeck() {
-        assertTrue("Full deck should have a next card", cardDeck.hasMoreCards());
+        assertTrue("Full deck should have a next card", cardDeck.hasMoreCardsAvailable());
     }
 
     @Test
     public void testHasMoreCards_shouldNotWhenUsingAnEmptyDeck() {
         cardDeck.create(0, 0);
-        assertFalse("Empty deck should not have a next card", cardDeck.hasMoreCards());
+        assertFalse("Empty deck should not have a next card", cardDeck.hasMoreCardsAvailable());
     }
 
 //    @Test

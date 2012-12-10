@@ -7,8 +7,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -81,13 +80,17 @@ public class PlayerPileTest extends BaseTest {
     
     @Test
     public void testFetchLastCardDealt_PileWithMultipleCardsReturnsTheOneThatWasAddedLast() {
-        List<Card> cardsInPile = new ArrayList<Card>();
-        cardsInPile.add(ACE_OF_CLUBS);
-        cardsInPile.add(JACK_OF_DIAMONDS);
-        cardsInPile.add(QUEEN_OF_HEARTS);
-        cardsInPile.add(KING_OF_SPADES);
-        PlayerPile pile = new PlayerPile(TESLA, cardsInPile);
+        PlayerPile pile = new PlayerPile(TESLA, buildCardList(new Card[] {ACE_OF_CLUBS, JACK_OF_DIAMONDS, QUEEN_OF_HEARTS, KING_OF_SPADES}));
         assertEquals("Last card dealt should have been the king", KING_OF_SPADES, pile.fetchLastCardDealt());
     }
-    
+
+    @Test
+    public void testShuffle_listsAreInDifferentOrderAfterShuffling() {
+        PlayerPile pile = new PlayerPile(TESLA, largeCardList());
+        List<Card> originalList = new ArrayList<Card>();
+        originalList.addAll(pile.getCards());
+        pile.shuffle();
+        assertFalse("Lists of available cards should not be in same order after shuffling", originalList.equals(pile.getCards()));
+    }
+
 }

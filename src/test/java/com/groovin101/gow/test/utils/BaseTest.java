@@ -43,6 +43,16 @@ public class BaseTest {
         return cardList;
     }
 
+    public static List<Card> largeCardList() {
+        List<Card> bigCardList = new ArrayList<Card>();
+        DeckExtended deck = new DeckImpl();
+        deck.create(4, 13);
+        while (deck.hasMoreCardsAvailable()) {
+            bigCardList.add(deck.deal());
+        }
+        return bigCardList;
+    }
+
     protected PlayerPile buildPlayerPile(Player player, int numberOfNonUniqueCardsInPile) {
         DeckImpl deck = new DeckImpl();
         return new PlayerPile(player, deck.deal(numberOfNonUniqueCardsInPile));

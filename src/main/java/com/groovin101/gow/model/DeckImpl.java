@@ -13,6 +13,7 @@ public class DeckImpl implements DeckExtended {
 
     private Deque<Card> availableCards;
     private Deque<Card> dealtCards;
+    private int totalCardCount;
 
     /**
      * CONSTRUCTOR
@@ -27,6 +28,7 @@ public class DeckImpl implements DeckExtended {
         validateNumberOfRanksToCreate(numberOfRanks);
         initializeAvailableCards(numberOfSuits, numberOfRanks);
         initializeDealtCards();
+        totalCardCount = availableCards.size();
     }
 
     private void validateNumberOfSuitsToCreate(int numberOfSuits) {
@@ -104,8 +106,13 @@ public class DeckImpl implements DeckExtended {
     }
 
     @Override
-    public boolean hasMoreCards() {
+    public boolean hasMoreCardsAvailable() {
         return !availableCards.isEmpty();
+    }
+
+    @Override
+    public int getTotalCardCount() {
+        return totalCardCount;
     }
 
     public List<Card> deal(int howMany) {

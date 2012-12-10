@@ -3,12 +3,13 @@ package com.groovin101.gow.model;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Represents an active pile of cards, in play, for a particular player
  */
-public class PlayerPile implements Comparable<PlayerPile> {
+public class PlayerPile implements Comparable<PlayerPile>, Deck {
 
     private Player player;
     private List<Card> cards;
@@ -42,6 +43,21 @@ public class PlayerPile implements Comparable<PlayerPile> {
     }
 
     @Override
+    public void create(int numberOfSuits, int numberOfRanks) {
+        throw new UnsupportedOperationException("Cannot create a PlayerPile directly");
+    }
+
+    @Override
+    public void shuffle() {
+        Collections.shuffle(cards);
+    }
+
+    @Override
+    public Card deal() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public int compareTo(PlayerPile o) {
         if (fetchLastCardDealt() == null) {
             if (o.fetchLastCardDealt() == null) {
@@ -55,8 +71,8 @@ public class PlayerPile implements Comparable<PlayerPile> {
     @Override
     public String toString() {
         return "PlayerPile{" +
-                "player=" + player +
-                ", cards=" + cards +
+                player.getName() +
+                " played: " + cards +
                 '}';
     }
 

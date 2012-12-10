@@ -6,5 +6,6 @@ package com.groovin101.gow.model;
  */
 public interface DeckExtended extends Deck {
 
-    public boolean hasMoreCards();
+    public boolean hasMoreCardsAvailable();
+    public int getTotalCardCount();
 }
