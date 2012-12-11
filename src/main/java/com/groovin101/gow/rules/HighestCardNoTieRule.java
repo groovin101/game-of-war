@@ -16,7 +16,7 @@ public class HighestCardNoTieRule implements RuleForUseWithRuleChain {
     @Override
     public void fireRule(WarTable warTable, RuleChainImplGameOfWar ruleChain) {
 
-        List<PileCard> highestRankingCardsInPlay = findHighestRankingCards(warTable.getSignificantCards());
+        List<PileCard> highestRankingCardsInPlay = findHighestRankingCards(warTable.fetchSignificantCards());
 
         if (!wasThereATieAmongTheHighestCards(highestRankingCardsInPlay)) {
             warTable.setWinner(highestRankingCardsInPlay.get(0).getCardOwner());

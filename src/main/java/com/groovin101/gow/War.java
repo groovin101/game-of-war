@@ -79,18 +79,24 @@ public class War {
         HighestCardNoTieRule highestCardNoTieRule = new HighestCardNoTieRule();
         highestCardNoTieRule.fireRule(warTable, null);
 
-        RuleEnforcer enforcer = new RuleEnforcer();
-//        enforcer.processRules()
-        while (shouldGotoWar()) {
+        if (warTable.getWinner() == null) {
             playAHand(HandType.WAR_STYLE_HAND);
-            logRound(null);
+            highestCardNoTieRule.fireRule(warTable, null);
         }
-
-        Player winnerOfRound = determineWinnerOfRound();
-
+        logRound(warTable.getWinner());
+//        if (warTable.shouldGoToWar()) {
+//
+//        }
+//        while (shouldGotoWar()) {
+//            playAHand(HandType.WAR_STYLE_HAND);
+//            logRound(null);
+//        }
+//
+//        Player winnerOfRound = determineWinnerOfRound();
+//
 //logRound(winnerOfRound);
 
-        divyWonCardsToWinner(winnerOfRound);
+divyWonCardsToWinner(warTable.getWinner());
     }
 
     private void logRound(Player winnerOfTheRound) {
@@ -127,7 +133,7 @@ public class War {
         while (it.hasNext()) {
             try {
                 Player player = it.next();
-                warTable.receiveCardsFrom(player, player.playCards(howMany));
+                warTable.playAHand(player, player.playCards(howMany));
             }
             catch (NoCardsToPlayException e) {
                 System.out.println(e.getMessage());

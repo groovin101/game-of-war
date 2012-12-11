@@ -56,6 +56,14 @@ public class BaseTest {
         return pileCardList;
     }
 
+    public static List<Card> pileCardListAsCardList(List<PileCard> pileCardsToConvert) {
+        List<Card> cards = new ArrayList<Card>();
+        for (PileCard pileCard : pileCardsToConvert) {
+            cards.add(pileCard.getCard());
+        }
+        return cards;
+    }
+
     public static List<Card> largeCardList() {
         List<Card> bigCardList = new ArrayList<Card>();
         DeckExtended deck = new DeckImpl();

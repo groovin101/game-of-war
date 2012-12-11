@@ -70,7 +70,7 @@ public class WarTest extends BaseTest {
         game.setPlayers(players);
         game.setWarTable(warTableMock);
         game.playCardsFromAllPlayers(2);
-        verify(warTableMock).receiveCardsFrom(TESLA, buildCardList(new Card[] {KING_OF_SPADES, ACE_OF_CLUBS}));
+        verify(warTableMock).playAHand(TESLA, buildCardList(new Card[]{KING_OF_SPADES, ACE_OF_CLUBS}));
     }
 
     @Test

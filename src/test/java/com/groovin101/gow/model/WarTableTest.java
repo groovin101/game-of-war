@@ -1,6 +1,5 @@
 package com.groovin101.gow.model;
 
-import com.groovin101.gow.exception.InvalidUsernameException;
 import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -16,102 +15,107 @@ import static junit.framework.Assert.*;
 public class WarTableTest extends BaseTest {
 
     private WarTable warTable;
-    private Player felix;
-    private Player oscar;
-    private Card ace;
-    private Card king;
-    private List<Card> expectedCardsFromOscarsHand;
-    private List<Card> expectedCardsFromFelixsHand;
+    private List<Card> expectedCardsFromGildernsternsHand;
+    private List<Card> expectedCardsFromRosencrantzsHand;
 
     @Before
     public void setup() {
         super.setup();
         warTable = new WarTable();
-        try {
-            oscar = new Player("oscar");
-            felix = new Player("felix");
-        }
-        catch (InvalidUsernameException e) {}
-        ace = new Card(Rank.ACE, Suit.CLUB);
-        king = new Card(Rank.KING, Suit.HEART);
-        expectedCardsFromOscarsHand = new ArrayList<Card>();
-        expectedCardsFromFelixsHand = new ArrayList<Card>();
+        expectedCardsFromRosencrantzsHand = new ArrayList<Card>();
+        expectedCardsFromGildernsternsHand = new ArrayList<Card>();
     }
 
     @Test
     public void testRetrieveCardsDealtFrom_returnsNoCardsWhenNobodyHasPlayedACardYet() throws Exception {
-        assertTrue("No hands have been played yet, so warTable should have none", warTable.retrieveCardsDealtFrom(oscar).isEmpty());
+        assertTrue("No hands have been played yet, so warTable should have none", warTable.retrieveCardsDealtFrom(GILDENSTERN).isEmpty());
     }
 
     @Test
-    public void testReceiveCardFrom_canHoldASingleCardPlayedByASinglePlayer() throws Exception {
-        dealTo(oscar, ace, expectedCardsFromOscarsHand);
-        warTable.receiveCardsFrom(oscar, oscar.playCards(1));
-        assertEquals("Should have the only card that was played by Oscar", expectedCardsFromOscarsHand, warTable.retrieveCardsDealtFrom(oscar));
+    public void testPlayAHand_singlePlayerPlayingASingleCard() throws Exception {
+        dealTo(GILDENSTERN, ACE_OF_SPADES, expectedCardsFromGildernsternsHand);
+        warTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(1));
+        assertEquals(expectedCardsFromGildernsternsHand, warTable.retrieveCardsDealtFrom(GILDENSTERN));
     }
 
     @Test
-    public void testReceiveCardFrom_canHoldMultipleCardsPlayedByASinglePlayer() throws Exception {
-        dealTo(oscar, ace, expectedCardsFromOscarsHand);
-        dealTo(oscar, king, expectedCardsFromOscarsHand);
-        warTable.receiveCardsFrom(oscar, oscar.playCards(1));
-        warTable.receiveCardsFrom(oscar, oscar.playCards(1));
-        assertTrue("Should have all cards played by Oscar", warTable.retrieveCardsDealtFrom(oscar).containsAll(expectedCardsFromOscarsHand));
+    public void testPlayAHand_singlePlayerPlayingMultipleCards() throws Exception {
+        dealTo(GILDENSTERN, ACE_OF_SPADES, expectedCardsFromGildernsternsHand);
+        dealTo(GILDENSTERN, KING_OF_SPADES, expectedCardsFromGildernsternsHand);
+        warTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(1));
+        warTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(1));
+        assertTrue("Should have all cards played by Oscar", warTable.retrieveCardsDealtFrom(GILDENSTERN).containsAll(expectedCardsFromGildernsternsHand));
     }
 
     @Test
-    public void testReceiveCardFrom_canHoldASingleCardPlayedByEachOfTwoPlayers() throws Exception {
-        dealTo(oscar, ace, expectedCardsFromOscarsHand);
-        dealTo(felix, king, expectedCardsFromFelixsHand);
-        warTable.receiveCardsFrom(oscar, oscar.playCards(1));
-        warTable.receiveCardsFrom(felix, felix.playCards(1));
-        assertEquals("Should have Oscar's card", expectedCardsFromOscarsHand, warTable.retrieveCardsDealtFrom(oscar));
-        assertEquals("Should have Felix's card", expectedCardsFromFelixsHand, warTable.retrieveCardsDealtFrom(felix));
+    public void testPlayAHand_contextCanHoldASingleCardPlayedByEachOfTwoPlayers() throws Exception {
+        dealTo(GILDENSTERN, ACE_OF_SPADES, expectedCardsFromGildernsternsHand);
+        dealTo(ROSENCRANTZ, KING_OF_SPADES, expectedCardsFromRosencrantzsHand);
+        warTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(1));
+        warTable.playAHand(ROSENCRANTZ, ROSENCRANTZ.playCards(1));
+        assertEquals("Should have R's card", expectedCardsFromRosencrantzsHand, warTable.retrieveCardsDealtFrom(ROSENCRANTZ));
+        assertEquals("Should have G's card", expectedCardsFromGildernsternsHand, warTable.retrieveCardsDealtFrom(GILDENSTERN));
     }
 
     @Test
-    public void testReceiveCardFrom_canHoldMultipleCardsPlayedByEachOfTwoPlayers() throws Exception {
-        dealTo(oscar, ace, expectedCardsFromOscarsHand);
-        dealTo(oscar, new Card(Rank.THREE, Suit.DIAMOND), expectedCardsFromOscarsHand);
-        dealTo(felix, king, expectedCardsFromFelixsHand);
-        dealTo(felix, new Card(Rank.NINE, Suit.SPADE), expectedCardsFromFelixsHand);
-        warTable.receiveCardsFrom(oscar, oscar.playCards(2));
-        warTable.receiveCardsFrom(felix, felix.playCards(2));
-        assertTrue("Should have all of Oscar's cards", warTable.retrieveCardsDealtFrom(oscar).containsAll(expectedCardsFromOscarsHand));
-        assertTrue("Should have all of Felix's cards", warTable.retrieveCardsDealtFrom(felix).containsAll(expectedCardsFromFelixsHand));
+    public void testPlayAHand_canHoldMultipleCardsPlayedByEachOfTwoPlayers() throws Exception {
+        dealTo(GILDENSTERN, ACE_OF_SPADES, expectedCardsFromGildernsternsHand);
+        dealTo(GILDENSTERN, new Card(Rank.THREE, Suit.DIAMOND), expectedCardsFromGildernsternsHand);
+        dealTo(ROSENCRANTZ, KING_OF_SPADES, expectedCardsFromRosencrantzsHand);
+        dealTo(ROSENCRANTZ, new Card(Rank.NINE, Suit.SPADE), expectedCardsFromRosencrantzsHand);
+        warTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(2));
+        warTable.playAHand(ROSENCRANTZ, ROSENCRANTZ.playCards(2));
+        assertTrue("Should have all of G's cards", warTable.retrieveCardsDealtFrom(GILDENSTERN).containsAll(expectedCardsFromGildernsternsHand));
+        assertTrue("Should have all of R's cards", warTable.retrieveCardsDealtFrom(ROSENCRANTZ).containsAll(expectedCardsFromRosencrantzsHand));
     }
+
+    @Test
+    public void testFetchSignificantCard_usesOnlyCardInASingleCardPile() {
+        PlayerPile playersPile = new PlayerPile(CHEWY, ACE_OF_CLUBS);
+
+        assertEquals("A pile with one card should flag that single card as the significant one",
+                new PileCard(CHEWY, ACE_OF_CLUBS), warTable.fetchSignificantCard(playersPile));
+    }
+
+@Test
+public void testFetchSignificantCard_usesLastPlayedCardInAPile() {
+
+}
+
+    @Test
+    public void testPlayAHand_latestCardToBePutInPlayShouldBeAddedToTheListOfSignificantCards() throws Exception {
+
+        dealTo(GILDENSTERN, ACE_OF_SPADES, expectedCardsFromGildernsternsHand);
+        warTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(1));
+        assertTrue("Lists should be identical, containing G's single card", expectedCardsFromGildernsternsHand.equals(pileCardListAsCardList(warTable.fetchSignificantCards())));
+    }
+//    //todo: //test when players play a hand, that the significant card is updated
+//    public void receiveCardsFrom(Player player, List<Card> cardsPassed) {
+//        PlayerPile pile = allPilesOnTheTable.get(player);
+//        if (pile != null) {
+//            pile.getCards().addAll(cardsPassed);
+//        }
+//        else {
+//            pile = new PlayerPile(player, cardsPassed);
+//            allPilesOnTheTable.put(player, pile);
+//        }
+//    }
 
     @Test
     public void testGetPlayerPiles_incorporatesPlayedCardsFromSinglePlayer() throws Exception {
-        dealTo(oscar, ace, expectedCardsFromOscarsHand);
-        warTable.receiveCardsFrom(oscar, oscar.playCards(1));
-        assertEquals(ace, warTable.retrieveCardsDealtFrom(oscar).get(0));
+        dealTo(GILDENSTERN, ACE_OF_SPADES, expectedCardsFromGildernsternsHand);
+        warTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(1));
+        assertEquals(ACE_OF_SPADES, warTable.retrieveCardsDealtFrom(GILDENSTERN).get(0));
     }
 
     @Test
     public void testClearAllPilesFromTheTable_leavesNoPiles() {
         DeckImpl deck = new DeckImpl();
-        warTable.receiveCardsFrom(CHEWY, deck.deal(11)); //pile 1
-        warTable.receiveCardsFrom(JABBA, deck.deal(12)); //pile 2
+        warTable.playAHand(CHEWY, deck.deal(11)); //pile 1
+        warTable.playAHand(JABBA, deck.deal(12)); //pile 2
         assertEquals("Should be 2 piles on the warTable before clearing", 2, warTable.getAllPilesOnTheTable().size());
         warTable.clearAllPilesFromTheTable();
         assertEquals("Should be no more piles on the warTable", 0, warTable.getAllPilesOnTheTable().size());
-    }
-
-    @Test
-    public void testAreThereTiesPresent_noBecauseAllCardsAreDifferent() {
-        List<PlayerPile> pilesThatDoNotTieEachOther = new ArrayList<PlayerPile>();
-        pilesThatDoNotTieEachOther.add(new PlayerPile(TESLA, ACE_OF_CLUBS));
-        pilesThatDoNotTieEachOther.add(new PlayerPile(THE_DUDE, KING_OF_SPADES));
-        assertFalse("All cards are different; there should not be a tie", warTable.areThereTiesPresent(pilesThatDoNotTieEachOther));
-    }
-
-    @Test
-    public void testAreThereTiesPresent_yesBecauseWeHaveTwoCardsWithTheSameRank() {
-        List<PlayerPile> pilesThatTieEachOther = new ArrayList<PlayerPile>();
-        pilesThatTieEachOther.add(new PlayerPile(ROSENCRANTZ, ACE_OF_CLUBS));
-        pilesThatTieEachOther.add(new PlayerPile(GILDENSTERN, ACE_OF_SPADES));
-        assertTrue("Ranks match; there should be a tie", warTable.areThereTiesPresent(pilesThatTieEachOther));
     }
 
 //    @Test

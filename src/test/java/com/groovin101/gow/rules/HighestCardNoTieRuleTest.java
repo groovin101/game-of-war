@@ -20,15 +20,13 @@ public class HighestCardNoTieRuleTest extends BaseTest {
     public void testFireRule_highestCardWinsWhenThereAreNoTies() {
 
         WarTable table = new WarTable();
+        RuleChainImplGameOfWar chain = new RuleChainImplGameOfWar();
 
-        table.addSignificantCard(new PileCard(CHEWY, KING_OF_SPADES));
-        table.addSignificantCard(new PileCard(JABBA, ACE_OF_CLUBS));
-        table.addSignificantCard(new PileCard(THE_DUDE, QUEEN_OF_HEARTS));
+        table.playAHand(CHEWY, buildCardList(new Card[] {KING_OF_SPADES}));
+        table.playAHand(JABBA, buildCardList(new Card[] {ACE_OF_CLUBS}));
+        table.playAHand(THE_DUDE, buildCardList(new Card[] {QUEEN_OF_HEARTS}));
 
         HighestCardNoTieRule highestCardNoTieRule = new HighestCardNoTieRule();
-        RuleChainImplGameOfWar chain = new RuleChainImplGameOfWar();
-        chain.registerRule(highestCardNoTieRule);
-
         highestCardNoTieRule.fireRule(table, chain);
 
         assertEquals("Jabba should have won", JABBA, table.getWinner());
