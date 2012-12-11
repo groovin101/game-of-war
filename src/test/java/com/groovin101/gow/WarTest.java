@@ -18,12 +18,14 @@ public class WarTest extends BaseTest {
 
     private War game;
     private List<Player> players;
+    private GameTable gameTable;
 
     @Before
     public void setup() {
         super.setup();
         game = new War();
         players = new ArrayList<Player>();
+        gameTable = new GameTable();
     }
 
     @Test
@@ -45,8 +47,8 @@ public class WarTest extends BaseTest {
         Player playerMock = mock(Player.class);
         players.add(playerMock);
         game.setPlayers(players);
-        game.playCardsFromAllPlayers(2);
-        verify(playerMock).playCards(2);
+        game.playCardsFromAllPlayers(2, gameTable);
+        verify(playerMock).playCards(2, gameTable);
     }
 
     @Test
@@ -56,28 +58,16 @@ public class WarTest extends BaseTest {
         players.add(playerOneMock);
         players.add(playerTwoMock);
         game.setPlayers(players);
-        game.playCardsFromAllPlayers(2);
-        verify(playerOneMock).playCards(2);
-        verify(playerTwoMock).playCards(2);
-    }
-
-    @Test
-    public void testPlayCardFromAllPlayers_sendsCardsToTheTable() throws Exception {
-        GameTable gameTableMock = mock(GameTable.class);
-        TESLA.dealToTopOfPlayersDeck(ACE_OF_CLUBS);
-        TESLA.dealToTopOfPlayersDeck(KING_OF_SPADES);
-        players.add(TESLA);
-        game.setPlayers(players);
-        game.setGameTable(gameTableMock);
-        game.playCardsFromAllPlayers(2);
-        verify(gameTableMock).playAHand(TESLA, buildCardList(new Card[]{KING_OF_SPADES, ACE_OF_CLUBS}));
+        game.playCardsFromAllPlayers(2, gameTable);
+        verify(playerOneMock).playCards(2, gameTable);
+        verify(playerTwoMock).playCards(2, gameTable);
     }
 
     @Test
     public void testPlayCardFromAllPlayers_removesPlayersThatRunOutOfCards() throws Exception {
         players.add(TESLA);
         game.setPlayers(players);
-        game.playCardsFromAllPlayers(1);
+        game.playCardsFromAllPlayers(1, gameTable);
         assertFalse("Should have removed Tesla after trying to play cards since he has no cards to play", game.getPlayers().contains(TESLA));
     }
 

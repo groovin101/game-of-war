@@ -128,12 +128,12 @@ divyWonCardsToWinner(gameTable.getWinner());
         return identifyWinningPile(gameTable.getAllPilesOnTheTable()).getPlayer();
     }
 
-    protected void playCardsFromAllPlayers(int howMany) {
+    protected void playCardsFromAllPlayers(int howMany, GameTable gameTable) {
         Iterator<Player> it = players.iterator();
         while (it.hasNext()) {
             try {
                 Player player = it.next();
-                gameTable.playAHand(player, player.playCards(howMany));
+                player.playCards(howMany, gameTable);
             }
             catch (NoCardsToPlayException e) {
                 System.out.println(e.getMessage());
@@ -157,10 +157,10 @@ divyWonCardsToWinner(gameTable.getWinner());
 
     public void playAHand(HandType handType) {
         if (handType.equals(HandType.SINGLE_CARD_HAND)) {
-            playCardsFromAllPlayers(1);
+            playCardsFromAllPlayers(1, gameTable);
         }
         else {
-            playCardsFromAllPlayers(4);
+            playCardsFromAllPlayers(4, gameTable);
         }
     }
 

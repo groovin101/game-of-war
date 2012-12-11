@@ -34,7 +34,7 @@ public class GameTableTest extends BaseTest {
     @Test
     public void testPlayAHand_singlePlayerPlayingASingleCard() throws Exception {
         dealTo(GILDENSTERN, ACE_OF_SPADES, expectedCardsFromGildernsternsHand);
-        gameTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(1));
+        GILDENSTERN.playCards(1, gameTable);
         assertEquals(expectedCardsFromGildernsternsHand, gameTable.retrieveCardsDealtFrom(GILDENSTERN));
     }
 
@@ -42,8 +42,8 @@ public class GameTableTest extends BaseTest {
     public void testPlayAHand_singlePlayerPlayingMultipleCards() throws Exception {
         dealTo(GILDENSTERN, ACE_OF_SPADES, expectedCardsFromGildernsternsHand);
         dealTo(GILDENSTERN, KING_OF_SPADES, expectedCardsFromGildernsternsHand);
-        gameTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(1));
-        gameTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(1));
+        GILDENSTERN.playCards(1, gameTable);
+        GILDENSTERN.playCards(1, gameTable);
         assertTrue("Should have all cards played by Oscar", gameTable.retrieveCardsDealtFrom(GILDENSTERN).containsAll(expectedCardsFromGildernsternsHand));
     }
 
@@ -51,8 +51,8 @@ public class GameTableTest extends BaseTest {
     public void testPlayAHand_contextCanHoldASingleCardPlayedByEachOfTwoPlayers() throws Exception {
         dealTo(GILDENSTERN, ACE_OF_SPADES, expectedCardsFromGildernsternsHand);
         dealTo(ROSENCRANTZ, KING_OF_SPADES, expectedCardsFromRosencrantzsHand);
-        gameTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(1));
-        gameTable.playAHand(ROSENCRANTZ, ROSENCRANTZ.playCards(1));
+        GILDENSTERN.playCards(1, gameTable);
+        ROSENCRANTZ.playCards(1, gameTable);
         assertEquals("Should have R's card", expectedCardsFromRosencrantzsHand, gameTable.retrieveCardsDealtFrom(ROSENCRANTZ));
         assertEquals("Should have G's card", expectedCardsFromGildernsternsHand, gameTable.retrieveCardsDealtFrom(GILDENSTERN));
     }
@@ -63,8 +63,8 @@ public class GameTableTest extends BaseTest {
         dealTo(GILDENSTERN, new Card(Rank.THREE, Suit.DIAMOND), expectedCardsFromGildernsternsHand);
         dealTo(ROSENCRANTZ, KING_OF_SPADES, expectedCardsFromRosencrantzsHand);
         dealTo(ROSENCRANTZ, new Card(Rank.NINE, Suit.SPADE), expectedCardsFromRosencrantzsHand);
-        gameTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(2));
-        gameTable.playAHand(ROSENCRANTZ, ROSENCRANTZ.playCards(2));
+        GILDENSTERN.playCards(2, gameTable);
+        ROSENCRANTZ.playCards(2, gameTable);
         assertTrue("Should have all of G's cards", gameTable.retrieveCardsDealtFrom(GILDENSTERN).containsAll(expectedCardsFromGildernsternsHand));
         assertTrue("Should have all of R's cards", gameTable.retrieveCardsDealtFrom(ROSENCRANTZ).containsAll(expectedCardsFromRosencrantzsHand));
     }
@@ -86,7 +86,7 @@ public void testFetchSignificantCard_usesLastPlayedCardInAPile() {
     public void testPlayAHand_latestCardToBePutInPlayShouldBeAddedToTheListOfSignificantCards() throws Exception {
 
         dealTo(GILDENSTERN, ACE_OF_SPADES, expectedCardsFromGildernsternsHand);
-        gameTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(1));
+        GILDENSTERN.playCards(1, gameTable);
         assertTrue("Lists should be identical, containing G's single card", expectedCardsFromGildernsternsHand.equals(pileCardListAsCardList(gameTable.fetchSignificantCards())));
     }
 //    //todo: //test when players play a hand, that the significant card is updated
@@ -104,7 +104,7 @@ public void testFetchSignificantCard_usesLastPlayedCardInAPile() {
     @Test
     public void testGetPlayerPiles_incorporatesPlayedCardsFromSinglePlayer() throws Exception {
         dealTo(GILDENSTERN, ACE_OF_SPADES, expectedCardsFromGildernsternsHand);
-        gameTable.playAHand(GILDENSTERN, GILDENSTERN.playCards(1));
+        GILDENSTERN.playCards(1, gameTable);
         assertEquals(ACE_OF_SPADES, gameTable.retrieveCardsDealtFrom(GILDENSTERN).get(0));
     }
 

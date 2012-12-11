@@ -37,12 +37,14 @@ public class Player {
         return playerDeck.size();
     }
 
-    public Card playACard() throws NoCardsToPlayException {
-        List<Card> playedCards = playCards(1);
+    //todo: remove return type
+    public Card playACard(GameTable gameTable) throws NoCardsToPlayException {
+        List<Card> playedCards = playCards(1, gameTable);
         return playedCards.isEmpty() ? null : playedCards.get(0);
     }
 
-    public List<Card> playCards(int howMany) throws NoCardsToPlayException {
+    //todo: remove return type
+    public List<Card> playCards(int howMany, GameTable gameTable) throws NoCardsToPlayException {
         List<Card> playedCards = new ArrayList<Card>();
         try {
             while (howMany > 0) {
@@ -55,6 +57,7 @@ public class Player {
                 throw new NoCardsToPlayException(getName() + " is out of cards");
             }
         }
+        gameTable.playAHand(this, playedCards);
         return playedCards;
     }
 

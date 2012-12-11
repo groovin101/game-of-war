@@ -18,6 +18,7 @@ public class PlayerTest extends BaseTest {
     private Player player;
     private Card cardForTestA;
     private Card cardForTestB;
+    private GameTable gameTable;
 
     @Before
     public void setup() {
@@ -28,6 +29,7 @@ public class PlayerTest extends BaseTest {
         catch (InvalidUsernameException e) {}
         cardForTestA = new Card(Rank.ACE, Suit.CLUB);
         cardForTestB = new Card(Rank.EIGHT, Suit.SPADE);
+        gameTable = new GameTable();
     }
 
     @Test
@@ -71,20 +73,20 @@ public class PlayerTest extends BaseTest {
     public void testAddToTopOfPlayerDeck_orderIsCorrect() throws Exception {
         player.dealToTopOfPlayersDeck(cardForTestB);
         player.dealToTopOfPlayersDeck(cardForTestA);
-        assertEquals(cardForTestA, player.playACard());
+        assertEquals(cardForTestA, player.playACard(gameTable));
     }
 
     @Test
     public void testAddToBottomOfPlayerDeck_orderIsCorrect() throws Exception {
         player.addToBottomOfPlayerDeck(cardForTestB);
         player.addToBottomOfPlayerDeck(cardForTestA);
-        assertEquals(cardForTestB, player.playACard());
+        assertEquals(cardForTestB, player.playACard(gameTable));
     }
 
     @Test
     public void testPlayACard_singleCard() throws Exception {
         player.dealToTopOfPlayersDeck(cardForTestA);
-        assertEquals(cardForTestA, player.playACard());
+        assertEquals(cardForTestA, player.playACard(gameTable));
     }
 
     @Test
@@ -94,7 +96,7 @@ public class PlayerTest extends BaseTest {
         List<Card> cardsThatWereExpectedToBePlayed = new ArrayList<Card>();
         cardsThatWereExpectedToBePlayed.add(cardForTestA);
         cardsThatWereExpectedToBePlayed.add(cardForTestB);
-        assertTrue("Should contain all two of our cards since we played both", player.playCards(2).containsAll(cardsThatWereExpectedToBePlayed));
+        assertTrue("Should contain all two of our cards since we played both", player.playCards(2, gameTable).containsAll(cardsThatWereExpectedToBePlayed));
     }
 
     @Test
@@ -102,13 +104,13 @@ public class PlayerTest extends BaseTest {
         player.dealToTopOfPlayersDeck(cardForTestA);
         List<Card> cardsThatWereExpectedToBePlayed = new ArrayList<Card>();
         cardsThatWereExpectedToBePlayed.add(cardForTestA);
-        assertTrue("Should contain a single card even though we specified to deal 2", player.playCards(2).containsAll(cardsThatWereExpectedToBePlayed));
+        assertTrue("Should contain a single card even though we specified to deal 2", player.playCards(2, gameTable).containsAll(cardsThatWereExpectedToBePlayed));
     }
 
     @Test
     public void testPlayACard_emptyHandThrowsANoCardsException() {
         try {
-            player.playCards(1);
+            player.playCards(1, gameTable);
             fail("Should have thrown an exception to indicate that we can't play a single card");
         }
         catch (NoCardsToPlayException e) {
