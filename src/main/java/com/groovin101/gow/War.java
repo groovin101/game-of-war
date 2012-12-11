@@ -5,10 +5,7 @@ import com.groovin101.gow.exception.NoCardsToPlayException;
 import com.groovin101.gow.model.*;
 import com.groovin101.gow.rules.HighestCardNoTieRule;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  */
@@ -19,6 +16,7 @@ public class War {
     private DeckExtended deck;
     private GameTable gameTable;
     private Player winner;
+    private int numberOfRoundsPlayed = 0;
 
     //todo: add a play method that takes a list of usernames so that we have a chance to throw our InvalidUsernameException, allowing it to bubble
 
@@ -67,36 +65,30 @@ public class War {
         players = buildPlayerList(numberOfPlayers);
         deck = new DeckImpl(); //todo - instantiate deck properly using args from above
         deck.create(numberOfSuits, numberOfRanks);
-        deck.shuffle();
+//todo: shuffle
+deck.shuffle();
         dealer.dealAllCards(deck, players);
     }
 
     protected void playARound() {
 
-
-        playAHand(HandType.SINGLE_CARD_HAND);
-
-        HighestCardNoTieRule highestCardNoTieRule = new HighestCardNoTieRule();
-        highestCardNoTieRule.fireRule(gameTable, null);
-
-        if (gameTable.getWinner() == null) {
-            playAHand(HandType.WAR_STYLE_HAND);
-            highestCardNoTieRule.fireRule(gameTable, null);
+        numberOfRoundsPlayed++;
+        startABattle();
+        new HighestCardNoTieRule().fireRule(gameTable, null);
+        if (gameTable.getWinnerOfRound() == null) {
+            startAWar();
+            new HighestCardNoTieRule().fireRule(gameTable, null);
         }
-        logRound(gameTable.getWinner());
-//        if (gameTable.shouldGoToWar()) {
-//
-//        }
-//        while (shouldGotoWar()) {
-//            playAHand(HandType.WAR_STYLE_HAND);
-//            logRound(null);
-//        }
-//
-//        Player winnerOfRound = determineWinnerOfRound();
-//
-//logRound(winnerOfRound);
+        logRound(gameTable.getWinnerOfRound());
+        divyWonCardsToWinner(gameTable.getWinnerOfRound());
+    }
 
-        divyWonCardsToWinner(gameTable.getWinner());
+    public void startABattle() {
+        playCardsFromAllPlayers(1, gameTable);
+    }
+
+    public void startAWar() {
+        playCardsFromAllPlayers(4, gameTable);
     }
 
     private void logRound(Player winnerOfTheRound) {
@@ -104,17 +96,21 @@ public class War {
         for (PlayerPile pileOnTable : gameTable.getAllPilesOnTheTable()) {
             System.out.println(pileOnTable + " ; cards left: " + pileOnTable.getPlayer().getPlayerDeckSize());
         }
-        System.out.println(winnerOfTheRound.getName() + " wins the round");
+        System.out.println((winnerOfTheRound == null ? "Nobody" : winnerOfTheRound.getName()) + " wins round [" + numberOfRoundsPlayed + "]");
         System.out.println("---------------------------------------\n");
     }
 
     protected void divyWonCardsToWinner(Player winner) {
+        List<Card> cardsFromBothPiles = new ArrayList<Card>();
         List<PlayerPile> allPilesFromTable = gameTable.getAllPilesOnTheTable();
         for (PlayerPile pileFromTable : allPilesFromTable) {
-            pileFromTable.shuffle();
             for (Card card : pileFromTable.getCards()) {
-                winner.addToBottomOfPlayerDeck(card);
+                cardsFromBothPiles.add(card);
             }
+        }
+        Collections.shuffle(cardsFromBothPiles, new Random(Calendar.getInstance().getTimeInMillis()));
+        for (Card card : cardsFromBothPiles) {
+            winner.addToBottomOfPlayerDeck(card);
         }
         gameTable.clearAllPilesFromTheTable();
     }
@@ -122,11 +118,7 @@ public class War {
     //todo: delete this
     protected PlayerPile identifyWinningPile(List<PlayerPile> piles) {
         Collections.sort(piles);
-        return piles.get(piles.size()-1);
-    }
-
-    protected Player determineWinnerOfRound() {
-        return gameTable.getWinner();
+        return piles.get(piles.size() - 1);
     }
 
     protected void playCardsFromAllPlayers(int howMany, GameTable gameTable) {
@@ -156,15 +148,6 @@ public class War {
         return players;
     }
 
-    public void playAHand(HandType handType) {
-        if (handType.equals(HandType.SINGLE_CARD_HAND)) {
-            playCardsFromAllPlayers(1, gameTable);
-        }
-        else {
-            playCardsFromAllPlayers(4, gameTable);
-        }
-    }
-
     boolean doesOnePlayerHaveAllTheCards(DeckExtended deck, List<Player> players) {
         for (Player player : players) {
             if (player.getPlayerDeckSize() == deck.getTotalCardCount()) {
@@ -177,10 +160,5 @@ public class War {
 
     boolean gameOver() {
         return doesOnePlayerHaveAllTheCards(deck, players);
-    }
-
-    public enum HandType {
-        SINGLE_CARD_HAND,
-        WAR_STYLE_HAND
     }
 }

@@ -8,27 +8,33 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Highest card found will determine the winner. If more than one card is equal, there is not a guarantee as to which
- * owning player will be determined the winner
+ * Will set a winner if there is a single card that has the highest rank. If there is a tie _among the highest ranking_
+ * cards in the round, no winner will be selected.
  */
-public class HighestCardNoTieRule implements RuleForUseWithRuleChain {
+public class HighestCardNoTieRule implements Rule {
 
     @Override
     public void fireRule(GameTable gameTable, RuleChainImplGameOfWar ruleChain) {
 
         List<PileCard> highestRankingCardsInPlay = findHighestRankingCards(gameTable.fetchSignificantCards());
 
-        if (!wasThereATieAmongTheHighestCards(highestRankingCardsInPlay)) {
+        if (!wasThereATie(highestRankingCardsInPlay)) {
             gameTable.setWinner(highestRankingCardsInPlay.get(0).getCardOwner());
         }
-        ruleChain.fireNextRule(gameTable);
+        else {
+            gameTable.setWinner(null);
+        }
+
+//ruleChain.fireNextRule(gameTable);
     }
 
-    private boolean wasThereATieAmongTheHighestCards(List<PileCard> highestCardsAmongTheSignificantCardsInPlay) {
+    boolean wasThereATie(List<PileCard> highestCardsAmongTheSignificantCardsInPlay) {
+
         return highestCardsAmongTheSignificantCardsInPlay.size() > 1;
     }
 
     List<PileCard> findHighestRankingCards(List<PileCard> pileCards) {
+
         List<PileCard> highestCards = new ArrayList<PileCard>();
         Collections.sort(pileCards);
 

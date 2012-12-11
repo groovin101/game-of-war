@@ -16,7 +16,7 @@ public class GameTable implements GameContext {
     }
 
     @Override
-    public Player getWinner() {
+    public Player getWinnerOfRound() {
         return winner;
     }
     public void setWinner(Player winner) {
@@ -49,7 +49,7 @@ public class GameTable implements GameContext {
         allPilesOnTheTable.clear();
     }
 
-    public PileCard fetchSignificantCard(PlayerPile pile) {
+    PileCard fetchSignificantCard(PlayerPile pile) {
 
         return new PileCard(pile.getPlayer(), pile.fetchLastCardDealt());
     }

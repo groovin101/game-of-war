@@ -3,6 +3,7 @@ package com.groovin101.gow;
 import com.groovin101.gow.model.*;
 import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -111,20 +112,6 @@ public class WarTest extends BaseTest {
     }
 
     @Test
-    public void testDetermineWinner_returnsOwnerOfWinningPile() {
-
-        List<PlayerPile> allPilesOnTable = new ArrayList<PlayerPile>();
-        allPilesOnTable.add(new PlayerPile(CHEWY, ACE_OF_CLUBS));
-
-        GameTable gameTableMock = mock(GameTable.class);
-        when(gameTableMock.getAllPilesOnTheTable()).thenReturn(allPilesOnTable);
-        game.setGameTable(gameTableMock);
-
-        assertEquals("Owner of winning pile should have been identified as winner", CHEWY, game.determineWinnerOfRound());
-    }
-
-
-    @Test
     public void testDivyWonCardsToWinner_allCardsPlayedAreGivenToWinner() {
 
         List<PlayerPile> allPilesOnTheTable = new ArrayList<PlayerPile>();
@@ -149,6 +136,7 @@ public class WarTest extends BaseTest {
         verify(gameTableMock).clearAllPilesFromTheTable();
     }
 
+    @Ignore
     @Test
     public void testDivyWonCardsToWinner_shufflesPilesBeforeDivyingOut() {
         GameTable gameTableMock = mock(GameTable.class);

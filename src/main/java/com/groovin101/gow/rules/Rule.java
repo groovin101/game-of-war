@@ -4,7 +4,7 @@ import com.groovin101.gow.model.GameTable;
 
 /**
  */
-public interface RuleForUseWithRuleChain {
+public interface Rule {
 
     public void fireRule(GameTable gameWarTable, RuleChainImplGameOfWar ruleChain);
 
@@ -56,6 +56,8 @@ build a rule engine and enforce sequentially; rules should know if they fire a n
                                     WIN - end round
 
                             YES - [war!]
+                                if (gameTable.getWinnerOfRound() == null) {
+                                startAWar();
                             WarRule
                                     *each* player
                                         lays down three face-down cards

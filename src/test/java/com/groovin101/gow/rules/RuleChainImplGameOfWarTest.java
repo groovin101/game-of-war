@@ -13,16 +13,16 @@ import static org.mockito.Mockito.*;
  */
 public class RuleChainImplGameOfWarTest {
 
-    private RuleForUseWithRuleChain ruleA;
-    private RuleForUseWithRuleChain ruleB;
+    private Rule ruleA;
+    private Rule ruleB;
     private RuleChainImplGameOfWar chain;
     private GameTable table;
 
     @Before
     public void setup() {
 
-        ruleA = mock(RuleForUseWithRuleChain.class);
-        ruleB = mock(RuleForUseWithRuleChain.class);
+        ruleA = mock(Rule.class);
+        ruleB = mock(Rule.class);
         chain = new RuleChainImplGameOfWar();
         table = new GameTable();
     }
@@ -66,7 +66,7 @@ public class RuleChainImplGameOfWarTest {
 //        try {
 //            RuleChainImplGameOfWar chain = new RuleChainImplGameOfWar();
 //            mockRuleThatJustFiresNextInChain().fireRule(null, chain);
-//            fail("RuleForUseWithRuleChain should not be able to fire using the chain if it has not registered with the chain");
+//            fail("Rule should not be able to fire using the chain if it has not registered with the chain");
 //        }
 //        catch (RuleNotRegisteredException e) {
 //        }
@@ -83,9 +83,9 @@ public class RuleChainImplGameOfWarTest {
         }
     }
 
-    private RuleForUseWithRuleChain mockRuleThatJustFiresNextInChain() {
+    private Rule mockRuleThatJustFiresNextInChain() {
 
-        return new RuleForUseWithRuleChain() {
+        return new Rule() {
             @Override
             public void fireRule(GameTable gameWarTable, RuleChainImplGameOfWar ruleChain) {
                 ruleChain.fireNextRule(gameWarTable);
@@ -93,9 +93,9 @@ public class RuleChainImplGameOfWarTest {
         };
     }
 
-    private RuleForUseWithRuleChain mockRuleThatSetsAWinner() {
+    private Rule mockRuleThatSetsAWinner() {
 
-        return new RuleForUseWithRuleChain() {
+        return new Rule() {
             @Override
             public void fireRule(GameTable gameWarTable, RuleChainImplGameOfWar ruleChain) {
                 gameWarTable.setWinner(BaseTest.CHEWY);

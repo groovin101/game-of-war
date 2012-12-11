@@ -10,7 +10,7 @@ public interface GameContext {
 
     public List<Card> retrieveCardsDealtFrom(Player player);
 
-    public Player getWinner();
+    public Player getWinnerOfRound();
 
     public void clearAllPilesFromTheTable();
 }

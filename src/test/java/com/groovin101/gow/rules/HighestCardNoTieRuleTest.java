@@ -1,10 +1,9 @@
 package com.groovin101.gow.rules;
 
 import com.groovin101.gow.model.Card;
-import com.groovin101.gow.model.PileCard;
 import com.groovin101.gow.model.GameTable;
+import com.groovin101.gow.model.PileCard;
 import com.groovin101.gow.test.utils.BaseTest;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -29,17 +28,7 @@ public class HighestCardNoTieRuleTest extends BaseTest {
         HighestCardNoTieRule highestCardNoTieRule = new HighestCardNoTieRule();
         highestCardNoTieRule.fireRule(table, chain);
 
-        assertEquals("Jabba should have won", JABBA, table.getWinner());
-//        RuleChainImplGameOfWar ruleChainMock = mock(RuleChainImplGameOfWar.class);
-//        rule.fireRule(table, ruleChainMock);
-//        verify(ruleChainMock).setWinner(JABBA);
-    }
-
-    //todo
-    @Ignore
-    @Test
-    public void testFireRule_noWinnerIsDeclaredIfThereIsATieAmongTheHighestCards() {
-
+        assertEquals("Jabba should have won", JABBA, table.getWinnerOfRound());
     }
 
     @Test
