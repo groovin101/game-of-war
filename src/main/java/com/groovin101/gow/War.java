@@ -96,7 +96,7 @@ public class War {
 //
 //logRound(winnerOfRound);
 
-divyWonCardsToWinner(gameTable.getWinner());
+        divyWonCardsToWinner(gameTable.getWinner());
     }
 
     private void logRound(Player winnerOfTheRound) {
@@ -104,7 +104,7 @@ divyWonCardsToWinner(gameTable.getWinner());
         for (PlayerPile pileOnTable : gameTable.getAllPilesOnTheTable()) {
             System.out.println(pileOnTable + " ; cards left: " + pileOnTable.getPlayer().getPlayerDeckSize());
         }
-//System.out.println(winnerOfTheRound.getName() + " wins the round");
+        System.out.println(winnerOfTheRound.getName() + " wins the round");
         System.out.println("---------------------------------------\n");
     }
 
@@ -119,13 +119,14 @@ divyWonCardsToWinner(gameTable.getWinner());
         gameTable.clearAllPilesFromTheTable();
     }
 
+    //todo: delete this
     protected PlayerPile identifyWinningPile(List<PlayerPile> piles) {
         Collections.sort(piles);
         return piles.get(piles.size()-1);
     }
 
     protected Player determineWinnerOfRound() {
-        return identifyWinningPile(gameTable.getAllPilesOnTheTable()).getPlayer();
+        return gameTable.getWinner();
     }
 
     protected void playCardsFromAllPlayers(int howMany, GameTable gameTable) {
@@ -176,11 +177,6 @@ divyWonCardsToWinner(gameTable.getWinner());
 
     boolean gameOver() {
         return doesOnePlayerHaveAllTheCards(deck, players);
-    }
-
-    boolean shouldGotoWar() {
-        //return gameTable.areThereTiesPresent(gameTable.getPilesFromMostRecentPlay());
-        return true;
     }
 
     public enum HandType {

@@ -3,7 +3,6 @@ package com.groovin101.gow;
 import com.groovin101.gow.model.*;
 import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -188,22 +187,5 @@ public class WarTest extends BaseTest {
         dealer.dealAllCards(deck, players);
         assertTrue("Jabba the Hut is holding all of the cards after the dealer Solo'd him out ;)",
                 game.doesOnePlayerHaveAllTheCards(deck, players));
-    }
-
-    @Ignore
-    @Test
-    public void testShouldGotoWar_noIfNoTiesPresent() {
-        GameTable gameTableMock = mock(GameTable.class);
-        when(gameTableMock.areThereTiesPresent(anyListOf(PlayerPile.class))).thenReturn(false);
-        game.setGameTable(gameTableMock);
-        assertFalse("No reason to go to war if nobody has tied", game.shouldGotoWar());
-    }
-
-    @Test
-    public void testShouldGotoWar_yesIfTiesArePresentInCurrentPileLaying_asOpposedToCurrentRound() { //todo: change the name of this - dont offer detail of impl
-        GameTable gameTableMock = mock(GameTable.class);
-        when(gameTableMock.areThereTiesPresent(anyListOf(PlayerPile.class))).thenReturn(false);
-        game.setGameTable(gameTableMock);
-        assertTrue("Had a tie so should have gone to war", game.shouldGotoWar());
     }
 }

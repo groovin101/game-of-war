@@ -138,13 +138,3 @@ public class DeckImpl implements DeckExtended {
         availableCards = new ArrayDeque<Card>(availableCardsInShuffledForm);
     }
 }
-
-//    public Card[] deal(int numberOfCardsToDeal) {
-//        Card[] dealt = new Card[52];
-//        int cardIndex = 0;
-//        while (numberOfCardsToDeal > 0) {
-//            dealt[cardIndex++] = this.deal();
-//        }
-//        return dealt;
-//    }
-

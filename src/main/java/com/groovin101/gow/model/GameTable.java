@@ -15,6 +15,7 @@ public class GameTable implements GameContext {
         winner = null;
     }
 
+    @Override
     public Player getWinner() {
         return winner;
     }
@@ -22,21 +23,11 @@ public class GameTable implements GameContext {
         this.winner = winner;
     }
 
-    public PileCard fetchSignificantCard(PlayerPile pile) {
-        return new PileCard(pile.getPlayer(), pile.fetchLastCardDealt());
-    }
-
-    public List<PileCard> fetchSignificantCards() {
-        List<PileCard> significantCards = new ArrayList<PileCard>();
-        for (PlayerPile pile : allPilesOnTheTable.values()) {
-            significantCards.add(fetchSignificantCard(pile));
-        }
-        return significantCards;
-    }
-
-    //todo: //test when players play a hand, that the significant card is updated
+    @Override
     public void playAHand(Player player, List<Card> cardsPassed) {
+
         PlayerPile pile = allPilesOnTheTable.get(player);
+
         if (pile != null) {
             pile.getCards().addAll(cardsPassed);
         }
@@ -46,25 +37,36 @@ public class GameTable implements GameContext {
         }
     }
 
+    @Override
     public List<Card> retrieveCardsDealtFrom(Player player) {
+
         return allPilesOnTheTable.get(player) == null ? new ArrayList<Card>() : allPilesOnTheTable.get(player).getCards();
     }
 
-    public List<PlayerPile> getAllPilesOnTheTable() {
-        List<PlayerPile> playerPiles = new ArrayList<PlayerPile>();
-        playerPiles.addAll(allPilesOnTheTable.values());
-        return playerPiles;
-    }
-
+    @Override
     public void clearAllPilesFromTheTable() {
+
         allPilesOnTheTable.clear();
     }
 
-    public boolean areThereTiesPresent(List<PlayerPile> pilesToInspectForTies) {
-        Set<Rank> ranksOfTheSignificantCardsFromEachPile = new HashSet<Rank>();
-        for (PlayerPile pile : pilesToInspectForTies) {
-            ranksOfTheSignificantCardsFromEachPile.add(pile.fetchLastCardDealt().getRank());
+    public PileCard fetchSignificantCard(PlayerPile pile) {
+
+        return new PileCard(pile.getPlayer(), pile.fetchLastCardDealt());
+    }
+
+    public List<PileCard> fetchSignificantCards() {
+
+        List<PileCard> significantCards = new ArrayList<PileCard>();
+        for (PlayerPile pile : allPilesOnTheTable.values()) {
+            significantCards.add(fetchSignificantCard(pile));
         }
-        return (ranksOfTheSignificantCardsFromEachPile.size() < pilesToInspectForTies.size());
+        return significantCards;
+    }
+
+    public List<PlayerPile> getAllPilesOnTheTable() {
+
+        List<PlayerPile> playerPiles = new ArrayList<PlayerPile>();
+        playerPiles.addAll(allPilesOnTheTable.values());
+        return playerPiles;
     }
 }
