@@ -5,12 +5,12 @@ import java.util.*;
 /**
  * Serves as the context for gameplay, where all current rounds are played out
  */
-public class WarTable implements GameContext {
+public class GameTable implements GameContext {
 
     private Map<Player, PlayerPile> allPilesOnTheTable;
     private Player winner;
 
-    public WarTable() {
+    public GameTable() {
         allPilesOnTheTable = new HashMap<Player, PlayerPile>();
         winner = null;
     }

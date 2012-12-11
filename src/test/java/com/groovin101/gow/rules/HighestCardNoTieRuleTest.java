@@ -2,7 +2,7 @@ package com.groovin101.gow.rules;
 
 import com.groovin101.gow.model.Card;
 import com.groovin101.gow.model.PileCard;
-import com.groovin101.gow.model.WarTable;
+import com.groovin101.gow.model.GameTable;
 import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class HighestCardNoTieRuleTest extends BaseTest {
     @Test
     public void testFireRule_highestCardWinsWhenThereAreNoTies() {
 
-        WarTable table = new WarTable();
+        GameTable table = new GameTable();
         RuleChainImplGameOfWar chain = new RuleChainImplGameOfWar();
 
         table.playAHand(CHEWY, buildCardList(new Card[] {KING_OF_SPADES}));

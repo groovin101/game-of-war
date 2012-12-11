@@ -16,12 +16,6 @@ public class Player {
     public String getName() {
         return name;
     }
-    public void setName(String name) throws InvalidUsernameException {
-        if (StringUtils.isBlank(name)) {
-            throw new InvalidUsernameException("Player's name must not be blank");
-        }
-        this.name = name;
-    }
 
     public Player(String name) throws InvalidUsernameException {
         if (StringUtils.isBlank(name)) {

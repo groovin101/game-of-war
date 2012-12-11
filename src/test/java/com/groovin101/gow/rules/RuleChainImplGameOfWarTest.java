@@ -1,6 +1,6 @@
 package com.groovin101.gow.rules;
 
-import com.groovin101.gow.model.WarTable;
+import com.groovin101.gow.model.GameTable;
 import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +16,7 @@ public class RuleChainImplGameOfWarTest {
     private RuleForUseWithRuleChain ruleA;
     private RuleForUseWithRuleChain ruleB;
     private RuleChainImplGameOfWar chain;
-    private WarTable table;
+    private GameTable table;
 
     @Before
     public void setup() {
@@ -24,7 +24,7 @@ public class RuleChainImplGameOfWarTest {
         ruleA = mock(RuleForUseWithRuleChain.class);
         ruleB = mock(RuleForUseWithRuleChain.class);
         chain = new RuleChainImplGameOfWar();
-        table = new WarTable();
+        table = new GameTable();
     }
 
     @Test
@@ -87,7 +87,7 @@ public class RuleChainImplGameOfWarTest {
 
         return new RuleForUseWithRuleChain() {
             @Override
-            public void fireRule(WarTable gameWarTable, RuleChainImplGameOfWar ruleChain) {
+            public void fireRule(GameTable gameWarTable, RuleChainImplGameOfWar ruleChain) {
                 ruleChain.fireNextRule(gameWarTable);
             }
         };
@@ -97,7 +97,7 @@ public class RuleChainImplGameOfWarTest {
 
         return new RuleForUseWithRuleChain() {
             @Override
-            public void fireRule(WarTable gameWarTable, RuleChainImplGameOfWar ruleChain) {
+            public void fireRule(GameTable gameWarTable, RuleChainImplGameOfWar ruleChain) {
                 gameWarTable.setWinner(BaseTest.CHEWY);
                 ruleChain.fireNextRule(gameWarTable);
             }

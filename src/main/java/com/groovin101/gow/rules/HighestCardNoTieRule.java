@@ -1,7 +1,7 @@
 package com.groovin101.gow.rules;
 
 import com.groovin101.gow.model.PileCard;
-import com.groovin101.gow.model.WarTable;
+import com.groovin101.gow.model.GameTable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,14 +14,14 @@ import java.util.List;
 public class HighestCardNoTieRule implements RuleForUseWithRuleChain {
 
     @Override
-    public void fireRule(WarTable warTable, RuleChainImplGameOfWar ruleChain) {
+    public void fireRule(GameTable gameTable, RuleChainImplGameOfWar ruleChain) {
 
-        List<PileCard> highestRankingCardsInPlay = findHighestRankingCards(warTable.fetchSignificantCards());
+        List<PileCard> highestRankingCardsInPlay = findHighestRankingCards(gameTable.fetchSignificantCards());
 
         if (!wasThereATieAmongTheHighestCards(highestRankingCardsInPlay)) {
-            warTable.setWinner(highestRankingCardsInPlay.get(0).getCardOwner());
+            gameTable.setWinner(highestRankingCardsInPlay.get(0).getCardOwner());
         }
-        ruleChain.fireNextRule(warTable);
+        ruleChain.fireNextRule(gameTable);
     }
 
     private boolean wasThereATieAmongTheHighestCards(List<PileCard> highestCardsAmongTheSignificantCardsInPlay) {

@@ -17,7 +17,7 @@ public class War {
     private List<Player> players;
     private Dealer dealer;
     private DeckExtended deck;
-    private WarTable warTable;
+    private GameTable gameTable;
     private Player winner;
 
     //todo: add a play method that takes a list of usernames so that we have a chance to throw our InvalidUsernameException, allowing it to bubble
@@ -36,13 +36,13 @@ public class War {
     public void setPlayers(List<Player> players) {
         this.players = players;
     }
-    public void setWarTable(WarTable warTable) {
-        this.warTable = warTable;
+    public void setGameTable(GameTable gameTable) {
+        this.gameTable = gameTable;
     }
 
     public War() {
         dealer = new Dealer();
-        warTable = new WarTable();
+        gameTable = new GameTable();
     }
 
     public void play(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
@@ -77,14 +77,14 @@ public class War {
         playAHand(HandType.SINGLE_CARD_HAND);
 
         HighestCardNoTieRule highestCardNoTieRule = new HighestCardNoTieRule();
-        highestCardNoTieRule.fireRule(warTable, null);
+        highestCardNoTieRule.fireRule(gameTable, null);
 
-        if (warTable.getWinner() == null) {
+        if (gameTable.getWinner() == null) {
             playAHand(HandType.WAR_STYLE_HAND);
-            highestCardNoTieRule.fireRule(warTable, null);
+            highestCardNoTieRule.fireRule(gameTable, null);
         }
-        logRound(warTable.getWinner());
-//        if (warTable.shouldGoToWar()) {
+        logRound(gameTable.getWinner());
+//        if (gameTable.shouldGoToWar()) {
 //
 //        }
 //        while (shouldGotoWar()) {
@@ -96,12 +96,12 @@ public class War {
 //
 //logRound(winnerOfRound);
 
-divyWonCardsToWinner(warTable.getWinner());
+divyWonCardsToWinner(gameTable.getWinner());
     }
 
     private void logRound(Player winnerOfTheRound) {
         System.out.println("---------------------------------------");
-        for (PlayerPile pileOnTable : warTable.getAllPilesOnTheTable()) {
+        for (PlayerPile pileOnTable : gameTable.getAllPilesOnTheTable()) {
             System.out.println(pileOnTable + " ; cards left: " + pileOnTable.getPlayer().getPlayerDeckSize());
         }
 //System.out.println(winnerOfTheRound.getName() + " wins the round");
@@ -109,14 +109,14 @@ divyWonCardsToWinner(warTable.getWinner());
     }
 
     protected void divyWonCardsToWinner(Player winner) {
-        List<PlayerPile> allPilesFromTable = warTable.getAllPilesOnTheTable();
+        List<PlayerPile> allPilesFromTable = gameTable.getAllPilesOnTheTable();
         for (PlayerPile pileFromTable : allPilesFromTable) {
             pileFromTable.shuffle();
             for (Card card : pileFromTable.getCards()) {
                 winner.addToBottomOfPlayerDeck(card);
             }
         }
-        warTable.clearAllPilesFromTheTable();
+        gameTable.clearAllPilesFromTheTable();
     }
 
     protected PlayerPile identifyWinningPile(List<PlayerPile> piles) {
@@ -125,7 +125,7 @@ divyWonCardsToWinner(warTable.getWinner());
     }
 
     protected Player determineWinnerOfRound() {
-        return identifyWinningPile(warTable.getAllPilesOnTheTable()).getPlayer();
+        return identifyWinningPile(gameTable.getAllPilesOnTheTable()).getPlayer();
     }
 
     protected void playCardsFromAllPlayers(int howMany) {
@@ -133,7 +133,7 @@ divyWonCardsToWinner(warTable.getWinner());
         while (it.hasNext()) {
             try {
                 Player player = it.next();
-                warTable.playAHand(player, player.playCards(howMany));
+                gameTable.playAHand(player, player.playCards(howMany));
             }
             catch (NoCardsToPlayException e) {
                 System.out.println(e.getMessage());
@@ -179,7 +179,7 @@ divyWonCardsToWinner(warTable.getWinner());
     }
 
     boolean shouldGotoWar() {
-        //return warTable.areThereTiesPresent(warTable.getPilesFromMostRecentPlay());
+        //return gameTable.areThereTiesPresent(gameTable.getPilesFromMostRecentPlay());
         return true;
     }
 

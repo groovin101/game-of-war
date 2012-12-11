@@ -1,12 +1,12 @@
 package com.groovin101.gow.rules;
 
-import com.groovin101.gow.model.WarTable;
+import com.groovin101.gow.model.GameTable;
 
 /**
  */
 public interface RuleForUseWithRuleChain {
 
-    public void fireRule(WarTable gameWarTable, RuleChainImplGameOfWar ruleChain);
+    public void fireRule(GameTable gameWarTable, RuleChainImplGameOfWar ruleChain);
 
     /*
 
