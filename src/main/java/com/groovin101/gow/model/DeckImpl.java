@@ -20,6 +20,10 @@ public class DeckImpl implements DeckExtended {
         create(4, 13);
     }
 
+    public DeckImpl(int numberOfSuits, int numberOfRanks) {
+        create(numberOfSuits, numberOfRanks);
+    }
+
     @Override
     public void create(int numberOfSuits, int numberOfRanks) {
         validateNumberOfSuitsToCreate(numberOfSuits);

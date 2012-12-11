@@ -24,8 +24,8 @@ public class War {
     //todo: validate args
     public static void main(String[] args) {
         War game = new War();
-//        game.play(4, 14, 5); //doesnt like these inputs for some reason...
-                game.play(4, 13, 2);
+//        game.play(4, 14, 5); //doesnt like these Kinputs for some reason...
+                game.play(4, 13, 3);
     }
 
     public List<Player> getPlayers() {
