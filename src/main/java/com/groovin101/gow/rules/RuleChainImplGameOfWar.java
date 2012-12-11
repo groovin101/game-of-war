@@ -16,18 +16,19 @@ public class RuleChainImplGameOfWar implements RuleChain {
 
     public RuleChainImplGameOfWar() {
         registeredRules = new ArrayList<Rule>();
+        winner = null;
     }
 
     public void registerRule(Rule rule) {
         registeredRules.add(rule);
     }
 
-    private void setWinner(Player winner) {
+    protected void setWinner(Player winner) {
         this.winner = winner;
     }
 
-    private boolean foundAWinner() {
-        return false;
+    boolean foundAWinner() {
+        return winner != null;
     }
 
     @Override
