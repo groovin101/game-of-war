@@ -1,6 +1,6 @@
 package com.groovin101.gow.model;
 
-import com.groovin101.gow.test.utils.BaseModelTest;
+import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,7 +13,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  */
-public class PlayerPileTest extends BaseModelTest {
+public class PlayerPileTest extends BaseTest {
 
     @Before
     public void setup() {

@@ -4,7 +4,7 @@ import com.groovin101.gow.model.WarTable;
 
 /**
  */
-public interface Rule {
+public interface RuleForUseWithRuleChain {
 
     public void fireRule(WarTable gameWarTable, RuleChainImplGameOfWar ruleChain);
 
@@ -44,15 +44,19 @@ build a rule engine and enforce sequentially; rules should know if they fire a n
                 LastCardInABattleRule - [confusing for multi-player war; only enforce this for 2 player war]
                     If one of the players has no more cards in a battle
                         that player wins that battle
-                HighestCardRule
+                        WIN - end round
+
+                HighestCardNoTieRule
                     Player with the highest card
                         HighestCardTieRule [If the two highest cards played are of equal value]
                             NO
                                 player with highest card
                                     takes all the cards played
                                     moves them to the bottom of his stack
-                                next round of play
+                                    WIN - end round
+
                             YES - [war!]
+                            WarRule
                                     *each* player
                                         lays down three face-down cards
                                             LastCardInAPileRule [If a player runs out of cards while dealing the face-down cards of a war}

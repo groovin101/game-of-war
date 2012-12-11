@@ -1,7 +1,7 @@
 package com.groovin101.gow.model;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
-import com.groovin101.gow.test.utils.BaseModelTest;
+import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -13,7 +13,7 @@ import static junit.framework.Assert.*;
 
 /**
  */
-public class WarTableTest extends BaseModelTest {
+public class WarTableTest extends BaseTest {
 
     private WarTable warTable;
     private Player felix;

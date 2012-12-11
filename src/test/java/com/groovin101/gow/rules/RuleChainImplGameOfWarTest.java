@@ -1,31 +1,30 @@
 package com.groovin101.gow.rules;
 
 import com.groovin101.gow.model.WarTable;
-import com.groovin101.gow.test.utils.BaseModelTest;
+import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static junit.framework.Assert.fail;
+import static org.mockito.Mockito.*;
 
 /**
  */
 public class RuleChainImplGameOfWarTest {
 
-
-    private Rule ruleA;
-    private Rule ruleB;
+    private RuleForUseWithRuleChain ruleA;
+    private RuleForUseWithRuleChain ruleB;
     private RuleChainImplGameOfWar chain;
+    private WarTable table;
 
     @Before
     public void setup() {
 
-        ruleA = mock(Rule.class);
-        ruleB = mock(Rule.class);
+        ruleA = mock(RuleForUseWithRuleChain.class);
+        ruleB = mock(RuleForUseWithRuleChain.class);
         chain = new RuleChainImplGameOfWar();
+        table = new WarTable();
     }
 
     @Test
@@ -44,24 +43,11 @@ public class RuleChainImplGameOfWarTest {
         chain.registerRule(ruleA);
         chain.registerRule(ruleB);
 
-        chain.fireNextRule(null);
-        verify(ruleA).fireRule(null, chain);
+        chain.fireNextRule(table);
+        verify(ruleA).fireRule(table, chain);
 
-        chain.fireNextRule(null);
-        verify(ruleB).fireRule(null, chain);
-    }
-
-    @Test
-    public void foundAWinner_returnsFalseIfNoRulesHaveFired() {
-        assertFalse(chain.foundAWinner());
-    }
-
-    @Test
-    public void foundAWinner_returnsTrueIfWeSetAWinner() {
-
-        chain.registerRule(mockRuleThatSetsAWinner());
-        chain.fireNextRule(null);
-        assertTrue(chain.foundAWinner());
+        chain.fireNextRule(table);
+        verify(ruleB).fireRule(table, chain);
     }
 
     @Test
@@ -71,13 +57,35 @@ public class RuleChainImplGameOfWarTest {
         chain.registerRule(mockRuleThatSetsAWinner());
         chain.registerRule(ruleB);
 
-        chain.fireNextRule(null);
+        chain.fireNextRule(table);
         verifyZeroInteractions(ruleB);
     }
 
-    private Rule mockRuleThatJustFiresNextInChain() {
+//    @Test
+//    public void fireNextRule_shouldNotBeAbleToBeInvokedByARuleThatIsNotRegisteredWithThisChain() {
+//        try {
+//            RuleChainImplGameOfWar chain = new RuleChainImplGameOfWar();
+//            mockRuleThatJustFiresNextInChain().fireRule(null, chain);
+//            fail("RuleForUseWithRuleChain should not be able to fire using the chain if it has not registered with the chain");
+//        }
+//        catch (RuleNotRegisteredException e) {
+//        }
+//    }
+//
 
-        return new Rule() {
+    @Test
+    public void fireNextRule_noRulesLeftInChainExitsChain() {
+        try {
+            chain.fireNextRule(table);
+        }
+        catch (IndexOutOfBoundsException e) {
+            fail("Should have stopped trying to fire more rules when we reached the end of the chain");
+        }
+    }
+
+    private RuleForUseWithRuleChain mockRuleThatJustFiresNextInChain() {
+
+        return new RuleForUseWithRuleChain() {
             @Override
             public void fireRule(WarTable gameWarTable, RuleChainImplGameOfWar ruleChain) {
                 ruleChain.fireNextRule(gameWarTable);
@@ -85,12 +93,12 @@ public class RuleChainImplGameOfWarTest {
         };
     }
 
-    private Rule mockRuleThatSetsAWinner() {
+    private RuleForUseWithRuleChain mockRuleThatSetsAWinner() {
 
-        return new Rule() {
+        return new RuleForUseWithRuleChain() {
             @Override
             public void fireRule(WarTable gameWarTable, RuleChainImplGameOfWar ruleChain) {
-                ruleChain.setWinner(BaseModelTest.CHEWY);
+                gameWarTable.setWinner(BaseTest.CHEWY);
                 ruleChain.fireNextRule(gameWarTable);
             }
         };

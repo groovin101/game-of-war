@@ -2,7 +2,7 @@ package com.groovin101.gow.model;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
 import com.groovin101.gow.exception.NoCardsToPlayException;
-import com.groovin101.gow.test.utils.BaseModelTest;
+import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,7 +13,7 @@ import static junit.framework.Assert.*;
 
 /**
  */
-public class PlayerTest extends BaseModelTest {
+public class PlayerTest extends BaseTest {
 
     private Player player;
     private Card cardForTestA;

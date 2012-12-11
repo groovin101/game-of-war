@@ -1,7 +1,7 @@
 package com.groovin101.gow;
 
 import com.groovin101.gow.model.*;
-import com.groovin101.gow.test.utils.BaseModelTest;
+import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -14,7 +14,7 @@ import static org.mockito.Mockito.*;
 
 /**
  */
-public class WarTest extends BaseModelTest {
+public class WarTest extends BaseTest {
 
     private War game;
     private List<Player> players;

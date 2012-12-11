@@ -3,6 +3,7 @@ package com.groovin101.gow;
 import com.groovin101.gow.exception.InvalidUsernameException;
 import com.groovin101.gow.exception.NoCardsToPlayException;
 import com.groovin101.gow.model.*;
+import com.groovin101.gow.rules.HighestCardNoTieRule;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,7 +73,11 @@ public class War {
 
     protected void playARound() {
 
+
         playAHand(HandType.SINGLE_CARD_HAND);
+
+        HighestCardNoTieRule highestCardNoTieRule = new HighestCardNoTieRule();
+        highestCardNoTieRule.fireRule(warTable, null);
 
         RuleEnforcer enforcer = new RuleEnforcer();
 //        enforcer.processRules()

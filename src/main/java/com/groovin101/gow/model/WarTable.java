@@ -7,7 +7,33 @@ import java.util.*;
  */
 public class WarTable implements GameContext {
 
-    private Map<Player, PlayerPile> allPilesOnTheTable = new HashMap<Player, PlayerPile>();
+    private List<PileCard> significantCards;
+    private Map<Player, PlayerPile> allPilesOnTheTable;
+    private Player winner;
+
+    public WarTable() {
+        significantCards = new ArrayList<PileCard>();
+        allPilesOnTheTable = new HashMap<Player, PlayerPile>();
+        winner = null;
+    }
+
+    public Player getWinner() {
+        return winner;
+    }
+    public void setWinner(Player winner) {
+        this.winner = winner;
+    }
+    public void addSignificantCard(PileCard currentlySignificantCard) {
+        significantCards.add(currentlySignificantCard);
+    }
+    public List<PileCard> getSignificantCards() {
+        return significantCards;
+    }
+
+    //todo: //test when players play a hand, that the significant card is updated
+
+
+
 
     public void receiveCardsFrom(Player player, List<Card> cardsPassed) {
         PlayerPile pile = allPilesOnTheTable.get(player);

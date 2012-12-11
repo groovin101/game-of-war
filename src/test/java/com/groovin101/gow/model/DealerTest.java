@@ -1,7 +1,7 @@
 package com.groovin101.gow.model;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
-import com.groovin101.gow.test.utils.BaseModelTest;
+import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,7 +12,7 @@ import static junit.framework.Assert.assertEquals;
 
 /**
  */
-public class DealerTest extends BaseModelTest {
+public class DealerTest extends BaseTest {
 
     private Dealer dealer;
     private DeckExtended deck;

@@ -1,6 +1,6 @@
 package com.groovin101.gow.model;
 
-import com.groovin101.gow.test.utils.BaseModelTest;
+import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,7 +8,7 @@ import static junit.framework.Assert.*;
 
 /**
  */
-public class CardTest extends BaseModelTest {
+public class CardTest extends BaseTest {
 
     private Card card;
 

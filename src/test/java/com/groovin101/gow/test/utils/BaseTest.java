@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  */
-public class BaseModelTest {
+public class BaseTest {
 
     public static Player TESLA;
     public static Player THE_DUDE;
@@ -42,6 +42,18 @@ public class BaseModelTest {
         List<Card> cardList = new ArrayList<Card>();
         CollectionUtils.addAll(cardList, cardArray);
         return cardList;
+    }
+
+    public static List<PileCard> buildPileCardList(Card[] cardArray) {
+        List<PileCard> pileCardList = new ArrayList<PileCard>();
+        int i = 0;
+        for (Card card : cardArray) {
+            try {
+                pileCardList.add(new PileCard(new Player("Test player " + ++i), card));
+            }
+            catch (InvalidUsernameException e) {}
+        }
+        return pileCardList;
     }
 
     public static List<Card> largeCardList() {

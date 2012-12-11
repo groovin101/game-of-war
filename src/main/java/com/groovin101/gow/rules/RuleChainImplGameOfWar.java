@@ -11,24 +11,20 @@ import java.util.List;
  */
 public class RuleChainImplGameOfWar implements RuleChain {
 
-    private List<Rule> registeredRules;
+    private List<RuleForUseWithRuleChain> registeredRules;
     private Player winner; //todo: should move this to the table itself, but for ease of development we'll keep it here for now
 
     public RuleChainImplGameOfWar() {
-        registeredRules = new ArrayList<Rule>();
+        registeredRules = new ArrayList<RuleForUseWithRuleChain>();
         winner = null;
     }
 
-    public void registerRule(Rule rule) {
+    public void registerRule(RuleForUseWithRuleChain rule) {
         registeredRules.add(rule);
     }
 
-    protected void setWinner(Player winner) {
-        this.winner = winner;
-    }
-
-    boolean foundAWinner() {
-        return winner != null;
+    boolean foundAWinner(WarTable table) {
+        return table.getWinner() != null;
     }
 
     @Override
@@ -37,12 +33,12 @@ public class RuleChainImplGameOfWar implements RuleChain {
         //Game of war uses the warTable class as its game context
         WarTable warTable = (WarTable)gameContext;
 
-        if (!foundAWinner()) {
+        if (!foundAWinner(warTable) && !registeredRules.isEmpty()) {
             registeredRules.remove(0).fireRule(warTable, this);
         }
     }
 
-    List<Rule> getRegisteredRules() {
+    List<RuleForUseWithRuleChain> getRegisteredRules() {
         return registeredRules;
     }
 }
