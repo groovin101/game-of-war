@@ -16,22 +16,45 @@ public class War {
     private Dealer dealer;
     private DeckExtended deck;
     private GameTable gameTable;
-    private Player winner;
+    private Player winnerOfTheGame;
     private int numberOfRoundsPlayed = 0;
 
     //todo: add a play method that takes a list of usernames so that we have a chance to throw our InvalidUsernameException, allowing it to bubble
 
     public static void main(String[] args) throws WarInitializationException {
 
-    //todo: invalid args reply with error message via exception
-    //todo: integrate the InputArgument class into the main method of War class
+        try {
+            War game = new War();
+            InputArguments arguments = new InputArguments(args);
+            game.play(arguments.getNumberOfSuits(), arguments.getNumberOfRanks(), arguments.getNumberOfPlayers());
+        }
+        catch (WarInitializationException e) {
+            if (InputArguments.isTheExceptionReportingFlagPresent(args)) {
+                System.out.println(buildErrorMessage(false));
+                throw e;
+            }
+            else {
+                System.out.println(buildErrorMessage(true));
+            }
+        }
 
+    }
 
-        InputArguments arguments = new InputArguments(args);
+    private static String buildErrorMessage(boolean includeMoreInformationMessage) {
+        String indentingSpaces = new String("   * ");
+        StringBuilder errorMessage = new StringBuilder("\n\n");
+        errorMessage.append(indentingSpaces).append("*********************************************************************").append("\n");
+        errorMessage.append(indentingSpaces).append("Problem with arguments.").append("\n");
+        if (includeMoreInformationMessage) {
+            errorMessage.append(indentingSpaces).append("For more information, call with a -e").append("\n");
+        }
+        errorMessage.append(indentingSpaces).append("*********************************************************************").append("\n");
+        errorMessage.append("\n");
+        return errorMessage.toString();
+    }
 
-        War game = new War();
-//        game.play(4, 14, 5); //doesnt like these Kinputs for some reason...
-        game.play(arguments.getNumberOfSuits(), arguments.getNumberOfRanks(), arguments.getNumberOfPlayers());
+    private static String buildUsageMessage() {
+        return "";
     }
 
     public List<Player> getPlayers() {
@@ -62,12 +85,12 @@ public class War {
 
     private void announceWinner() {
         System.out.println("*************************************/n");
-        System.out.println(winner.getName() + " has won the game!");
+        System.out.println(winnerOfTheGame.getName() + " has won the game!");
         System.out.println("*************************************/n");
     }
 
     void startTheGame(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
-        winner = null;
+        winnerOfTheGame = null;
         players = buildPlayerList(numberOfPlayers);
         deck = new DeckImpl(); //todo - instantiate deck properly using args from above
         deck.create(numberOfSuits, numberOfRanks);
@@ -81,12 +104,14 @@ deck.shuffle();
         numberOfRoundsPlayed++;
         startABattle();
         new HighestCardNoTieRule().fireRule(gameTable, null);
-        if (gameTable.getWinnerOfRound() == null) {
-            startAWar();
-            new HighestCardNoTieRule().fireRule(gameTable, null);
+        while (shouldStartAWar(gameTable)) {
+            if (gameTable.getWinnerOfTheLastRound() == null) {
+                startAWar();
+                new HighestCardNoTieRule().fireRule(gameTable, null);
+            }
         }
-        logRound(gameTable.getWinnerOfRound());
-        divyWonCardsToWinner(gameTable.getWinnerOfRound());
+        logRound(gameTable.getWinnerOfTheLastRound());
+        divyWonCardsToWinner(gameTable.getWinnerOfTheLastRound());
     }
 
     public void startABattle() {
@@ -116,6 +141,7 @@ deck.shuffle();
         }
         Collections.shuffle(cardsFromBothPiles, new Random(Calendar.getInstance().getTimeInMillis()));
         for (Card card : cardsFromBothPiles) {
+System.out.println(winner == null ? "winner was null" : winner.getName());
             winner.addToBottomOfPlayerDeck(card);
         }
         gameTable.clearAllPilesFromTheTable();
@@ -135,11 +161,14 @@ deck.shuffle();
                 player.playCards(howMany, gameTable);
             }
             catch (NoCardsToPlayException e) {
+                e.printStackTrace();
                 System.out.println(e.getMessage());
                 it.remove();
             }
         }
     }
+
+
 
     protected List<Player> buildPlayerList(int numberOfPlayers) {
         List<Player> players = new ArrayList<Player>();
@@ -157,7 +186,7 @@ deck.shuffle();
     boolean doesOnePlayerHaveAllTheCards(DeckExtended deck, List<Player> players) {
         for (Player player : players) {
             if (player.getPlayerDeckSize() == deck.getTotalCardCount()) {
-                winner = player;
+                winnerOfTheGame = player;
                 return true;
             }
         }
@@ -166,5 +195,9 @@ deck.shuffle();
 
     boolean gameOver() {
         return doesOnePlayerHaveAllTheCards(deck, players);
+    }
+
+    boolean shouldStartAWar(GameTable gameTable) {
+        return gameTable.getWinnerOfTheLastRound() == null;
     }
 }

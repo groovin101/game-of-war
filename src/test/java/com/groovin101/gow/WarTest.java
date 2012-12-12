@@ -176,4 +176,18 @@ public class WarTest extends BaseTest {
         assertTrue("Jabba the Hut is holding all of the cards after the dealer Solo'd him out ;)",
                 game.doesOnePlayerHaveAllTheCards(deck, players));
     }
+
+    @Test
+    public void testShouldStartAWar_notIfABatteHasBeenWon() {
+        War game = new War();
+        gameTable.setWinner(TESLA);
+        assertFalse("Don't start a war if somebody won a battle", game.shouldStartAWar(gameTable));
+    }
+
+    @Test
+    public void testShouldStartAWar_ifABatteHasBeenWon() {
+        War game = new War();
+        gameTable.setWinner(null);
+        assertTrue("If nobody won the battle, then we must war!", game.shouldStartAWar(gameTable));
+    }
 }

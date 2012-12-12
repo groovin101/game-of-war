@@ -83,17 +83,15 @@ public class InputArgumentsTest {
     }
 
     @Test
-    public void testTurnExceptionReportingOn() throws Exception {
-        InputArguments args = new InputArguments(new String[]{"-e", "2", "2", "2"});
-        args.turnExceptionReportingOnIfNeeded(new String[]{"-e", "2", "2", "2"});
-        assertTrue("We provied a -e so exception reporting should turn on", args.isExceptionReportingTurnedOn());
+    public void testIsExceptionReportingOn() throws Exception {
+        assertTrue("We provied a -e so exception reporting should turn on",
+                InputArguments.isTheExceptionReportingFlagPresent(new String[]{"-e", "2", "2", "2"}));
     }
 
     @Test
-    public void testTurnExceptionReportingOn_doesNotTurnOnWhenNoDashEIsPresent() throws Exception {
-        InputArguments args = new InputArguments(new String[]{"2", "2", "2"});
-        args.turnExceptionReportingOnIfNeeded(new String[]{"2", "2", "2"});
-        assertFalse("Should not have turned exception reporting on since we did not supply a -e", args.isExceptionReportingTurnedOn());
+    public void testIsExceptionReportingOn_doesNotTurnOnWhenNoDashEIsPresent() throws Exception {
+        assertFalse("Should not have turned exception reporting on since we did not supply a -e",
+                InputArguments.isTheExceptionReportingFlagPresent(new String[]{"2", "2", "2"}));
     }
 
     @Test

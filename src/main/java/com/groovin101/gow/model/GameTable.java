@@ -16,7 +16,7 @@ public class GameTable implements GameContext {
     }
 
     @Override
-    public Player getWinnerOfRound() {
+    public Player getWinnerOfTheLastRound() {
         return winner;
     }
     public void setWinner(Player winner) {

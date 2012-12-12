@@ -21,7 +21,7 @@ public class RuleChainImplGameOfWar implements RuleChain {
     }
 
     boolean foundAWinner(GameTable table) {
-        return table.getWinnerOfRound() != null;
+        return table.getWinnerOfTheLastRound() != null;
     }
 
     @Override

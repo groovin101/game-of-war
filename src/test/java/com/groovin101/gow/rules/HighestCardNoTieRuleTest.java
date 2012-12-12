@@ -6,10 +6,10 @@ import com.groovin101.gow.model.PileCard;
 import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  */
@@ -28,7 +28,7 @@ public class HighestCardNoTieRuleTest extends BaseTest {
         HighestCardNoTieRule highestCardNoTieRule = new HighestCardNoTieRule();
         highestCardNoTieRule.fireRule(table, chain);
 
-        assertEquals("Jabba should have won", JABBA, table.getWinnerOfRound());
+        assertEquals("Jabba should have won", JABBA, table.getWinnerOfTheLastRound());
     }
 
     @Test
@@ -76,4 +76,12 @@ public class HighestCardNoTieRuleTest extends BaseTest {
         assertTrue(highestCards.contains(pileCardsToBeEvaluated.get(2)));
     }
 
+    @Test
+    public void testDetermineWinner_returnsNullWhenThereAreNoHighestRankingCards() {
+
+        HighestCardNoTieRule rule = new HighestCardNoTieRule();
+
+        List<PileCard> highestRankingCards = new ArrayList<PileCard>(); //no players can play, ie they both have run out of cards
+        assertNull("Should not be a winner", rule.determineWinner(highestRankingCards));
+    }
 }

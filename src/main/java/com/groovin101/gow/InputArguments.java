@@ -15,7 +15,6 @@ public class InputArguments {
     private int numberOfPlayers = 0;
     private int numberOfSuits = 0;
     private int numberOfRanks = 0;
-    private boolean isExceptionReportingTurnedOn;
 
     /**
      * Args should be specified in the following order:
@@ -31,7 +30,6 @@ public class InputArguments {
      */
     public InputArguments(String[] args) throws WarInitializationException {
 
-        turnExceptionReportingOnIfNeeded(args);
         args = removeDashEArgument(args);
 
         if (args.length == 0) {
@@ -63,19 +61,14 @@ public class InputArguments {
         }
     }
 
-    private List<String> argsAsList(String[] args) {
+    private static List<String> argsAsList(String[] args) {
         List<String> argsAsList = new ArrayList<String>();
         Collections.addAll(argsAsList, args);
         return argsAsList;
     }
 
-    void turnExceptionReportingOnIfNeeded(String[] args) {
-        if (argsAsList(args).contains("-e")) {
-            isExceptionReportingTurnedOn = true;
-        }
-        else {
-            isExceptionReportingTurnedOn = false;
-        }
+    public static boolean isTheExceptionReportingFlagPresent(String[] args) {
+        return argsAsList(args).contains("-e");
     }
 
     String[] removeDashEArgument(String[] argsToModify) {
@@ -153,9 +146,4 @@ public class InputArguments {
     boolean numberOfPlayersExceedsNumberOfCards(int numberOfPlayers, int numberOfSuits, int numberOfRanks) {
         return numberOfPlayers > new DeckImpl(numberOfSuits, numberOfRanks).getTotalCardCount();
     }
-
-    boolean isExceptionReportingTurnedOn() {
-        return isExceptionReportingTurnedOn;
-    }
-
 }
