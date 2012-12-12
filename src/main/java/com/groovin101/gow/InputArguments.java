@@ -3,6 +3,11 @@ package com.groovin101.gow;
 import com.groovin101.gow.exception.*;
 import com.groovin101.gow.model.DeckImpl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  */
 public class InputArguments {
@@ -10,6 +15,7 @@ public class InputArguments {
     private int numberOfPlayers = 0;
     private int numberOfSuits = 0;
     private int numberOfRanks = 0;
+    private boolean isExceptionReportingTurnedOn;
 
     /**
      * Args should be specified in the following order:
@@ -25,11 +31,14 @@ public class InputArguments {
      */
     public InputArguments(String[] args) throws WarInitializationException {
 
+        turnExceptionReportingOnIfNeeded(args);
+        args = removeDashEArgument(args);
+
         if (args.length == 0) {
             assignDefaultValues();
         }
         else if (args.length != 3) {
-            throw new IncorrectNumberOfArgumentsException("Incorrect number of arguments provided.");
+            throw new IncorrectNumberOfArgumentsException("Incorrect number of arguments provided: " + args.length);
         }
         else {
             parseValues(args);
@@ -54,13 +63,44 @@ public class InputArguments {
         }
     }
 
+    private List<String> argsAsList(String[] args) {
+        List<String> argsAsList = new ArrayList<String>();
+        Collections.addAll(argsAsList, args);
+        return argsAsList;
+    }
+
+    void turnExceptionReportingOnIfNeeded(String[] args) {
+        if (argsAsList(args).contains("-e")) {
+            isExceptionReportingTurnedOn = true;
+        }
+        else {
+            isExceptionReportingTurnedOn = false;
+        }
+    }
+
+    String[] removeDashEArgument(String[] argsToModify) {
+
+        List<String> argsToModifyAsList = new ArrayList<String>();
+        Collections.addAll(argsToModifyAsList, argsToModify);
+
+        Iterator<String> it = argsToModifyAsList.iterator();
+        while (it.hasNext()) {
+            String arg = it.next();
+            if (arg.equals("-e")) {
+                it.remove();
+            }
+        }
+        return argsToModifyAsList.toArray(new String[argsToModifyAsList.size()]);
+    }
+
     private void assignDefaultValues() {
         numberOfPlayers = 2;
         numberOfRanks = 13;
         numberOfSuits = 4;
     }
 
-    private void parseValues(String[] args) throws WarInitializationException {
+    void parseValues(String[] args) throws WarInitializationException {
+
         numberOfPlayers = parsePlayer(args[0]);
         numberOfSuits = parseSuit(args[1]);
         numberOfRanks = parseRank(args[2]);
@@ -68,7 +108,7 @@ public class InputArguments {
 
     private int parsePlayer(String arg) throws InvalidNumberOfPlayersException {
         try {
-            return Integer.parseInt(arg);
+            return parseInt(arg);
         }
         catch (NumberFormatException e) {
             throw new InvalidNumberOfPlayersException("Player arg should be an int");
@@ -77,7 +117,7 @@ public class InputArguments {
 
     private int parseSuit(String arg) throws InvalidNumberOfSuitsException {
         try {
-            return Integer.parseInt(arg);
+            return parseInt(arg);
         }
         catch (NumberFormatException e) {
             throw new InvalidNumberOfSuitsException("Suit arg should be an int");
@@ -86,11 +126,16 @@ public class InputArguments {
 
     private int parseRank(String arg) throws InvalidNumberOfRanksException {
         try {
-            return Integer.parseInt(arg);
+            return parseInt(arg);
         }
         catch (NumberFormatException e) {
             throw new InvalidNumberOfRanksException("Rank arg should be an int");
         }
+    }
+
+    private int parseInt(String intAsString) {
+        intAsString = intAsString.replaceAll("\"", "");
+        return Integer.parseInt(intAsString.trim());
     }
 
     int getNumberOfPlayers() {
@@ -108,4 +153,9 @@ public class InputArguments {
     boolean numberOfPlayersExceedsNumberOfCards(int numberOfPlayers, int numberOfSuits, int numberOfRanks) {
         return numberOfPlayers > new DeckImpl(numberOfSuits, numberOfRanks).getTotalCardCount();
     }
+
+    boolean isExceptionReportingTurnedOn() {
+        return isExceptionReportingTurnedOn;
+    }
+
 }

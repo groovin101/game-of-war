@@ -2,6 +2,7 @@ package com.groovin101.gow;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
 import com.groovin101.gow.exception.NoCardsToPlayException;
+import com.groovin101.gow.exception.WarInitializationException;
 import com.groovin101.gow.model.*;
 import com.groovin101.gow.rules.HighestCardNoTieRule;
 
@@ -20,12 +21,17 @@ public class War {
 
     //todo: add a play method that takes a list of usernames so that we have a chance to throw our InvalidUsernameException, allowing it to bubble
 
+    public static void main(String[] args) throws WarInitializationException {
 
-    //todo: validate args
-    public static void main(String[] args) {
+    //todo: invalid args reply with error message via exception
+    //todo: integrate the InputArgument class into the main method of War class
+
+
+        InputArguments arguments = new InputArguments(args);
+
         War game = new War();
 //        game.play(4, 14, 5); //doesnt like these Kinputs for some reason...
-                game.play(4, 13, 3);
+        game.play(arguments.getNumberOfSuits(), arguments.getNumberOfRanks(), arguments.getNumberOfPlayers());
     }
 
     public List<Player> getPlayers() {

@@ -4,7 +4,12 @@ import com.groovin101.gow.exception.IncorrectNumberOfArgumentsException;
 import com.groovin101.gow.exception.InvalidNumberOfPlayersException;
 import com.groovin101.gow.exception.InvalidNumberOfRanksException;
 import com.groovin101.gow.exception.InvalidNumberOfSuitsException;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static junit.framework.Assert.*;
 
@@ -30,6 +35,32 @@ public class InputArgumentsTest {
     }
 
     @Test
+    public void test_argumentsWithSpacesAreTolerated() throws Exception {
+        InputArguments args = new InputArguments(new String[]{" 2 ", " 1 ", " 3 "});
+        assertEquals(2, args.getNumberOfPlayers());
+        assertEquals(1, args.getNumberOfSuits());
+        assertEquals(3, args.getNumberOfRanks());
+    }
+
+    @Test
+    public void test_argumentsWithQuotesAroundThemAreTolerated() throws Exception {
+        InputArguments args = new InputArguments(new String[]{"\"2\"", "\"1\"", "\"3\""});
+        assertEquals(2, args.getNumberOfPlayers());
+        assertEquals(1, args.getNumberOfSuits());
+        assertEquals(3, args.getNumberOfRanks());
+    }
+
+    //todo: this would be a nice to have
+    @Ignore
+    @Test
+    public void test_argumentsSeperatedByCommasAreTolerated() throws Exception {
+        InputArguments args = new InputArguments(new String[]{"2,1,3"});
+        assertEquals(2, args.getNumberOfPlayers());
+        assertEquals(1, args.getNumberOfSuits());
+        assertEquals(3, args.getNumberOfRanks());
+    }
+
+    @Test
     public void test_notCorrectNumberOfParamsWhenOnlyTwoAreProvided() throws Exception {
 
         try {
@@ -48,6 +79,43 @@ public class InputArgumentsTest {
             fail("Should have thrown exception since too many arguments were provided");
         }
         catch (IncorrectNumberOfArgumentsException e) {
+        }
+    }
+
+    @Test
+    public void testTurnExceptionReportingOn() throws Exception {
+        InputArguments args = new InputArguments(new String[]{"-e", "2", "2", "2"});
+        args.turnExceptionReportingOnIfNeeded(new String[]{"-e", "2", "2", "2"});
+        assertTrue("We provied a -e so exception reporting should turn on", args.isExceptionReportingTurnedOn());
+    }
+
+    @Test
+    public void testTurnExceptionReportingOn_doesNotTurnOnWhenNoDashEIsPresent() throws Exception {
+        InputArguments args = new InputArguments(new String[]{"2", "2", "2"});
+        args.turnExceptionReportingOnIfNeeded(new String[]{"2", "2", "2"});
+        assertFalse("Should not have turned exception reporting on since we did not supply a -e", args.isExceptionReportingTurnedOn());
+    }
+
+    @Test
+    public void testRemoveDashEArgument() throws Exception {
+
+        String[] argsToModify = new String[]{"-e", "2", "2", "2"};
+        InputArguments args = new InputArguments(argsToModify);
+
+        String[] modifiedArguments = args.removeDashEArgument(argsToModify);
+
+        List<String> modifiedArgumentsAsList = new ArrayList<String>();
+        Collections.addAll(modifiedArgumentsAsList, modifiedArguments);
+        assertFalse("Should have removed the -e", modifiedArgumentsAsList.contains("-e"));
+    }
+
+    @Test
+    public void test_dashEArgDoesNotCountTowardsArgCount() throws Exception {
+        try {
+            InputArguments args = new InputArguments(new String[]{"-e", "2", "2", "2"});
+        }
+        catch (IncorrectNumberOfArgumentsException e) {
+            fail("Should not have thrown an exception");
         }
     }
 
@@ -144,11 +212,12 @@ public class InputArgumentsTest {
         catch (InvalidNumberOfPlayersException e) {}
     }
 
+@Ignore
+    @Test
+    public void test_dashEArgTurnsOnExceptions() throws Exception {
+        InputArguments args = new InputArguments(new String[]{"-e", "2", "2", "2"});
+        fail();
+    }
     //todo: fix ignored tests or remove them entirely
     //todo: followup on all todos
-
-
-    //todo: invalid args reply with error message via exception
-    //todo: parse args out of String array; handle for spaces, handle for quotes, handle for valid input
-
 }
