@@ -6,6 +6,7 @@ import com.groovin101.gow.exception.WarInitializationException;
 import com.groovin101.gow.model.*;
 import com.groovin101.gow.rules.HighestCardNoTieRule;
 
+import java.net.InetAddress;
 import java.util.*;
 
 /**
@@ -30,31 +31,14 @@ public class War {
         }
         catch (WarInitializationException e) {
             if (InputArguments.isTheExceptionReportingFlagPresent(args)) {
-                System.out.println(buildErrorMessage(false));
+                System.out.println(InputArguments.buildErrorMessage(false));
                 throw e;
             }
             else {
-                System.out.println(buildErrorMessage(true));
+                System.out.println(InputArguments.buildErrorMessage(true));
             }
         }
 
-    }
-
-    private static String buildErrorMessage(boolean includeMoreInformationMessage) {
-        String indentingSpaces = new String("   * ");
-        StringBuilder errorMessage = new StringBuilder("\n\n");
-        errorMessage.append(indentingSpaces).append("*********************************************************************").append("\n");
-        errorMessage.append(indentingSpaces).append("Problem with arguments.").append("\n");
-        if (includeMoreInformationMessage) {
-            errorMessage.append(indentingSpaces).append("For more information, call with a -e").append("\n");
-        }
-        errorMessage.append(indentingSpaces).append("*********************************************************************").append("\n");
-        errorMessage.append("\n");
-        return errorMessage.toString();
-    }
-
-    private static String buildUsageMessage() {
-        return "";
     }
 
     public List<Player> getPlayers() {

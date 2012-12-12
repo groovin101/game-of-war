@@ -94,6 +94,8 @@ public class InputArgumentsTest {
                 InputArguments.isTheExceptionReportingFlagPresent(new String[]{"2", "2", "2"}));
     }
 
+    //todo: when all players are out of cards, then the game should be a draw
+
     @Test
     public void testRemoveDashEArgument() throws Exception {
 

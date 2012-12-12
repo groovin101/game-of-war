@@ -131,6 +131,30 @@ public class InputArguments {
         return Integer.parseInt(intAsString.trim());
     }
 
+    public static String buildErrorMessage(boolean includeMoreInformationMessage) {
+        StringBuilder errorMessage = new StringBuilder("\n\n");
+        errorMessage.append(indentingSpaces()).append("*********************************************************************").append("\n");
+        errorMessage.append(indentingSpaces()).append("Problem with arguments.").append("\n");
+        errorMessage.append(buildUsageMessage());
+        errorMessage.append("\n");
+        if (includeMoreInformationMessage) {
+            errorMessage.append(indentingSpaces()).append("For more information, call with a -e").append("\n");
+        }
+        errorMessage.append(indentingSpaces()).append("*********************************************************************").append("\n");
+        errorMessage.append("\n");
+        return errorMessage.toString();
+    }
+
+    private static String indentingSpaces() {
+        return "   * ";
+    }
+
+    private static String buildUsageMessage() {
+        StringBuilder usageMessage = new StringBuilder("");
+        usageMessage.append(indentingSpaces()).append("usage: war numberOfPlayers numberOfSuits numberOfRanks [-e showExceptions]");
+        return usageMessage.toString();
+    }
+
     int getNumberOfPlayers() {
         return numberOfPlayers;
     }
