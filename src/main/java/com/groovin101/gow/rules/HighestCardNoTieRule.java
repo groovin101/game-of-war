@@ -12,18 +12,17 @@ import java.util.List;
  * Will set a winner if there is a single card that has the highest rank. If there is a tie _among the highest ranking_
  * cards in the round, no winner will be selected.
  */
-public class HighestCardNoTieRule implements Rule {
+public class HighestCardNoTieRule {
 
-    @Override
-    public void fireRule(GameTable gameTable, RuleChainImplGameOfWar ruleChain) {
+    public Player fireRule(GameTable gameTable) {
 
         List<PileCard> highestRankingCardsInPlay = findHighestRankingCards(gameTable.fetchSignificantCards());
 
         if (!wasThereATie(highestRankingCardsInPlay)) {
-            gameTable.setWinner(determineWinner(highestRankingCardsInPlay));
+            return (determineWinner(highestRankingCardsInPlay));
         }
         else {
-            gameTable.setWinner(null);
+            return null;
         }
 
 //ruleChain.fireNextRule(gameTable);

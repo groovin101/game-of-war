@@ -17,6 +17,17 @@ public class War {
     private GameTable gameTable;
     private Player winnerOfTheGame;
     private int numberOfRoundsPlayed = 0;
+    private Set<Player> players;
+    private Player winnerOfTheLastRound;
+
+
+    public Player getWinnerOfTheLastRound() {
+        return winnerOfTheLastRound;
+    }
+    public void setWinnerOfTheLastRound(Player winnerOfTheLastRound) {
+        this.winnerOfTheLastRound = winnerOfTheLastRound;
+    }
+
 
     //todo: add a play method that takes a list of usernames so that we have a chance to throw our InvalidUsernameException, allowing it to bubble
 
@@ -40,10 +51,6 @@ public class War {
 
     }
 
-    //todo: remove this
-    public Collection<Player> getPlayers() {
-        return gameTable.getPlayers();
-    }
     public void setGameTable(GameTable gameTable) {
         this.gameTable = gameTable;
     }
@@ -51,6 +58,8 @@ public class War {
     public War() {
         dealer = new Dealer();
         gameTable = new GameTable();
+        players = new HashSet<Player>();
+        winnerOfTheLastRound = null;
     }
 
     public void play(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
@@ -59,12 +68,13 @@ public class War {
 
         while (!gameOver()) {
             playARound();
+            removePlayersWithNoCards();
         }
 
-        announceWinner();
+        announceWinnerOfGame();
     }
 
-    private void announceWinner() {
+    private void announceWinnerOfGame() {
         System.out.println("*************************************/n");
         System.out.println(winnerOfTheGame.getName() + " has won the game!");
         System.out.println("*************************************/n");
@@ -72,32 +82,37 @@ public class War {
 
     void startTheGame(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
         winnerOfTheGame = null;
-        gameTable.setPlayers(buildPlayerList(numberOfPlayers));
+        setPlayers(buildPlayerList(numberOfPlayers));
         deck = new DeckImpl(); //todo - instantiate deck properly using args from above
         deck.create(numberOfSuits, numberOfRanks);
-//todo: shuffle
-deck.shuffle();
-        dealer.dealAllCards(deck, gameTable.getPlayers());
+        deck.shuffle();
+        dealer.dealAllCards(deck, getPlayers());
     }
 
     protected void playARound() {
 
+        //doBattle();
+        //while (shouldHaveAWar) {
+        //  doWar();
+        //}
+        //divy cards to winner
+
         numberOfRoundsPlayed++;
         startABattle();
-        new HighestCardNoTieRule().fireRule(gameTable, null);
+        setWinnerOfTheLastRound(new HighestCardNoTieRule().fireRule(gameTable));
         while (shouldStartAWar(gameTable)) {
-            if (gameTable.getWinnerOfTheLastRound() == null) {
+            if (getWinnerOfTheLastRound() == null) {
                 startAWar();
-                new HighestCardNoTieRule().fireRule(gameTable, null);
+                new HighestCardNoTieRule().fireRule(gameTable);
             }
         }
-        logRound(gameTable.getWinnerOfTheLastRound());
-        divyWonCardsToWinner(gameTable.getWinnerOfTheLastRound());
-        gameTable.removePlayersWithNoCards();
+        logRound(getWinnerOfTheLastRound());
+        divyWonCardsToWinner(getWinnerOfTheLastRound());
     }
 
     public void startABattle() {
         playCardsFromAllPlayers(1, gameTable);
+
     }
 
     public void startAWar() {
@@ -135,7 +150,7 @@ deck.shuffle();
     }
 
     protected void playCardsFromAllPlayers(int howMany, GameTable gameTable) {
-        for (Player player : gameTable.getPlayers()) {
+        for (Player player : getPlayers()) {
             if (player.getPlayerDeckSize() > 0) {
                 try {
                     player.playCards(howMany, gameTable);
@@ -173,10 +188,42 @@ deck.shuffle();
     }
 
     boolean gameOver() {
-        return doesOnePlayerHaveAllTheCards(deck, gameTable.getPlayers());
+        return doesOnePlayerHaveAllTheCards(deck, getPlayers());
     }
 
     boolean shouldStartAWar(GameTable gameTable) {
-        return gameTable.getWinnerOfTheLastRound() == null;
+        return getWinnerOfTheLastRound() == null;
     }
+
+    public Set<Player> getPlayers() {
+        return players;
+    }
+    public void setPlayers(Collection<Player> players) {
+        for (Player player : players) {
+            this.players.add(player);
+        }
+    }
+
+    public void addPlayer(Player player) {
+        players.add(player);
+    }
+    public Player getPlayer(String name) {
+        for (Player player : players) {
+            if (player.getName().equals(name)) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    public void removePlayersWithNoCards() {
+
+        Iterator<Player> it = players.iterator();
+        while (it.hasNext()) {
+            if (it.next().getPlayerDeckSize() == 0) {
+                it.remove();
+            }
+        }
+    }
+
 }

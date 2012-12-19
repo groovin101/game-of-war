@@ -21,7 +21,8 @@ public class RuleChainImplGameOfWar implements RuleChain {
     }
 
     boolean foundAWinner(GameTable table) {
-        return table.getWinnerOfTheLastRound() != null;
+//        return table.getWinnerOfTheLastRound() != null;
+        return false;
     }
 
     @Override
@@ -29,9 +30,9 @@ public class RuleChainImplGameOfWar implements RuleChain {
 
         GameTable gameTable = (GameTable)gameContext;
 
-        if (!foundAWinner(gameTable) && !registeredRules.isEmpty()) {
-            registeredRules.remove(0).fireRule(gameTable, this);
-        }
+//        if (!foundAWinner(gameTable) && !registeredRules.isEmpty()) {
+//            registeredRules.remove(0).fireRule(gameTable, this);
+//        }
     }
 
     List<Rule> getRegisteredRules() {

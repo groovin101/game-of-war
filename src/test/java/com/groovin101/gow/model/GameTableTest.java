@@ -135,26 +135,7 @@ public void testFetchSignificantCard_usesLastPlayedCardInAPile() {
                 // this will be needed when we try to determine whether a tie has occured in the current handl of play, which is then used to determine if we hsould go to war or not
     }
 
-    @Test
-    public void testRemovePlayersWithNoCards_doesNotRemoveAPlayerWhoHasCards() {
-        gameTable.addPlayer(ROSENCRANTZ);
-        dealTo(gameTable.getPlayer(ROSENCRANTZ.getName()), ACE_OF_CLUBS);
-        assertEquals(1, gameTable.getPlayers().size());
-        gameTable.removePlayersWithNoCards();
-        assertEquals(1, gameTable.getPlayers().size());
-    }
 
-    @Test
-    public void testRemovePlayersWithNoCards_doesRemoveAPlayerWhoHasNoCards() {
-        gameTable.addPlayer(ROSENCRANTZ);
-        assertEquals(1, gameTable.getPlayers().size());
-        gameTable.removePlayersWithNoCards();
-        assertEquals(0, gameTable.getPlayers().size());
-    }
-
-    private void dealTo(Player player, Card card) {
-        player.dealToTopOfPlayersDeck(card);
-    }
 
     private void dealTo(Player player, Card card, List<Card> expectedCardsToUseInTest) {
         player.dealToTopOfPlayersDeck(card);

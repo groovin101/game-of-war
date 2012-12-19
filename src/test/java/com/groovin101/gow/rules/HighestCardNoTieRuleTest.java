@@ -3,6 +3,7 @@ package com.groovin101.gow.rules;
 import com.groovin101.gow.model.Card;
 import com.groovin101.gow.model.GameTable;
 import com.groovin101.gow.model.PileCard;
+import com.groovin101.gow.model.Player;
 import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Test;
 
@@ -19,16 +20,15 @@ public class HighestCardNoTieRuleTest extends BaseTest {
     public void testFireRule_highestCardWinsWhenThereAreNoTies() {
 
         GameTable table = new GameTable();
-        RuleChainImplGameOfWar chain = new RuleChainImplGameOfWar();
 
         table.playAHand(CHEWY, buildCardList(new Card[] {KING_OF_SPADES}));
         table.playAHand(JABBA, buildCardList(new Card[] {ACE_OF_CLUBS}));
         table.playAHand(THE_DUDE, buildCardList(new Card[] {QUEEN_OF_HEARTS}));
 
         HighestCardNoTieRule highestCardNoTieRule = new HighestCardNoTieRule();
-        highestCardNoTieRule.fireRule(table, chain);
+        Player winnder = highestCardNoTieRule.fireRule(table);
 
-        assertEquals("Jabba should have won", JABBA, table.getWinnerOfTheLastRound());
+        assertEquals("Jabba should have won", JABBA, winnder);
     }
 
     @Test

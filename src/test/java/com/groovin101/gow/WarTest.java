@@ -43,11 +43,28 @@ public class WarTest extends BaseTest {
     }
 
     @Test
+    public void testRemovePlayersWithNoCards_doesNotRemoveAPlayerWhoHasCards() {
+        game.addPlayer(ROSENCRANTZ);
+        dealTo(game.getPlayer(ROSENCRANTZ.getName()), ACE_OF_CLUBS);
+        assertEquals(1, game.getPlayers().size());
+        game.removePlayersWithNoCards();
+        assertEquals(1, game.getPlayers().size());
+    }
+
+    @Test
+    public void testRemovePlayersWithNoCards_doesRemoveAPlayerWhoHasNoCards() {
+        game.addPlayer(ROSENCRANTZ);
+        assertEquals(1, game.getPlayers().size());
+        game.removePlayersWithNoCards();
+        assertEquals(0, game.getPlayers().size());
+    }
+
+    @Test
     public void testPlayCardFromAllPlayers_singlePlayerCallForSingleCardInvokesPlayersPlayACardOnce() throws Exception {
         Player playerMock = mock(Player.class);
         when(playerMock.getPlayerDeckSize()).thenReturn(1);
         players.add(playerMock);
-        gameTable.setPlayers(players);
+        game.setPlayers(players);
         game.playCardsFromAllPlayers(2, gameTable);
         verify(playerMock).playCards(2, gameTable);
     }
@@ -60,18 +77,10 @@ public class WarTest extends BaseTest {
         when(playerTwoMock.getPlayerDeckSize()).thenReturn(1);
         players.add(playerOneMock);
         players.add(playerTwoMock);
-        gameTable.setPlayers(players);
+        game.setPlayers(players);
         game.playCardsFromAllPlayers(2, gameTable);
         verify(playerOneMock).playCards(2, gameTable);
         verify(playerTwoMock).playCards(2, gameTable);
-    }
-
-    @Test
-    public void testPlayCardFromAllPlayers_removesPlayersThatRunOutOfCards() throws Exception {
-        players.add(TESLA);
-        gameTable.setPlayers(players);
-        game.playCardsFromAllPlayers(1, gameTable);
-        assertFalse("Should have removed Tesla after trying to play cards since he has no cards to play", game.getPlayers().contains(TESLA));
     }
 
     @Test
@@ -183,14 +192,19 @@ public class WarTest extends BaseTest {
     @Test
     public void testShouldStartAWar_notIfABatteHasBeenWon() {
         War game = new War();
-        gameTable.setWinner(TESLA);
+        game.setWinnerOfTheLastRound(TESLA);
         assertFalse("Don't start a war if somebody won a battle", game.shouldStartAWar(gameTable));
     }
 
     @Test
     public void testShouldStartAWar_ifABatteHasBeenWon() {
         War game = new War();
-        gameTable.setWinner(null);
+        game.setWinnerOfTheLastRound(null);
         assertTrue("If nobody won the battle, then we must war!", game.shouldStartAWar(gameTable));
     }
+
+    private void dealTo(Player player, Card card) {
+        player.dealToTopOfPlayersDeck(card);
+    }
+
 }
