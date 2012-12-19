@@ -131,6 +131,17 @@ public class InputArguments {
         return Integer.parseInt(intAsString.trim());
     }
 
+    public String buildGameIsStartingMessage() {
+        StringBuilder startupMessage = new StringBuilder("\n\n");
+        startupMessage.append(indentingSpaces()).append("*********************************************************************").append("\n");
+        startupMessage.append(indentingSpaces()).append("Starting a game for ").append(getNumberOfPlayers()).append(" players").append("\n");
+        startupMessage.append(indentingSpaces()).append(" Using a deck with:").append("\n");
+        startupMessage.append(indentingSpaces()).append("  ").append(getNumberOfSuits()).append(" suits").append("\n");
+        startupMessage.append(indentingSpaces()).append("  ").append(getNumberOfRanks()).append(" ranks").append("\n");
+        startupMessage.append(indentingSpaces()).append("*********************************************************************").append("\n\n");
+        return startupMessage.toString();
+    }
+
     public static String buildErrorMessage(boolean includeMoreInformationMessage) {
         StringBuilder errorMessage = new StringBuilder("\n\n");
         errorMessage.append(indentingSpaces()).append("*********************************************************************").append("\n");

@@ -1,12 +1,12 @@
 package com.groovin101.gow.model;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  */
 public class Dealer {
 
-    public void dealAllCards(DeckExtended deckToDealFrom, List<Player> players) {
+    public void dealAllCards(DeckExtended deckToDealFrom, Collection<Player> players) {
         while (deckToDealFrom.hasMoreCardsAvailable()) {
             for (Player player : players) {
                 if (deckToDealFrom.hasMoreCardsAvailable()) {

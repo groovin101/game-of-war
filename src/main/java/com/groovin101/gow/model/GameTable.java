@@ -9,10 +9,33 @@ public class GameTable implements GameContext {
 
     private Map<Player, PlayerPile> allPilesOnTheTable;
     private Player winner;
+    private Set<Player> players;
 
     public GameTable() {
         allPilesOnTheTable = new HashMap<Player, PlayerPile>();
         winner = null;
+        players = new HashSet<Player>();
+    }
+
+    public Set<Player> getPlayers() {
+        return players;
+    }
+    public void setPlayers(Collection<Player> players) {
+        for (Player player : players) {
+            this.players.add(player);
+        }
+    }
+
+    public void addPlayer(Player player) {
+        players.add(player);
+    }
+    public Player getPlayer(String name) {
+        for (Player player : players) {
+            if (player.getName().equals(name)) {
+                return player;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -68,5 +91,15 @@ public class GameTable implements GameContext {
         List<PlayerPile> playerPiles = new ArrayList<PlayerPile>();
         playerPiles.addAll(allPilesOnTheTable.values());
         return playerPiles;
+    }
+
+    public void removePlayersWithNoCards() {
+
+        Iterator<Player> it = players.iterator();
+        while (it.hasNext()) {
+            if (it.next().getPlayerDeckSize() == 0) {
+                it.remove();
+            }
+        }
     }
 }

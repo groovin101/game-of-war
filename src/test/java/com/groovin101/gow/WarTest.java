@@ -30,14 +30,14 @@ public class WarTest extends BaseTest {
 
     @Test
     public void testBuildPlayersList_namesAreUnique() {
-        players = game.buildPlayerList(2);
+        players = new ArrayList<Player>(game.buildPlayerList(2));
         assertEquals("Should be 2 users", 2, players.size());
         assertFalse("Names of users should have been unique", players.get(0).getName().equals(players.get(1).getName()));
     }
 
     @Test
     public void testBuildPlayersList_namesReflectUserNumberCorrectly() {
-        players = game.buildPlayerList(2);
+        players = new ArrayList<Player>(game.buildPlayerList(2));
         assertEquals("Names should reflect player number", "Player 2", players.get(0).getName());
         assertEquals("Names should reflect player number", "Player 1", players.get(1).getName());
     }
@@ -45,19 +45,22 @@ public class WarTest extends BaseTest {
     @Test
     public void testPlayCardFromAllPlayers_singlePlayerCallForSingleCardInvokesPlayersPlayACardOnce() throws Exception {
         Player playerMock = mock(Player.class);
+        when(playerMock.getPlayerDeckSize()).thenReturn(1);
         players.add(playerMock);
-        game.setPlayers(players);
+        gameTable.setPlayers(players);
         game.playCardsFromAllPlayers(2, gameTable);
         verify(playerMock).playCards(2, gameTable);
     }
 
     @Test
-    public void testPlayCardFromAllPlayers_callForTwoCardsInvokesPlayersPlayACardTwice() throws Exception {
+    public void testPlayCardFromAllPlayers_callForTwoCardsInvokesPlayCardOnAllPlayers() throws Exception {
         Player playerOneMock = mock(Player.class);
         Player playerTwoMock = mock(Player.class);
+        when(playerOneMock.getPlayerDeckSize()).thenReturn(1);
+        when(playerTwoMock.getPlayerDeckSize()).thenReturn(1);
         players.add(playerOneMock);
         players.add(playerTwoMock);
-        game.setPlayers(players);
+        gameTable.setPlayers(players);
         game.playCardsFromAllPlayers(2, gameTable);
         verify(playerOneMock).playCards(2, gameTable);
         verify(playerTwoMock).playCards(2, gameTable);
@@ -66,7 +69,7 @@ public class WarTest extends BaseTest {
     @Test
     public void testPlayCardFromAllPlayers_removesPlayersThatRunOutOfCards() throws Exception {
         players.add(TESLA);
-        game.setPlayers(players);
+        gameTable.setPlayers(players);
         game.playCardsFromAllPlayers(1, gameTable);
         assertFalse("Should have removed Tesla after trying to play cards since he has no cards to play", game.getPlayers().contains(TESLA));
     }

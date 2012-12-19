@@ -6,14 +6,12 @@ import com.groovin101.gow.exception.WarInitializationException;
 import com.groovin101.gow.model.*;
 import com.groovin101.gow.rules.HighestCardNoTieRule;
 
-import java.net.InetAddress;
 import java.util.*;
 
 /**
  */
 public class War {
 
-    private List<Player> players;
     private Dealer dealer;
     private DeckExtended deck;
     private GameTable gameTable;
@@ -27,6 +25,7 @@ public class War {
         try {
             War game = new War();
             InputArguments arguments = new InputArguments(args);
+            System.out.println(arguments.buildGameIsStartingMessage());
             game.play(arguments.getNumberOfSuits(), arguments.getNumberOfRanks(), arguments.getNumberOfPlayers());
         }
         catch (WarInitializationException e) {
@@ -41,11 +40,9 @@ public class War {
 
     }
 
-    public List<Player> getPlayers() {
-        return players;
-    }
-    public void setPlayers(List<Player> players) {
-        this.players = players;
+    //todo: remove this
+    public Collection<Player> getPlayers() {
+        return gameTable.getPlayers();
     }
     public void setGameTable(GameTable gameTable) {
         this.gameTable = gameTable;
@@ -75,12 +72,12 @@ public class War {
 
     void startTheGame(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
         winnerOfTheGame = null;
-        players = buildPlayerList(numberOfPlayers);
+        gameTable.setPlayers(buildPlayerList(numberOfPlayers));
         deck = new DeckImpl(); //todo - instantiate deck properly using args from above
         deck.create(numberOfSuits, numberOfRanks);
 //todo: shuffle
 deck.shuffle();
-        dealer.dealAllCards(deck, players);
+        dealer.dealAllCards(deck, gameTable.getPlayers());
     }
 
     protected void playARound() {
@@ -96,6 +93,7 @@ deck.shuffle();
         }
         logRound(gameTable.getWinnerOfTheLastRound());
         divyWonCardsToWinner(gameTable.getWinnerOfTheLastRound());
+        gameTable.removePlayersWithNoCards();
     }
 
     public void startABattle() {
@@ -125,7 +123,6 @@ deck.shuffle();
         }
         Collections.shuffle(cardsFromBothPiles, new Random(Calendar.getInstance().getTimeInMillis()));
         for (Card card : cardsFromBothPiles) {
-System.out.println(winner == null ? "winner was null" : winner.getName());
             winner.addToBottomOfPlayerDeck(card);
         }
         gameTable.clearAllPilesFromTheTable();
@@ -138,23 +135,21 @@ System.out.println(winner == null ? "winner was null" : winner.getName());
     }
 
     protected void playCardsFromAllPlayers(int howMany, GameTable gameTable) {
-        Iterator<Player> it = players.iterator();
-        while (it.hasNext()) {
-            try {
-                Player player = it.next();
-                player.playCards(howMany, gameTable);
-            }
-            catch (NoCardsToPlayException e) {
-                e.printStackTrace();
-                System.out.println(e.getMessage());
-                it.remove();
+        for (Player player : gameTable.getPlayers()) {
+            if (player.getPlayerDeckSize() > 0) {
+                try {
+                    player.playCards(howMany, gameTable);
+                }
+                catch (NoCardsToPlayException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
 
 
-    protected List<Player> buildPlayerList(int numberOfPlayers) {
+    protected Collection<Player> buildPlayerList(int numberOfPlayers) {
         List<Player> players = new ArrayList<Player>();
         while (numberOfPlayers > 0) {
             try {
@@ -167,7 +162,7 @@ System.out.println(winner == null ? "winner was null" : winner.getName());
         return players;
     }
 
-    boolean doesOnePlayerHaveAllTheCards(DeckExtended deck, List<Player> players) {
+    boolean doesOnePlayerHaveAllTheCards(DeckExtended deck, Collection<Player> players) {
         for (Player player : players) {
             if (player.getPlayerDeckSize() == deck.getTotalCardCount()) {
                 winnerOfTheGame = player;
@@ -178,7 +173,7 @@ System.out.println(winner == null ? "winner was null" : winner.getName());
     }
 
     boolean gameOver() {
-        return doesOnePlayerHaveAllTheCards(deck, players);
+        return doesOnePlayerHaveAllTheCards(deck, gameTable.getPlayers());
     }
 
     boolean shouldStartAWar(GameTable gameTable) {
