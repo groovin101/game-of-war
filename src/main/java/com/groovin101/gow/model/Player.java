@@ -14,6 +14,7 @@ public class Player {
     private String name;
     private List<Card> throwdownCards; //todo: consider renaming to throwdownPile, not to be confused with mult piles on table
     private List<Card> currentHand;
+    private List<Card> cardsPlayedThisRound;
 
     public String getName() {
         return name;
@@ -27,6 +28,7 @@ public class Player {
         playerDeck = new LinkedList<Card>();
         throwdownCards = new ArrayList<Card>();
         currentHand = new ArrayList<Card>();
+        cardsPlayedThisRound = new ArrayList<Card>();
     }
 
     public List<Card> getThrowdownCards() {
@@ -85,10 +87,21 @@ public class Player {
     public void battle() {
         currentHand.clear();
         currentHand.add(throwNextCard());
+        cardsPlayedThisRound.addAll(currentHand);
     }
 
     public void war() {
-
+        currentHand.clear();
+        try {
+            currentHand.add(playerDeck.pop());
+            currentHand.add(playerDeck.pop());
+            currentHand.add(playerDeck.pop());
+        }
+        catch (NoSuchElementException e) {
+//            new NoCardsToPlayException("Player: " + getName() + " is out of cards", e).printStackTrace();
+            System.out.println("Player: " + getName() + " is out of cards");
+        }
+        cardsPlayedThisRound.addAll(currentHand);
     }
 
     /**
@@ -97,6 +110,10 @@ public class Player {
      */
     public List<Card> getCurrentHand() {
         return currentHand;
+    }
+
+    public List<Card> getCardsPlayedThisRound() {
+        return cardsPlayedThisRound;
     }
 
     @Override
