@@ -1,10 +1,8 @@
 package com.groovin101.gow;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
-import com.groovin101.gow.exception.NoCardsToPlayException;
 import com.groovin101.gow.exception.WarInitializationException;
 import com.groovin101.gow.model.*;
-import com.groovin101.gow.rules.HighestCardNoTieRule;
 
 import java.util.*;
 
@@ -14,7 +12,6 @@ public class War {
 
     private Dealer dealer;
     private DeckExtended deck;
-    private GameTable gameTable;
     private Player winnerOfTheGame;
     private int numberOfRoundsPlayed = 0;
     private Set<Player> players;
@@ -51,13 +48,8 @@ public class War {
 
     }
 
-    public void setGameTable(GameTable gameTable) {
-        this.gameTable = gameTable;
-    }
-
     public War() {
         dealer = new Dealer();
-        gameTable = new GameTable();
         players = new HashSet<Player>();
         winnerOfTheLastRound = null;
     }
@@ -99,70 +91,61 @@ public class War {
 
         numberOfRoundsPlayed++;
         startABattle();
-        setWinnerOfTheLastRound(new HighestCardNoTieRule().fireRule(gameTable));
-        while (shouldStartAWar(gameTable)) {
-            if (getWinnerOfTheLastRound() == null) {
-                startAWar();
-                new HighestCardNoTieRule().fireRule(gameTable);
-            }
-        }
+//        setWinnerOfTheLastRound(new HighestCardNoTieRule().fireRule(gameTable));
+//        while (shouldStartAWar(gameTable)) {
+//            if (getWinnerOfTheLastRound() == null) {
+//                startAWar();
+//                new HighestCardNoTieRule().fireRule(gameTable);
+//            }
+//        }
         logRound(getWinnerOfTheLastRound());
         divyWonCardsToWinner(getWinnerOfTheLastRound());
     }
 
-    public void startABattle() {
-        playCardsFromAllPlayers(1, gameTable);
+    void clearCardsFromPreviousRound() {
+        for (Player player : getPlayers()) {
+            player.clearCardsFromPreviousRound();
+        }
+    }
 
+    public void startABattle() {
+        for (Player player : getPlayers()) {
+            player.battle();
+        }
     }
 
     public void startAWar() {
-        playCardsFromAllPlayers(4, gameTable);
+        for (Player player : getPlayers()) {
+            player.war();
+        }
     }
 
     private void logRound(Player winnerOfTheRound) {
         System.out.println("---------------------------------------");
-        for (PlayerPile pileOnTable : gameTable.getAllPilesOnTheTable()) {
-            System.out.println(pileOnTable + " ; cards left: " + pileOnTable.getPlayer().getPlayerDeckSize());
+        for (Player player : getPlayers()) {
+            System.out.println(player.getName() + " played " + player.getCardsPlayedThisRound() + "; cards left: " + player.getPlayerDeckSize());
         }
         System.out.println((winnerOfTheRound == null ? "Nobody" : winnerOfTheRound.getName()) + " wins round [" + numberOfRoundsPlayed + "]");
         System.out.println("---------------------------------------\n");
     }
 
-    protected void divyWonCardsToWinner(Player winner) {
-        List<Card> cardsFromBothPiles = new ArrayList<Card>();
-        List<PlayerPile> allPilesFromTable = gameTable.getAllPilesOnTheTable();
-        for (PlayerPile pileFromTable : allPilesFromTable) {
-            for (Card card : pileFromTable.getCards()) {
-                cardsFromBothPiles.add(card);
-            }
+    List<Card> fetchAllCardsPlayedThisRound() {
+
+        List<Card> cardsPlayedThisRound = new ArrayList<Card>();
+        for (Player player : getPlayers()) {
+            cardsPlayedThisRound.addAll(player.getCardsPlayedThisRound());
         }
-        Collections.shuffle(cardsFromBothPiles, new Random(Calendar.getInstance().getTimeInMillis()));
-        for (Card card : cardsFromBothPiles) {
+        return cardsPlayedThisRound;
+    }
+
+    protected void divyWonCardsToWinner(Player winner) {
+        List<Card> allCardsPlayedThisRound = fetchAllCardsPlayedThisRound();
+        Collections.shuffle(allCardsPlayedThisRound, new Random(Calendar.getInstance().getTimeInMillis()));
+        for (Card card : allCardsPlayedThisRound) {
             winner.addToBottomOfPlayerDeck(card);
         }
-        gameTable.clearAllPilesFromTheTable();
+        clearCardsFromPreviousRound();
     }
-
-    //todo: delete this
-    protected PlayerPile identifyWinningPile(List<PlayerPile> piles) {
-        Collections.sort(piles);
-        return piles.get(piles.size() - 1);
-    }
-
-    protected void playCardsFromAllPlayers(int howMany, GameTable gameTable) {
-        for (Player player : getPlayers()) {
-            if (player.getPlayerDeckSize() > 0) {
-                try {
-                    player.playCards(howMany, gameTable);
-                }
-                catch (NoCardsToPlayException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-
 
     protected Collection<Player> buildPlayerList(int numberOfPlayers) {
         List<Player> players = new ArrayList<Player>();
@@ -191,7 +174,7 @@ public class War {
         return doesOnePlayerHaveAllTheCards(deck, getPlayers());
     }
 
-    boolean shouldStartAWar(GameTable gameTable) {
+    boolean shouldStartAWar() {
         return getWinnerOfTheLastRound() == null;
     }
 

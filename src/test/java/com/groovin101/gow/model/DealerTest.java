@@ -44,7 +44,7 @@ public class DealerTest extends BaseTest {
         Card onlyCardInSingleCardDeck = deck.deal();
         deck.create(1,1);
         dealer.dealAllCards(deck, players);
-        assertEquals("Single player should have the same card as was in a single-card deck", onlyCardInSingleCardDeck, rosencrantz.playACard(new GameTable()));
+        assertEquals("Single player should have the same card as was in a single-card deck", onlyCardInSingleCardDeck, rosencrantz.getPlayerDeck().getFirst());
     }
 
     @Test

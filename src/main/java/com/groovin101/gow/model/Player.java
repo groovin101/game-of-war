@@ -1,7 +1,6 @@
 package com.groovin101.gow.model;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
-import com.groovin101.gow.exception.NoCardsToPlayException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -49,44 +48,13 @@ public class Player {
         return playerDeck.size();
     }
 
-    //todo: remove return type
-    public Card playACard(GameTable gameTable) throws NoCardsToPlayException {
-        throwdownCards = playCards(1, gameTable);
-        return throwdownCards.isEmpty() ? null : throwdownCards.get(0);
-    }
-
-    //todo: rename to playACard
-    public Card throwNextCard() {
-        Card played = playerDeck.pop();
-        throwdownCards.add(played);
-        return played;
-    }
-
-//    public List<Card> throwCards(int howMany) {
-//
-//    }
-
-    //todo: remove return type
-    public List<Card> playCards(int howMany, GameTable gameTable) throws NoCardsToPlayException {
-        List<Card> playedCards = new ArrayList<Card>();
-        try {
-            while (howMany > 0) {
-                playedCards.add(playerDeck.pop());
-                howMany--;
-            }
-        }
-        catch (NoSuchElementException e) {
-            if (playedCards.isEmpty()) {
-                throw new NoCardsToPlayException(getName() + " is out of cards");
-            }
-        }
-        gameTable.playAHand(this, playedCards);
-        return playedCards;
+    Deque<Card> getPlayerDeck() {
+        return playerDeck;
     }
 
     public void battle() {
         currentHand.clear();
-        currentHand.add(throwNextCard());
+        currentHand.add(playerDeck.pop());
         cardsPlayedThisRound.addAll(currentHand);
     }
 
@@ -111,9 +79,26 @@ public class Player {
     public List<Card> getCurrentHand() {
         return currentHand;
     }
-
+    void setCurrentHand(List<Card> currentHand) {
+        this.currentHand = currentHand;
+    }
     public List<Card> getCardsPlayedThisRound() {
         return cardsPlayedThisRound;
+    }
+    void setCardsPlayedThisRound(List<Card> cardsPlayedThisRound) {
+        this.cardsPlayedThisRound = cardsPlayedThisRound;
+    }
+
+    /**
+     * Returns the significant card to use when comparing against other players hands in order to determine a winner
+     * @return
+     */
+    public Card getSignificantCard() {
+        return currentHand.get(currentHand.size()-1);
+    }
+
+    public void clearCardsFromPreviousRound() {
+        cardsPlayedThisRound.clear();
     }
 
     @Override

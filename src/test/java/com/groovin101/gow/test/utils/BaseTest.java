@@ -44,26 +44,6 @@ public class BaseTest {
         return cardList;
     }
 
-    public static List<PileCard> buildPileCardList(Card[] cardArray) {
-        List<PileCard> pileCardList = new ArrayList<PileCard>();
-        int i = 0;
-        for (Card card : cardArray) {
-            try {
-                pileCardList.add(new PileCard(new Player("Test player " + ++i), card));
-            }
-            catch (InvalidUsernameException e) {}
-        }
-        return pileCardList;
-    }
-
-    public static List<Card> pileCardListAsCardList(List<PileCard> pileCardsToConvert) {
-        List<Card> cards = new ArrayList<Card>();
-        for (PileCard pileCard : pileCardsToConvert) {
-            cards.add(pileCard.getCard());
-        }
-        return cards;
-    }
-
     public static List<Card> largeCardList() {
         List<Card> bigCardList = new ArrayList<Card>();
         DeckExtended deck = new DeckImpl();
@@ -72,11 +52,6 @@ public class BaseTest {
             bigCardList.add(deck.deal());
         }
         return bigCardList;
-    }
-
-    protected PlayerPile buildPlayerPile(Player player, int numberOfNonUniqueCardsInPile) {
-        DeckImpl deck = new DeckImpl();
-        return new PlayerPile(player, deck.deal(numberOfNonUniqueCardsInPile));
     }
 
     private static Player buildPlayer(String name) {

@@ -1,7 +1,6 @@
 package com.groovin101.gow.model;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
-import com.groovin101.gow.exception.NoCardsToPlayException;
 import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,8 +16,6 @@ public class PlayerTest extends BaseTest {
 
     private Player player;
     private Card cardForTestA;
-    private Card cardForTestB;
-    private GameTable gameTable;
 
     @Before
     public void setup() {
@@ -29,8 +26,6 @@ public class PlayerTest extends BaseTest {
         catch (InvalidUsernameException e) {
         }
         cardForTestA = new Card(Rank.ACE, Suit.CLUB);
-        cardForTestB = new Card(Rank.EIGHT, Suit.SPADE);
-        gameTable = new GameTable();
     }
 
     @Test
@@ -68,74 +63,6 @@ public class PlayerTest extends BaseTest {
     public void testAddToTopOfPlayerDeck_incrementsDeckSize() {
         player.dealToTopOfPlayersDeck(cardForTestA);
         assertEquals(1, player.getPlayerDeckSize());
-    }
-
-    @Test
-    public void testAddToTopOfPlayerDeck_orderIsCorrect() throws Exception {
-        player.dealToTopOfPlayersDeck(cardForTestB);
-        player.dealToTopOfPlayersDeck(cardForTestA);
-        assertEquals(cardForTestA, player.playACard(gameTable));
-    }
-
-    @Test
-    public void testAddToBottomOfPlayerDeck_orderIsCorrect() throws Exception {
-        player.addToBottomOfPlayerDeck(cardForTestB);
-        player.addToBottomOfPlayerDeck(cardForTestA);
-        assertEquals(cardForTestB, player.playACard(gameTable));
-    }
-
-    @Test
-    public void testPlayACard_singleCard() throws Exception {
-        player.dealToTopOfPlayersDeck(cardForTestA);
-        assertEquals(cardForTestA, player.playACard(gameTable));
-    }
-
-    @Test
-    public void testPlayACard_multipleCards() throws Exception {
-        player.dealToTopOfPlayersDeck(cardForTestA);
-        player.dealToTopOfPlayersDeck(cardForTestB);
-        List<Card> cardsThatWereExpectedToBePlayed = new ArrayList<Card>();
-        cardsThatWereExpectedToBePlayed.add(cardForTestA);
-        cardsThatWereExpectedToBePlayed.add(cardForTestB);
-        assertTrue("Should contain all two of our cards since we played both", player.playCards(2, gameTable).containsAll(cardsThatWereExpectedToBePlayed));
-    }
-
-    @Test
-    public void testPlayACard_requestingMoreCardsThanWeHaveReturnsWhatWeDoHave() throws Exception {
-        player.dealToTopOfPlayersDeck(cardForTestA);
-        List<Card> cardsThatWereExpectedToBePlayed = new ArrayList<Card>();
-        cardsThatWereExpectedToBePlayed.add(cardForTestA);
-        assertTrue("Should contain a single card even though we specified to deal 2", player.playCards(2, gameTable).containsAll(cardsThatWereExpectedToBePlayed));
-    }
-
-    @Test
-    public void testPlayACard_emptyHandThrowsANoCardsException() {
-        try {
-            player.playCards(1, gameTable);
-            fail("Should have thrown an exception to indicate that we can't play a single card");
-        }
-        catch (NoCardsToPlayException e) {
-        }
-    }
-
-    @Test
-    public void testPlayACard_returnsTheOnlyCardInOurDeck() {
-        JABBA.dealToTopOfPlayersDeck(JACK_OF_DIAMONDS);
-        assertEquals("Should return the only card that was in Jabba's deck", JACK_OF_DIAMONDS, JABBA.throwNextCard());
-    }
-
-    @Test
-    public void testThrowNextCard_addsToTheThrowdownPile() {
-        JABBA.dealToTopOfPlayersDeck(JACK_OF_DIAMONDS);
-        JABBA.throwNextCard();
-        assertEquals("Should now be one card in the throwdown pile", 1, JABBA.getThrowdownCards().size());
-    }
-
-    @Test
-    public void testThrowNextCard_marksTheSingleCardThrownAsTheSignificantCard() {
-        JABBA.dealToTopOfPlayersDeck(JACK_OF_DIAMONDS);
-        JABBA.throwNextCard();
-        assertEquals("Should now be one card in the throwdown pile", 1, JABBA.getThrowdownCards().size());
     }
 
     @Test
@@ -256,7 +183,7 @@ public class PlayerTest extends BaseTest {
     public void testBattleAndWar_cardsFromBothBattleAndWarAreAddedToTheListOfCardsPlayedThisRound() {
 
         List<Card> cardsThatShouldHaveBeenPlayedThisRound = new ArrayList<Card>();
-        cardsThatShouldHaveBeenPlayedThisRound.addAll(buildCardList(new Card[]{JACK_OF_DIAMONDS,QUEEN_OF_HEARTS,KING_OF_SPADES,ACE_OF_CLUBS}));
+        cardsThatShouldHaveBeenPlayedThisRound.addAll(buildCardList(new Card[]{JACK_OF_DIAMONDS, QUEEN_OF_HEARTS, KING_OF_SPADES, ACE_OF_CLUBS}));
 
         JABBA.dealToTopOfPlayersDeck(JACK_OF_DIAMONDS);
         JABBA.dealToTopOfPlayersDeck(QUEEN_OF_HEARTS);
@@ -275,4 +202,20 @@ public class PlayerTest extends BaseTest {
         assertEquals(0, JABBA.getCurrentHand().size());
     }
 
+    @Test
+    public void testClearCardsPlayedDuringThisRound() {
+        JABBA.setCardsPlayedThisRound(buildCardList(new Card[]{ACE_OF_SPADES}));
+        assertEquals(1, JABBA.getCardsPlayedThisRound().size());
+        JABBA.clearCardsFromPreviousRound();
+        assertEquals(0, JABBA.getCardsPlayedThisRound().size());
+    }
+
+    @Test
+    public void testGetSignificantCard_returnsTheLastCardPlayed() {
+        JABBA.setCurrentHand(buildCardList(new Card[]{ACE_OF_CLUBS,JACK_OF_DIAMONDS,QUEEN_OF_HEARTS}));
+        assertEquals(QUEEN_OF_HEARTS, JABBA.getSignificantCard());
+    }
+
+    //todo: add tests to verify getSignificantCard in a two card war
+    //todo: getSignificantCard with zero cards played
 }
