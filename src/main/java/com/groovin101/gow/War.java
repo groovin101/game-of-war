@@ -12,31 +12,64 @@ public class War {
 
     private Dealer dealer;
     private DeckExtended deck;
-    private Player winnerOfTheGame;
     private int numberOfRoundsPlayed = 0;
     private Set<Player> players;
-    private Player winnerOfTheLastRound;
+    private Player winnerOfTheLastHandPlayed;
+    private Player winnerOfTheGame;
+    private boolean gameIsADraw;
 
-
-    public Player getWinnerOfTheLastRound() {
-        return winnerOfTheLastRound;
+    public Player getWinnerOfTheLastHandPlayed() {
+        return winnerOfTheLastHandPlayed;
     }
-    public void setWinnerOfTheLastRound(Player winnerOfTheLastRound) {
-        this.winnerOfTheLastRound = winnerOfTheLastRound;
+    public void setWinnerOfTheLastHandPlayed(Player winnerOfTheLastHandPlayed) {
+        this.winnerOfTheLastHandPlayed = winnerOfTheLastHandPlayed;
+    }
+    boolean isWarCalledFor() {
+//        return winnerOfTheLastHandPlayed == null;
+                                                    //todo: make a test for the draw scenario with no winner of war
+        return winnerOfTheLastHandPlayed == null && atLeastOnePlayerHasCardsLeftToPlay();
+    }
+    void setGameIsADraw(boolean gameIsADraw) {
+        this.gameIsADraw = gameIsADraw;
+    }
+    boolean atLeastOnePlayerHasCardsLeftToPlay() {
+        for (Player player : getPlayers()) {
+            if (player.getPlayerDeckSize() > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
+    public Set<Player> getPlayers() {
+        return players;
+    }
+    public void setPlayers(Collection<Player> players) {
+        for (Player player : players) {
+            this.players.add(player);
+        }
+    }
+
+    public War() {
+        dealer = new Dealer();
+        players = new HashSet<Player>();
+        winnerOfTheLastHandPlayed = null;
+    }
 
     //todo: add a play method that takes a list of usernames so that we have a chance to throw our InvalidUsernameException, allowing it to bubble
 
     public static void main(String[] args) throws WarInitializationException {
 
         try {
+
             War game = new War();
             InputArguments arguments = new InputArguments(args);
             System.out.println(arguments.buildGameIsStartingMessage());
+
             game.play(arguments.getNumberOfSuits(), arguments.getNumberOfRanks(), arguments.getNumberOfPlayers());
         }
         catch (WarInitializationException e) {
+
             if (InputArguments.isTheExceptionReportingFlagPresent(args)) {
                 System.out.println(InputArguments.buildErrorMessage(false));
                 throw e;
@@ -46,12 +79,6 @@ public class War {
             }
         }
 
-    }
-
-    public War() {
-        dealer = new Dealer();
-        players = new HashSet<Player>();
-        winnerOfTheLastRound = null;
     }
 
     public void play(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
@@ -67,39 +94,41 @@ public class War {
     }
 
     private void announceWinnerOfGame() {
+
         System.out.println("*************************************/n");
-        System.out.println(winnerOfTheGame.getName() + " has won the game!");
+        System.out.println(gameIsADraw ? "Game is a draw. No winner." : winnerOfTheGame.getName() + " has won the game!");
         System.out.println("*************************************/n");
     }
 
     void startTheGame(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
+
         winnerOfTheGame = null;
         setPlayers(buildPlayerList(numberOfPlayers));
+
         deck = new DeckImpl(); //todo - instantiate deck properly using args from above
         deck.create(numberOfSuits, numberOfRanks);
         deck.shuffle();
+
         dealer.dealAllCards(deck, getPlayers());
     }
 
     protected void playARound() {
 
-        //doBattle();
-        //while (shouldHaveAWar) {
-        //  doWar();
-        //}
-        //divy cards to winner
-
         numberOfRoundsPlayed++;
-        startABattle();
-//        setWinnerOfTheLastRound(new HighestCardNoTieRule().fireRule(gameTable));
-//        while (shouldStartAWar(gameTable)) {
-//            if (getWinnerOfTheLastRound() == null) {
-//                startAWar();
-//                new HighestCardNoTieRule().fireRule(gameTable);
-//            }
-//        }
-        logRound(getWinnerOfTheLastRound());
-        divyWonCardsToWinner(getWinnerOfTheLastRound());
+
+        doBattle();
+        while (isWarCalledFor()) {
+            doWar();
+        }
+
+        if (getWinnerOfTheLastHandPlayed() == null) {
+            gameIsADraw = true;
+        }
+
+        divySpoilsToWinner(getWinnerOfTheLastHandPlayed());
+
+        logRound(getWinnerOfTheLastHandPlayed());
+        clearCardsFromPreviousRound();
     }
 
     void clearCardsFromPreviousRound() {
@@ -108,25 +137,49 @@ public class War {
         }
     }
 
-    public void startABattle() {
+    public void doBattle() {
+
+        playBattleHands();
+        evaluateHand();
+    }
+
+    public void doWar() {
+
+        playWarHands();
+        evaluateHand();
+    }
+
+    private void playBattleHands() {
+
         for (Player player : getPlayers()) {
             player.battle();
         }
     }
 
-    public void startAWar() {
+    private void playWarHands() {
+
         for (Player player : getPlayers()) {
             player.war();
         }
     }
 
     private void logRound(Player winnerOfTheRound) {
+
         System.out.println("---------------------------------------");
         for (Player player : getPlayers()) {
-            System.out.println(player.getName() + " played " + player.getCardsPlayedThisRound() + "; cards left: " + player.getPlayerDeckSize());
+            System.out.println(player.getName() + " played " + toStringForListOfCards(player.getCardsPlayedThisRound()) + "; cards left: " + player.getPlayerDeckSize());
         }
         System.out.println((winnerOfTheRound == null ? "Nobody" : winnerOfTheRound.getName()) + " wins round [" + numberOfRoundsPlayed + "]");
         System.out.println("---------------------------------------\n");
+    }
+
+    private String toStringForListOfCards(List<Card> cards) {
+        StringBuilder toStringForListOfCards = new StringBuilder();
+        for (Card card : cards) {
+            toStringForListOfCards.append(card.toString()).append(",");
+        }
+        toStringForListOfCards = toStringForListOfCards.deleteCharAt(toStringForListOfCards.length()-1);
+        return toStringForListOfCards.toString();
     }
 
     List<Card> fetchAllCardsPlayedThisRound() {
@@ -138,13 +191,14 @@ public class War {
         return cardsPlayedThisRound;
     }
 
-    protected void divyWonCardsToWinner(Player winner) {
-        List<Card> allCardsPlayedThisRound = fetchAllCardsPlayedThisRound();
-        Collections.shuffle(allCardsPlayedThisRound, new Random(Calendar.getInstance().getTimeInMillis()));
-        for (Card card : allCardsPlayedThisRound) {
-            winner.addToBottomOfPlayerDeck(card);
+    protected void divySpoilsToWinner(Player winner) {
+        if (winner != null) {
+            List<Card> allCardsPlayedThisRound = fetchAllCardsPlayedThisRound();
+            Collections.shuffle(allCardsPlayedThisRound, new Random(Calendar.getInstance().getTimeInMillis()));
+            for (Card card : allCardsPlayedThisRound) {
+                winner.addToBottomOfPlayerDeck(card);
+            }
         }
-        clearCardsFromPreviousRound();
     }
 
     protected Collection<Player> buildPlayerList(int numberOfPlayers) {
@@ -161,6 +215,7 @@ public class War {
     }
 
     boolean doesOnePlayerHaveAllTheCards(DeckExtended deck, Collection<Player> players) {
+
         for (Player player : players) {
             if (player.getPlayerDeckSize() == deck.getTotalCardCount()) {
                 winnerOfTheGame = player;
@@ -171,26 +226,15 @@ public class War {
     }
 
     boolean gameOver() {
-        return doesOnePlayerHaveAllTheCards(deck, getPlayers());
-    }
-
-    boolean shouldStartAWar() {
-        return getWinnerOfTheLastRound() == null;
-    }
-
-    public Set<Player> getPlayers() {
-        return players;
-    }
-    public void setPlayers(Collection<Player> players) {
-        for (Player player : players) {
-            this.players.add(player);
-        }
+        return doesOnePlayerHaveAllTheCards(deck, getPlayers()) || gameIsADraw;
     }
 
     public void addPlayer(Player player) {
         players.add(player);
     }
+
     public Player getPlayer(String name) {
+
         for (Player player : players) {
             if (player.getName().equals(name)) {
                 return player;
@@ -207,6 +251,26 @@ public class War {
                 it.remove();
             }
         }
+    }
+
+    void evaluateHand() {
+
+        Player ownerOfHighestCard = null;
+        Card highestCardPlayedDuringHand = null;
+
+        for (Player player : getPlayers()) {
+            if (player.getSignificantCard() != null) {
+                if (player.getSignificantCard().compareTo(highestCardPlayedDuringHand) > 0) {
+                    ownerOfHighestCard = player;
+                    highestCardPlayedDuringHand = player.getSignificantCard();
+                }
+                else if (player.getSignificantCard().compareTo(highestCardPlayedDuringHand) == 0) {
+    //                setWarCalledFor(true);
+                    ownerOfHighestCard = null;
+                }
+            }
+        }
+        setWinnerOfTheLastHandPlayed(ownerOfHighestCard);
     }
 
 }

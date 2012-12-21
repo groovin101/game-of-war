@@ -217,5 +217,9 @@ public class PlayerTest extends BaseTest {
     }
 
     //todo: add tests to verify getSignificantCard in a two card war
-    //todo: getSignificantCard with zero cards played
+
+    @Test
+    public void testGetSignificantCard_returnsNullWhenNoCardsWerePlayedInAHand() {
+        assertNull(JABBA.getSignificantCard());
+    }
 }

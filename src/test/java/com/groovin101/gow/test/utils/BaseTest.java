@@ -24,6 +24,7 @@ public class BaseTest {
     public static final Card KING_OF_SPADES = new Card(Rank.KING, Suit.SPADE);
     public static final Card QUEEN_OF_HEARTS = new Card(Rank.QUEEN, Suit.HEART);
     public static final Card JACK_OF_DIAMONDS = new Card(Rank.JACK, Suit.DIAMOND);
+    public static final Card JACK_OF_CLUBS = new Card(Rank.JACK, Suit.CLUB);
 
     /**
      * Don't forget to call this in subclasses!

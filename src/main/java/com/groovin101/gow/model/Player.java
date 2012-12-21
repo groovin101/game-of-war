@@ -67,7 +67,7 @@ public class Player {
         }
         catch (NoSuchElementException e) {
 //            new NoCardsToPlayException("Player: " + getName() + " is out of cards", e).printStackTrace();
-            System.out.println("Player: " + getName() + " is out of cards");
+System.out.println("Player: " + getName() + " is out of cards");
         }
         cardsPlayedThisRound.addAll(currentHand);
     }
@@ -94,6 +94,9 @@ public class Player {
      * @return
      */
     public Card getSignificantCard() {
+        if (currentHand.isEmpty()) {
+            return null;
+        }
         return currentHand.get(currentHand.size()-1);
     }
 
