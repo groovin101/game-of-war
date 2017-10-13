@@ -1,2 +1,8 @@
 language: java
-script: "mvn help:active-profiles goal"
+
+#andale' amigo
+sudo: false
+
+#testing the ability to override the default install directive
+install: true
+script: "mvn help:active-profiles install"
