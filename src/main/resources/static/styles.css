@@ -157,6 +157,34 @@ header h1 {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+    align-items: center;
+}
+
+.auto-play-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.speed-select {
+    padding: 10px 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: white;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.speed-select:hover:not(:disabled) {
+    border-color: var(--primary-color);
+}
+
+.speed-select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* Game Status */

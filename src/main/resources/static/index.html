@@ -39,7 +39,14 @@
                 <h2>Game in Progress</h2>
                 <div class="control-buttons">
                     <button id="play-round-btn" class="btn btn-primary">Play Round</button>
-                    <button id="auto-play-btn" class="btn btn-secondary">Auto Play</button>
+                    <div class="auto-play-controls">
+                        <button id="auto-play-btn" class="btn btn-secondary">Auto Play</button>
+                        <select id="speed-select" class="speed-select">
+                            <option value="1000">Slow</option>
+                            <option value="500" selected>Medium</option>
+                            <option value="50">Ludicrous 🚀</option>
+                        </select>
+                    </div>
                     <button id="new-game-btn" class="btn btn-secondary">New Game</button>
                 </div>
             </div>

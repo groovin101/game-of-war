@@ -11,6 +11,7 @@ const gameSection = document.getElementById('game-section');
 const startGameBtn = document.getElementById('start-game-btn');
 const playRoundBtn = document.getElementById('play-round-btn');
 const autoPlayBtn = document.getElementById('auto-play-btn');
+const speedSelect = document.getElementById('speed-select');
 const newGameBtn = document.getElementById('new-game-btn');
 const numPlayersInput = document.getElementById('num-players');
 const numSuitsInput = document.getElementById('num-suits');
@@ -121,9 +122,15 @@ function startAutoPlay() {
     autoPlayBtn.classList.remove('btn-secondary');
     autoPlayBtn.classList.add('btn-primary');
     
+    // Get selected speed in milliseconds
+    const speed = parseInt(speedSelect.value);
+    
+    // Disable speed selector while auto-playing
+    speedSelect.disabled = true;
+    
     autoPlayInterval = setInterval(async () => {
         await playRound();
-    }, 1500); // Play a round every 1.5 seconds
+    }, speed);
 }
 
 function stopAutoPlay() {
@@ -133,6 +140,9 @@ function stopAutoPlay() {
         autoPlayBtn.textContent = 'Auto Play';
         autoPlayBtn.classList.remove('btn-primary');
         autoPlayBtn.classList.add('btn-secondary');
+        
+        // Re-enable speed selector
+        speedSelect.disabled = false;
     }
 }
 
