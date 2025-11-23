@@ -1,7 +1,5 @@
 package com.groovin101.gow;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -11,9 +9,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.byteThat;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 
@@ -111,22 +109,8 @@ public class MockitoTest {
         // can't do this as we don't know how long the array is going to be
         // verify(mock).write(new byte[]{'a'},0,1);
 
-        BaseMatcher arrayStartingWithA = new BaseMatcher() {
-            @Override
-            public void describeTo(Description description) {
-                // nothing
-            }
-
-            // check that first character is A
-            @Override
-            public boolean matches(Object item) {
-                byte[] actual = (byte[]) item;
-                return actual[0] == 'a';
-            }
-        };
-
         // check that first character of the array is A, and that the other two arguments are 0 and 1
-        verify(mockedOutputStream).write(new byte[]{byteThat(arrayStartingWithA)}, eq(0), eq(1));
+        verify(mockedOutputStream).write(argThat((byte[] arr) -> arr.length > 0 && arr[0] == 'a'), eq(0), eq(1));
     }
 
 }

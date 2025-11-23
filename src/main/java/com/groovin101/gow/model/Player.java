@@ -3,7 +3,11 @@ package com.groovin101.gow.model;
 import com.groovin101.gow.exception.InvalidUsernameException;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  */

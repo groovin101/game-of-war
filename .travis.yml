@@ -5,4 +5,4 @@ sudo: false
 
 #testing the ability to override the default install directive
 install: true
-script: "mvn help:active-profiles install"
+script: "./gradlew build"

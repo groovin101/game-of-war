@@ -1,0 +1,69 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.groovin101'
+version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Production dependencies
+    implementation 'org.apache.commons:commons-lang3:3.1'
+    implementation 'commons-collections:commons-collections:3.2.1'
+    
+    // Test dependencies
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:5.11.0'
+}
+
+// Java compilation settings
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+// Test configuration
+test {
+    useJUnit()
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+        exceptionFormat = "full"
+        showStandardStreams = true
+    }
+    // Always run tests, even if up-to-date
+    outputs.upToDateWhen { false }
+}
+
+// JAR task configuration
+jar {
+    archiveBaseName = 'gameOfWar'
+    manifest {
+        attributes(
+            'Main-Class': 'com.groovin101.gow.War'
+        )
+    }
+}
+
+// Create a runnable JAR with dependencies (optional, for convenience)
+tasks.register('fatJar', Jar) {
+    group = 'distribution'
+    description = 'Creates an executable JAR bundling all runtime dependencies.'
+    archiveBaseName.set('gameOfWar')
+    archiveClassifier.set('all')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with(tasks.named('jar').get())
+    manifest {
+        attributes('Main-Class': 'com.groovin101.gow.War')
+    }
+}
+

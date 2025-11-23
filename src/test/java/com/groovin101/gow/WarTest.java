@@ -1,6 +1,10 @@
 package com.groovin101.gow;
 
-import com.groovin101.gow.model.*;
+import com.groovin101.gow.model.Card;
+import com.groovin101.gow.model.Dealer;
+import com.groovin101.gow.model.DeckExtended;
+import com.groovin101.gow.model.DeckImpl;
+import com.groovin101.gow.model.Player;
 import com.groovin101.gow.test.utils.BaseTest;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,8 +14,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static junit.framework.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  */

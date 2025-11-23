@@ -1,102 +1,235 @@
 package com.groovin101.gow;
 
-import com.groovin101.gow.exception.*;
+import com.groovin101.gow.exception.IncorrectNumberOfArgumentsException;
+import com.groovin101.gow.exception.InvalidNumberOfPlayersException;
+import com.groovin101.gow.exception.InvalidNumberOfRanksException;
+import com.groovin101.gow.exception.InvalidNumberOfSuitsException;
+import com.groovin101.gow.exception.WarInitializationException;
 import com.groovin101.gow.model.DeckImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  */
 public class InputArguments {
 
-    private int numberOfPlayers = 0;
-    private int numberOfSuits = 0;
-    private int numberOfRanks = 0;
+    private static final int DEFAULT_NUMBER_OF_PLAYERS = 2;
+    private static final int DEFAULT_NUMBER_OF_SUITS = 4;
+    private static final int DEFAULT_NUMBER_OF_RANKS = 13;
 
-    /**
-     * Args should be specified in the following order:
-     *  1) number of players
-     *  2) number of suits
-     *  3) number of ranks
-     *
-     *  If no arguments are supplied, a default configuration for standard war is assumed using 2 players and a 52 card
-     *  deck.
-     *
-     * @param args
-     * @throws WarInitializationException
-     */
+    private int numberOfPlayers;
+    private int numberOfSuits;
+    private int numberOfRanks;
+    private boolean helpRequested;
+    private boolean exceptionReportingEnabled;
+
+    private boolean playersExplicitlySet;
+    private boolean suitsExplicitlySet;
+    private boolean ranksExplicitlySet;
+
     public InputArguments(String[] args) throws WarInitializationException {
 
-        args = removeDashEArgument(args);
-
-        if (args.length == 0) {
-            assignDefaultValues();
+        assignDefaultValues();
+        parseArguments(args == null ? new String[0] : args);
+        if (!helpRequested) {
+            validateConfiguration();
         }
-        else if (args.length != 3) {
-            throw new IncorrectNumberOfArgumentsException("Incorrect number of arguments provided: " + args.length);
+    }
+
+    private void parseArguments(String[] args) throws WarInitializationException {
+
+        List<String> positionalArgs = new ArrayList<String>();
+
+        for (int i = 0; i < args.length; i++) {
+            String token = sanitize(args[i]);
+            if (token == null) {
+                continue;
+            }
+
+            if (isExceptionFlag(token)) {
+                exceptionReportingEnabled = true;
+                continue;
+            }
+            if (isHelpFlag(token)) {
+                helpRequested = true;
+                continue;
+            }
+
+            if (token.startsWith("--")) {
+                i = handleLongOption(token, args, i);
+                continue;
+            }
+
+            if (token.startsWith("-") && token.length() > 1) {
+                i = handleShortOption(token, args, i);
+                continue;
+            }
+
+            positionalArgs.add(token);
+        }
+
+        applyPositionalArguments(positionalArgs);
+    }
+
+    private int handleLongOption(String token, String[] args, int currentIndex) throws WarInitializationException {
+
+        String[] parts = token.split("=", 2);
+        String optionName = parts[0].toLowerCase(Locale.ENGLISH);
+        String value = parts.length > 1 ? sanitize(parts[1]) : null;
+        boolean consumedNextValue = false;
+
+        if ("--players".equals(optionName)) {
+            String playersValue = resolveOptionValue(optionName, value, args, currentIndex);
+            consumedNextValue = value == null;
+            setPlayers(playersValue);
+        }
+        else if ("--suits".equals(optionName)) {
+            String suitsValue = resolveOptionValue(optionName, value, args, currentIndex);
+            consumedNextValue = value == null;
+            setSuits(suitsValue);
+        }
+        else if ("--ranks".equals(optionName)) {
+            String ranksValue = resolveOptionValue(optionName, value, args, currentIndex);
+            consumedNextValue = value == null;
+            setRanks(ranksValue);
+        }
+        else if ("--exception-reporting".equals(optionName)) {
+            exceptionReportingEnabled = true;
+        }
+        else if ("--help".equals(optionName) || "--usage".equals(optionName)) {
+            helpRequested = true;
         }
         else {
-            parseValues(args);
-            if (numberOfRanks < 1) {
-                throw new InvalidNumberOfRanksException("Not enough ranks were specified");
-            }
-            if (numberOfRanks > 13) {
-                throw new InvalidNumberOfRanksException("Too many ranks were specified");
-            }
-            if (numberOfSuits < 1) {
-                throw new InvalidNumberOfSuitsException("Not enough suits were specified");
-            }
-            if (numberOfSuits > 4) {
-                throw new InvalidNumberOfSuitsException("Too many suits were specified");
-            }
-            if (numberOfPlayersExceedsNumberOfCards(numberOfPlayers, numberOfSuits, numberOfRanks)) {
-                throw new InvalidNumberOfPlayersException("Number of players should not exceed number of cards");
-            }
-            if (numberOfPlayers < 2) {
-                throw new InvalidNumberOfPlayersException("Not enough players were specified");
-            }
+            throw new IncorrectNumberOfArgumentsException("Unknown argument: " + token);
+        }
+
+        return consumedNextValue ? currentIndex + 1 : currentIndex;
+    }
+
+    private int handleShortOption(String token, String[] args, int currentIndex) throws WarInitializationException {
+
+        String normalized = token.toLowerCase(Locale.ENGLISH);
+
+        if ("-p".equals(normalized)) {
+            setPlayers(requireNextValue("-p", args, currentIndex));
+            return currentIndex + 1;
+        }
+        if (normalized.startsWith("-p") && normalized.length() > 2) {
+            setPlayers(normalized.substring(2));
+            return currentIndex;
+        }
+
+        if ("-s".equals(normalized)) {
+            setSuits(requireNextValue("-s", args, currentIndex));
+            return currentIndex + 1;
+        }
+        if (normalized.startsWith("-s") && normalized.length() > 2) {
+            setSuits(normalized.substring(2));
+            return currentIndex;
+        }
+
+        if ("-r".equals(normalized)) {
+            setRanks(requireNextValue("-r", args, currentIndex));
+            return currentIndex + 1;
+        }
+        if (normalized.startsWith("-r") && normalized.length() > 2) {
+            setRanks(normalized.substring(2));
+            return currentIndex;
+        }
+
+        if ("-usage".equals(normalized)) {
+            helpRequested = true;
+            return currentIndex;
+        }
+
+        throw new IncorrectNumberOfArgumentsException("Unknown argument: " + token);
+    }
+
+    private String resolveOptionValue(String optionName, String providedValue, String[] args, int currentIndex)
+            throws IncorrectNumberOfArgumentsException {
+
+        if (providedValue != null && providedValue.length() > 0) {
+            return providedValue;
+        }
+        return requireNextValue(optionName, args, currentIndex);
+    }
+
+    private String requireNextValue(String optionName, String[] args, int currentIndex)
+            throws IncorrectNumberOfArgumentsException {
+
+        if (currentIndex + 1 >= args.length) {
+            throw new IncorrectNumberOfArgumentsException("Missing value for option: " + optionName);
+        }
+        return sanitize(args[currentIndex + 1]);
+    }
+
+    private void applyPositionalArguments(List<String> positionalArgs) throws WarInitializationException {
+
+        if (positionalArgs.isEmpty()) {
+            return;
+        }
+
+        int index = 0;
+        if (!playersExplicitlySet && index < positionalArgs.size()) {
+            setPlayers(positionalArgs.get(index++));
+        }
+        if (!suitsExplicitlySet && index < positionalArgs.size()) {
+            setSuits(positionalArgs.get(index++));
+        }
+        if (!ranksExplicitlySet && index < positionalArgs.size()) {
+            setRanks(positionalArgs.get(index++));
+        }
+
+        if (index < positionalArgs.size()) {
+            throw new IncorrectNumberOfArgumentsException("Too many positional arguments provided: " + positionalArgs.size());
         }
     }
 
-    private static List<String> argsAsList(String[] args) {
-        List<String> argsAsList = new ArrayList<String>();
-        Collections.addAll(argsAsList, args);
-        return argsAsList;
+    private void setPlayers(String value) throws InvalidNumberOfPlayersException {
+        numberOfPlayers = parsePlayer(value);
+        playersExplicitlySet = true;
     }
 
-    public static boolean isTheExceptionReportingFlagPresent(String[] args) {
-        return argsAsList(args).contains("-e");
+    private void setSuits(String value) throws InvalidNumberOfSuitsException {
+        numberOfSuits = parseSuit(value);
+        suitsExplicitlySet = true;
     }
 
-    String[] removeDashEArgument(String[] argsToModify) {
+    private void setRanks(String value) throws InvalidNumberOfRanksException {
+        numberOfRanks = parseRank(value);
+        ranksExplicitlySet = true;
+    }
 
-        List<String> argsToModifyAsList = new ArrayList<String>();
-        Collections.addAll(argsToModifyAsList, argsToModify);
+    private void validateConfiguration() throws WarInitializationException {
 
-        Iterator<String> it = argsToModifyAsList.iterator();
-        while (it.hasNext()) {
-            String arg = it.next();
-            if (arg.equals("-e")) {
-                it.remove();
-            }
+        if (numberOfRanks < 1) {
+            throw new InvalidNumberOfRanksException("Not enough ranks were specified");
         }
-        return argsToModifyAsList.toArray(new String[argsToModifyAsList.size()]);
+        if (numberOfRanks > 13) {
+            throw new InvalidNumberOfRanksException("Too many ranks were specified");
+        }
+        if (numberOfSuits < 1) {
+            throw new InvalidNumberOfSuitsException("Not enough suits were specified");
+        }
+        if (numberOfSuits > 4) {
+            throw new InvalidNumberOfSuitsException("Too many suits were specified");
+        }
+        if (numberOfPlayersExceedsNumberOfCards(numberOfPlayers, numberOfSuits, numberOfRanks)) {
+            throw new InvalidNumberOfPlayersException("Number of players should not exceed number of cards");
+        }
+        if (numberOfPlayers < 2) {
+            throw new InvalidNumberOfPlayersException("Not enough players were specified");
+        }
     }
 
     private void assignDefaultValues() {
-        numberOfPlayers = 2;
-        numberOfRanks = 13;
-        numberOfSuits = 4;
-    }
-
-    void parseValues(String[] args) throws WarInitializationException {
-
-        numberOfPlayers = parsePlayer(args[0]);
-        numberOfSuits = parseSuit(args[1]);
-        numberOfRanks = parseRank(args[2]);
+        numberOfPlayers = DEFAULT_NUMBER_OF_PLAYERS;
+        numberOfSuits = DEFAULT_NUMBER_OF_SUITS;
+        numberOfRanks = DEFAULT_NUMBER_OF_RANKS;
     }
 
     private int parsePlayer(String arg) throws InvalidNumberOfPlayersException {
@@ -131,6 +264,14 @@ public class InputArguments {
         return Integer.parseInt(intAsString.trim());
     }
 
+    private String sanitize(String raw) {
+        if (raw == null) {
+            return null;
+        }
+        String trimmed = raw.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
+
     public String buildGameIsStartingMessage() {
         StringBuilder startupMessage = new StringBuilder("\n\n");
         startupMessage.append(indentingSpaces()).append("*********************************************************************").append("\n");
@@ -149,21 +290,27 @@ public class InputArguments {
         errorMessage.append(buildUsageMessage());
         errorMessage.append("\n");
         if (includeMoreInformationMessage) {
-            errorMessage.append(indentingSpaces()).append("For more information, call with a -e").append("\n");
+            errorMessage.append(indentingSpaces()).append("For more information, call with a -e or --exception-reporting flag").append("\n");
         }
         errorMessage.append(indentingSpaces()).append("*********************************************************************").append("\n");
         errorMessage.append("\n");
         return errorMessage.toString();
     }
 
-    private static String indentingSpaces() {
-        return "   * ";
+    public static String buildUsageMessage() {
+        StringBuilder usageMessage = new StringBuilder("");
+        usageMessage.append(indentingSpaces()).append("usage: war [options]").append("\n");
+        usageMessage.append(indentingSpaces()).append("  --players, -p <int>        Number of players (default 2)").append("\n");
+        usageMessage.append(indentingSpaces()).append("  --suits, -s <int>          Number of suits (1-4, default 4)").append("\n");
+        usageMessage.append(indentingSpaces()).append("  --ranks, -r <int>          Number of ranks (1-13, default 13)").append("\n");
+        usageMessage.append(indentingSpaces()).append("  -e, --exception-reporting  Show detailed exceptions").append("\n");
+        usageMessage.append(indentingSpaces()).append("  --help | --usage | -usage  Display this help message").append("\n");
+        usageMessage.append(indentingSpaces()).append("Positional arguments (legacy): players suits ranks").append("\n");
+        return usageMessage.toString();
     }
 
-    private static String buildUsageMessage() {
-        StringBuilder usageMessage = new StringBuilder("");
-        usageMessage.append(indentingSpaces()).append("usage: war numberOfPlayers numberOfSuits numberOfRanks [-e showExceptions]");
-        return usageMessage.toString();
+    private static String indentingSpaces() {
+        return "   * ";
     }
 
     int getNumberOfPlayers() {
@@ -178,7 +325,58 @@ public class InputArguments {
         return numberOfSuits;
     }
 
+    boolean shouldShowUsage() {
+        return helpRequested;
+    }
+
+    boolean isExceptionReportingEnabled() {
+        return exceptionReportingEnabled;
+    }
+
     boolean numberOfPlayersExceedsNumberOfCards(int numberOfPlayers, int numberOfSuits, int numberOfRanks) {
         return numberOfPlayers > new DeckImpl(numberOfSuits, numberOfRanks).getTotalCardCount();
+    }
+
+    public static boolean isTheExceptionReportingFlagPresent(String[] args) {
+        if (args == null) {
+            return false;
+        }
+        for (String arg : args) {
+            if (isExceptionFlag(arg)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    String[] removeDashEArgument(String[] argsToModify) {
+
+        List<String> argsToModifyAsList = new ArrayList<String>();
+        Collections.addAll(argsToModifyAsList, argsToModify);
+
+        Iterator<String> it = argsToModifyAsList.iterator();
+        while (it.hasNext()) {
+            String arg = sanitize(it.next());
+            if (isExceptionFlag(arg)) {
+                it.remove();
+            }
+        }
+        return argsToModifyAsList.toArray(new String[argsToModifyAsList.size()]);
+    }
+
+    private static boolean isExceptionFlag(String token) {
+        if (token == null) {
+            return false;
+        }
+        String normalized = token.toLowerCase(Locale.ENGLISH);
+        return "-e".equals(normalized) || "--exception-reporting".equals(normalized);
+    }
+
+    private static boolean isHelpFlag(String token) {
+        if (token == null) {
+            return false;
+        }
+        String normalized = token.toLowerCase(Locale.ENGLISH);
+        return "--help".equals(normalized) || "-help".equals(normalized) || "--usage".equals(normalized) || "-usage".equals(normalized) || "-h".equals(normalized);
     }
 }

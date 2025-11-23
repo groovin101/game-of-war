@@ -1,3 +1,10 @@
 .idea/workspace.xml
 .idea/libraries
 target
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+*.iml
