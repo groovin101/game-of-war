@@ -62,7 +62,7 @@ public class GameService {
             game.divySpoilsToWinner(winner);
             game.removePlayersWithNoCards();
 
-            // Record round result
+            // Record round result (capture before clearing cards)
             RoundResultDto roundResult = new RoundResultDto(
                     instance.getRoundHistory().size() + 1,
                     buildPlayerStates(game.getPlayers()),
@@ -71,7 +71,13 @@ public class GameService {
             );
             instance.getRoundHistory().add(roundResult);
 
+            // Build game state BEFORE clearing cards so frontend can see them
+            GameStateDto gameState = buildGameState(gameId, instance);
+            
+            // Now clear cards for next round
             game.clearCardsFromPreviousRound();
+            
+            return gameState;
         }
 
         return buildGameState(gameId, instance);
@@ -193,4 +199,5 @@ public class GameService {
         }
     }
 }
+
 

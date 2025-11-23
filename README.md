@@ -118,10 +118,10 @@ The web interface provides a modern, interactive way to play Game of War.
 ### Features
 - 🎨 Beautiful, responsive design that works on desktop and mobile
 - ⚡ Real-time game updates
-- 🎯 Visual card display with suit symbols
+- 🎴 Visual playing card images (real card graphics!)
 - 📊 Round history tracking
 - 🤖 Auto-play mode for automatic game progression
-- 🎴 Configurable game parameters (players, suits, ranks)
+- ⚙️ Configurable game parameters (players, suits, ranks)
 
 ### Starting the Web Server
 

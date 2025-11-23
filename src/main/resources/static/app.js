@@ -168,8 +168,17 @@ function createPlayerCard(player, gameState) {
         card.classList.add('eliminated');
     }
 
+    // Highlight if this player won the overall game
     if (gameState.gameOver && gameState.winner && gameState.winner.name === player.name) {
         card.classList.add('winner');
+    }
+
+    // Highlight if this player won the last round
+    if (gameState.roundHistory && gameState.roundHistory.length > 0) {
+        const lastRound = gameState.roundHistory[gameState.roundHistory.length - 1];
+        if (lastRound.winnerName === player.name) {
+            card.classList.add('round-winner');
+        }
     }
 
     const nameDiv = document.createElement('div');
@@ -195,7 +204,7 @@ function createPlayerCard(player, gameState) {
                 cardElement.classList.add('significant');
             }
             
-            cardElement.textContent = formatCard(playedCard);
+            cardElement.innerHTML = formatCard(playedCard);
             cardsDiv.appendChild(cardElement);
         });
     }
@@ -207,26 +216,32 @@ function createPlayerCard(player, gameState) {
     return card;
 }
 
-// Format a card for display
+// Format a card for display as an image
 function formatCard(card) {
-    const suitSymbols = {
-        'HEART': '♥',
-        'DIAMOND': '♦',
-        'CLUB': '♣',
-        'SPADE': '♠'
+    // Map backend rank names to card file names
+    const rankMap = {
+        'ACE': 'A', 'KING': 'K', 'QUEEN': 'Q', 'JACK': 'J',
+        'TEN': '10', 'NINE': '9', 'EIGHT': '8', 'SEVEN': '7',
+        'SIX': '6', 'FIVE': '5', 'FOUR': '4', 'THREE': '3', 'TWO': '2'
     };
-
-    const rankSymbols = {
-        'ACE': 'A',
-        'KING': 'K',
-        'QUEEN': 'Q',
-        'JACK': 'J'
+    
+    // Map backend suit names to card image codes
+    const suitMap = {
+        'HEART': 'H',
+        'DIAMOND': 'D',
+        'CLUB': 'C',
+        'SPADE': 'S'
     };
-
-    const rank = rankSymbols[card.rank] || card.rank;
-    const suit = suitSymbols[card.suit] || card.suit;
-
-    return `${rank}${suit}`;
+    
+    const rank = rankMap[card.rank] || card.rank;
+    const suitCode = suitMap[card.suit] || card.suit.charAt(0).toUpperCase();
+    
+    // Deck of Cards API format: rank + suit code (e.g., "AS" for Ace of Spades)
+    const cardUrl = `https://deckofcardsapi.com/static/img/${rank}${suitCode}.png`;
+    
+    console.log('Card:', card.rank, card.suit, '-> URL:', cardUrl);
+    
+    return `<img src="${cardUrl}" alt="${card.display}" class="playing-card" loading="lazy">`;
 }
 
 // Update round history
@@ -303,4 +318,5 @@ function resetToSetup() {
 
 // Initialize the app
 console.log('Game of War - Web Interface Loaded');
+
 
