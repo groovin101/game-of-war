@@ -245,6 +245,112 @@ game-of-war/
 
 ---
 
+## Documentation Standards
+
+### Guiding Principles
+1. **Clarity and accuracy are the top priority** - users must understand what, why, and how
+2. **Conciseness without sacrificing meaning** - every word must serve a purpose
+3. **Scannable structure** - use headers, bullets, and formatting to aid quick reading
+
+### Writing Guidelines
+
+**Be Concise:**
+- Remove redundant phrases ("please note", "it is important that", "you should")
+- Avoid repeating information that's obvious from context
+- Use bullets for lists, not verbose paragraphs
+- Combine related points instead of listing separately
+- Remove step-by-step details from summaries (keep in detailed sections)
+
+**Be Clear:**
+- Start with the most important information
+- Use specific terms over vague ones ("runs on every push" not "runs automatically sometimes")
+- Include file paths when referencing files (`.github/workflows/ci.yml`)
+- State what something does AND what it doesn't do when clarifying intent
+- Use examples for complex concepts
+
+**Be Accurate:**
+- Verify technical details (versions, commands, paths)
+- Test all code examples before documenting
+- Update docs when code changes
+- Use exact terminology from the codebase
+
+### Structure Standards
+
+**Headers:**
+- Use descriptive headers that answer "what is this section about?"
+- Keep hierarchy shallow (prefer 2-3 levels max)
+
+**Code Examples:**
+- Include only essential code, not full implementations
+- Add brief inline comments for non-obvious steps
+- Show expected output when relevant
+
+**Configuration/Setup Instructions:**
+- List prerequisites first
+- Number steps only when order matters
+- Use checkboxes (✅/❌) to show status or requirements
+- Link to detailed guides instead of repeating content
+
+**README files:**
+- Quick Start must be in first 1-2 screens
+- Core functionality before advanced topics
+- Link to specialized docs rather than inline everything
+
+### File-Specific Guidelines
+
+**Workflow files (`.github/workflows/*.yml`):**
+- Include header comment block explaining: purpose, when it runs, what it does, setup requirements
+- Keep inline comments brief - explain why, not what
+- Reference related documentation files
+
+**Markdown documentation:**
+- Start with 1-2 sentence summary
+- Use tables for comparing options or listing commands
+- Include "Next Steps" or "See Also" sections for navigation
+- Maximum 200 lines before considering split into multiple files
+
+**Code comments:**
+- Explain intent and context, not mechanics
+- Document assumptions and edge cases
+- Keep method/class javadocs focused on contract and usage
+- Avoid redundant comments that restate the code
+
+### Examples
+
+**❌ Too Verbose:**
+```
+This workflow will automatically run on every single push that you make to any 
+branch in the repository and it will also run on pull requests. It is important 
+to note that this does not deploy anything to AWS.
+```
+
+**✅ Concise and Clear:**
+```
+Runs automatically on every push and pull request. Does not deploy to AWS.
+```
+
+**❌ Missing Key Info:**
+```
+The build script compiles everything.
+```
+
+**✅ Clear and Complete:**
+```
+Builds application with Gradle, runs all tests, creates JAR at build/libs/
+```
+
+### Review Checklist
+
+Before finalizing documentation:
+- [ ] Can each sentence be shortened without losing meaning?
+- [ ] Is the most important info in the first paragraph?
+- [ ] Are file/command references accurate and tested?
+- [ ] Would a new developer understand this without asking questions?
+- [ ] Are setup instructions complete and in order?
+- [ ] Is navigation clear (links to related docs)?
+
+---
+
 **Last Updated**: This file should be updated whenever:
 - Dependencies change (build.gradle)
 - Project structure changes

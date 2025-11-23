@@ -162,6 +162,16 @@ curl http://localhost:5000/api/games/{GAME_ID_HERE}
 
 ---
 
+## GitHub Actions
+
+### ✅ CI (Automatic) - `.github/workflows/ci.yml`
+Builds and tests on every push. No setup required.
+
+### 🚀 AWS Deploy (Manual) - `.github/workflows/aws-deploy.yml`
+Only runs when manually triggered. Requires setup. See **[GITHUB-ACTIONS.md](GITHUB-ACTIONS.md)**.
+
+---
+
 ## Deploying to AWS (Optional)
 
 Once you're happy with the local version, deploy to AWS:

@@ -54,6 +54,12 @@ That's it! 🎉 The web interface will load with an interactive game board.
 ### Want to deploy to AWS?
 See **[deploy-aws.md](deploy-aws.md)** for complete AWS deployment instructions (Elastic Beanstalk, ECS, App Runner, and more).
 
+### GitHub Actions
+Automated CI (`.github/workflows/ci.yml`) builds and tests on every push. See **[GITHUB-ACTIONS.md](GITHUB-ACTIONS.md)** for:
+- CI setup (automatic, no config needed)
+- AWS deployment via `aws-deploy.yml` (manual only, requires setup)
+- Required secrets and cost estimates
+
 ### Troubleshooting
 
 **Port 5000 already in use?**
@@ -277,6 +283,14 @@ src/
 
 ## ☁️ Deployment
 
+### GitHub Actions CI/CD
+
+✅ **CI (`.github/workflows/ci.yml`)** - Automatic builds and tests (no setup)
+
+🚀 **AWS Deploy (`.github/workflows/aws-deploy.yml`)** - Manual deployment (requires setup)
+
+📖 See **[GITHUB-ACTIONS.md](GITHUB-ACTIONS.md)** for full instructions
+
 ### Deploy to AWS
 
 This application is **production-ready** and can be deployed to AWS in multiple ways.
@@ -286,7 +300,6 @@ This application is **production-ready** and can be deployed to AWS in multiple 
 - AWS ECS with Docker (containerized deployment)
 - AWS App Runner (fully managed containers)
 - Cost estimates and comparisons
-- CI/CD setup with GitHub Actions
 
 ### Docker Deployment
 

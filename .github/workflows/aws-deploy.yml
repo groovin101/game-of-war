@@ -1,11 +1,7 @@
 name: Deploy to AWS
 
 on:
-  push:
-    branches:
-      - main
-      - web-interface
-  workflow_dispatch:
+  workflow_dispatch:  # Only runs when manually triggered
 
 jobs:
   deploy:
@@ -25,9 +21,13 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
       
+      # AWS deployment step requires secrets to be configured:
+      # 1. Go to repository Settings > Secrets and variables > Actions
+      # 2. Add: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+      # 3. Ensure AWS Elastic Beanstalk app and environment are created
+      
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
-        if: github.ref == 'refs/heads/main'
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

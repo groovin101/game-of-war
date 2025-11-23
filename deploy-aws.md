@@ -200,6 +200,33 @@ For production, enable HTTPS:
 4. Set up monitoring and alerts
 5. Implement caching with ElastiCache if needed
 
+## GitHub Actions CI/CD
+
+### Automated CI - `.github/workflows/ci.yml`
+Runs automatically on every push: builds, tests, reports failures. No AWS or secrets required.
+
+### Manual AWS Deployment - `.github/workflows/aws-deploy.yml`
+To enable manual AWS deployment:
+
+1. **Configure AWS Secrets** in your repository:
+   - Go to: `Settings` > `Secrets and variables` > `Actions`
+   - Add secrets:
+     - `AWS_ACCESS_KEY_ID`
+     - `AWS_SECRET_ACCESS_KEY`
+
+2. **Create AWS resources** first:
+   ```bash
+   eb init -p "Corretto 21" game-of-war
+   eb create game-of-war-env
+   ```
+
+3. **Trigger deployment manually**:
+   - Go to: `Actions` > `Deploy to AWS`
+   - Click `Run workflow`
+   - Select branch and run
+
+**Note:** AWS deployment does NOT run automatically on push. It must be triggered manually from the GitHub Actions UI to prevent accidental deployments and AWS charges.
+
 ## Support
 
 For issues, check:
