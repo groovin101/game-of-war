@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '3.4.0'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.groovin101'
@@ -15,11 +17,16 @@ repositories {
 }
 
 dependencies {
+    // Spring Boot dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    
     // Production dependencies
     implementation 'org.apache.commons:commons-lang3:3.1'
     implementation 'commons-collections:commons-collections:3.2.1'
     
     // Test dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-core:5.11.0'
 }
@@ -41,27 +48,30 @@ test {
     outputs.upToDateWhen { false }
 }
 
-// JAR task configuration
+// JAR task configuration - Spring Boot will create an executable JAR
 jar {
     archiveBaseName = 'gameOfWar'
-    manifest {
-        attributes(
-            'Main-Class': 'com.groovin101.gow.War'
-        )
-    }
+    enabled = false
 }
 
-// Create a runnable JAR with dependencies (optional, for convenience)
+// Spring Boot JAR with embedded server
+bootJar {
+    archiveBaseName = 'gameOfWar'
+    archiveVersion = '1.0-SNAPSHOT'
+    mainClass = 'com.groovin101.gow.GameOfWarApplication'
+}
+
+// Create a runnable JAR with dependencies for command-line usage
 tasks.register('fatJar', Jar) {
     group = 'distribution'
-    description = 'Creates an executable JAR bundling all runtime dependencies.'
-    archiveBaseName.set('gameOfWar')
+    description = 'Creates an executable JAR for command-line War game (non-web).'
+    archiveBaseName.set('gameOfWar-cli')
     archiveClassifier.set('all')
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    with(tasks.named('jar').get())
+    from(sourceSets.main.output)
     manifest {
         attributes('Main-Class': 'com.groovin101.gow.War')
     }

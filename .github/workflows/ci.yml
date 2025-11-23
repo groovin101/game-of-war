@@ -1,0 +1,59 @@
+# ============================================================================
+# Continuous Integration (CI) - Automatic Build & Test
+# ============================================================================
+# Runs automatically on every push and pull request
+# 
+# What it does:
+#   - Builds the application with Gradle
+#   - Runs all unit tests
+#   - Uploads test reports if tests fail
+#
+# Important:
+#   - Does NOT deploy to AWS
+#   - Does NOT require secrets
+#   - Does NOT incur costs
+#   - No setup required - works out of the box!
+#
+# For AWS deployment, see GITHUB-ACTIONS.md
+# ============================================================================
+
+name: CI Build and Test
+
+on:
+  push:
+    branches:
+      - main
+      - web-interface
+      - '**'  # Run on all branches
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+      
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      - name: Build and test with Gradle
+        run: ./gradlew build
+      
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-reports
+          path: build/reports/
+

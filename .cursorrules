@@ -8,15 +8,21 @@ This is a Java-based card game implementation of "War" - a simple card game wher
 ### Core Technologies
 - **Language**: Java 21
 - **Build Tool**: Gradle (build.gradle, settings.gradle)
+- **Web Framework**: Spring Boot 3.4.0
 - **Package Manager**: Gradle dependencies (Maven Central)
 - **IDE**: IntelliJ IDEA (gameOfWar.iml, .idea/ directory)
-- **CI/CD**: Travis CI (.travis.yml)
+- **CI/CD**: Travis CI (.travis.yml), GitHub Actions (.github/workflows/)
 - **Gradle Wrapper**: gradlew.bat (Windows), gradlew (Unix)
+- **Containerization**: Docker (Dockerfile, .dockerignore)
 
 ### Dependencies
+- **Spring Boot 3.4.0**: 
+  - spring-boot-starter-web (REST API)
+  - spring-boot-starter-actuator (Health checks, metrics)
 - **Testing**: 
   - JUnit 4.13.2 (test scope)
   - Mockito 5.11.0 (test scope)
+  - spring-boot-starter-test (Spring Boot testing)
 - **Utilities**:
   - Apache Commons Lang3 3.1
   - Commons Collections 3.2.1
@@ -24,6 +30,12 @@ This is a Java-based card game implementation of "War" - a simple card game wher
 ### Java Version
 - Java 21 (source and target compatibility)
 - Source encoding: UTF-8
+
+### Frontend
+- **HTML5** with semantic markup
+- **CSS3** with CSS Variables and Flexbox/Grid
+- **Vanilla JavaScript** (ES6+) for interactivity
+- **REST API** integration with Fetch API
 
 ## Project Structure
 
@@ -33,40 +45,65 @@ com.groovin101.gow
 ├── exception/          # Custom exception classes
 ├── model/              # Domain models (Card, Player, Deck, Dealer, etc.)
 ├── rules/              # Game rule implementations (RuleChain pattern)
-└── War.java           # Main game class and entry point
+├── web/                # Web layer (Spring Boot)
+│   ├── controller/     # REST API controllers
+│   ├── service/        # Business logic layer
+│   └── dto/            # Data Transfer Objects
+├── War.java           # CLI game class and entry point
+└── GameOfWarApplication.java  # Spring Boot application entry point
 ```
 
 ### Directory Layout
 ```
 game-of-war/
 ├── src/
-│   ├── main/java/     # Production code
+│   ├── main/
+│   │   ├── java/      # Production code
+│   │   └── resources/
+│   │       ├── static/       # Web UI (HTML, CSS, JS)
+│   │       └── application.properties
 │   └── test/java/     # Test code
 ├── build/             # Build output (compiled classes, reports)
 ├── gradle/
 │   └── wrapper/       # Gradle wrapper files
+├── .ebextensions/     # AWS Elastic Beanstalk configuration
+├── .github/
+│   └── workflows/     # GitHub Actions CI/CD
 ├── build.gradle       # Gradle build configuration
 ├── settings.gradle    # Gradle project settings
 ├── gradle.properties  # Gradle properties
 ├── gradlew.bat        # Gradle wrapper (Windows)
 ├── gradlew            # Gradle wrapper (Unix)
 ├── gameOfWar.iml     # IntelliJ module file
+├── Dockerfile         # Docker container definition
+├── Procfile           # Heroku/AWS deployment
+├── start-web.bat      # Windows startup script
+├── start-web.sh       # Unix startup script
 └── .travis.yml       # CI/CD configuration
 ```
 
 ## Architecture Patterns
 
-### Domain Models
+### Domain Models (Core Game Logic)
 - **Card**: Represents a playing card with Rank and Suit
 - **Player**: Manages player state, deck, and card playing logic
 - **Deck**: Card collection with creation, shuffling, and dealing capabilities
 - **Dealer**: Handles card distribution to players
 - **War**: Main game orchestrator
 
+### Web Layer (Spring Boot)
+- **Controllers**: REST API endpoints (`GameController`, `WebController`)
+- **Services**: Business logic layer (`GameService` manages game instances)
+- **DTOs**: Data Transfer Objects for API contracts (`GameStateDto`, `PlayerStateDto`, `CardDto`, etc.)
+
 ### Design Patterns
+- **Service Layer Pattern**: `GameService` manages game instances and orchestrates game logic
+- **DTO Pattern**: Clean separation between domain models and API contracts
+- **Repository Pattern**: In-memory storage with `ConcurrentHashMap` for thread-safe game management
 - **Rule Chain Pattern**: Used in `rules/` package (RuleChain interface exists but appears to be in early stages)
 - **Exception Hierarchy**: Custom exceptions extend base exception types
 - **Factory Pattern**: InputArguments creates game configuration from command-line args
+- **MVC Pattern**: Controllers handle requests, Services contain business logic, Models represent data
 
 ## Code Conventions
 
@@ -93,16 +130,24 @@ game-of-war/
   - `InvalidUsernameException`
   - `NoCardsToPlayException`
 
-## Application Entry Point
+## Application Entry Points
 
-### Main Method
+### CLI Mode: War.main(String[] args)
 - Location: `War.main(String[] args)`
 - Command-line arguments:
   - Named options: `--players/-p`, `--suits/-s`, `--ranks/-r` (defaults: 2 players, 4 suits, 13 ranks)
   - Flags: `-e`/`--exception-reporting` for verbose errors, `--help`/`--usage` to print usage
   - Legacy positional order (`players suits ranks`) is still accepted but optional
 
-### Game Flow
+### Web Mode: GameOfWarApplication.main(String[] args)
+- Location: `GameOfWarApplication.main(String[] args)`
+- Spring Boot application that starts embedded Tomcat server
+- Default port: 5000 (configurable in application.properties)
+- Serves web UI at `/`
+- Exposes REST API at `/api/games`
+- Health checks at `/actuator/health`
+
+### Game Flow (CLI)
 1. Parse command-line arguments via `InputArguments`
 2. Initialize game with `War` constructor
 3. Create and shuffle deck
@@ -112,6 +157,15 @@ game-of-war/
    - War phase (if tie)
    - Distribute winnings
 6. Announce winner
+
+### Game Flow (Web)
+1. User accesses web UI at `http://localhost:5000`
+2. User configures game parameters in UI
+3. JavaScript sends POST to `/api/games` to create game
+4. User clicks "Play Round" → POST to `/api/games/{id}/play-round`
+5. Game state returned as JSON
+6. UI updates to show cards played, winners, etc.
+7. Process repeats until game over
 
 ## Key Features
 
@@ -131,16 +185,27 @@ game-of-war/
 
 ## Build & Run
 
-### Gradle Commands
-- Build: `.\gradlew.bat build` (Windows) or `./gradlew build` (Unix)
-- Test: `.\gradlew.bat test` (Windows) or `./gradlew test` (Unix)
-- Clean: `.\gradlew.bat clean` (Windows) or `./gradlew clean` (Unix)
-- Run: `java -cp build/classes/java/main com.groovin101.gow.War [args]`
-- Create fat JAR: `.\gradlew.bat fatJar` (creates gameOfWar-all.jar with dependencies)
+### Gradle Commands - Web Application
+- **Run web server**: `.\gradlew.bat bootRun` (Windows) or `./gradlew bootRun` (Unix)
+  - Starts Spring Boot application on port 5000
+  - Access web UI at `http://localhost:5000`
+- **Build Spring Boot JAR**: `.\gradlew.bat build` (creates `build/libs/gameOfWar-1.0-SNAPSHOT.jar`)
+- **Run Spring Boot JAR**: `java -jar build/libs/gameOfWar-1.0-SNAPSHOT.jar`
 
-### Travis CI
-- Language: Java
-- Build command: `./gradlew build`
+### Gradle Commands - CLI Application
+- **Build**: `.\gradlew.bat build` (Windows) or `./gradlew build` (Unix)
+- **Test**: `.\gradlew.bat test` (Windows) or `./gradlew test` (Unix)
+- **Clean**: `.\gradlew.bat clean` (Windows) or `./gradlew clean` (Unix)
+- **Run CLI**: `java -cp build/classes/java/main com.groovin101.gow.War [args]`
+- **Create CLI fat JAR**: `.\gradlew.bat fatJar` (creates `gameOfWar-cli-all.jar`)
+
+### Docker
+- **Build image**: `docker build -t game-of-war .`
+- **Run container**: `docker run -p 5000:5000 game-of-war`
+
+### CI/CD
+- **Travis CI**: `./gradlew build` (legacy)
+- **GitHub Actions**: Automated deployment to AWS (see `.github/workflows/aws-deploy.yml`)
 
 ## Development Guidelines
 
@@ -177,6 +242,112 @@ game-of-war/
 - Treat tests as first-class citizens: add/adjust tests with every code change and keep `gradlew test` green.
 - Match existing formatting, logging, and exception-handling conventions.
 - Guard against invalid states and edge cases without premature optimization.
+
+---
+
+## Documentation Standards
+
+### Guiding Principles
+1. **Clarity and accuracy are the top priority** - users must understand what, why, and how
+2. **Conciseness without sacrificing meaning** - every word must serve a purpose
+3. **Scannable structure** - use headers, bullets, and formatting to aid quick reading
+
+### Writing Guidelines
+
+**Be Concise:**
+- Remove redundant phrases ("please note", "it is important that", "you should")
+- Avoid repeating information that's obvious from context
+- Use bullets for lists, not verbose paragraphs
+- Combine related points instead of listing separately
+- Remove step-by-step details from summaries (keep in detailed sections)
+
+**Be Clear:**
+- Start with the most important information
+- Use specific terms over vague ones ("runs on every push" not "runs automatically sometimes")
+- Include file paths when referencing files (`.github/workflows/ci.yml`)
+- State what something does AND what it doesn't do when clarifying intent
+- Use examples for complex concepts
+
+**Be Accurate:**
+- Verify technical details (versions, commands, paths)
+- Test all code examples before documenting
+- Update docs when code changes
+- Use exact terminology from the codebase
+
+### Structure Standards
+
+**Headers:**
+- Use descriptive headers that answer "what is this section about?"
+- Keep hierarchy shallow (prefer 2-3 levels max)
+
+**Code Examples:**
+- Include only essential code, not full implementations
+- Add brief inline comments for non-obvious steps
+- Show expected output when relevant
+
+**Configuration/Setup Instructions:**
+- List prerequisites first
+- Number steps only when order matters
+- Use checkboxes (✅/❌) to show status or requirements
+- Link to detailed guides instead of repeating content
+
+**README files:**
+- Quick Start must be in first 1-2 screens
+- Core functionality before advanced topics
+- Link to specialized docs rather than inline everything
+
+### File-Specific Guidelines
+
+**Workflow files (`.github/workflows/*.yml`):**
+- Include header comment block explaining: purpose, when it runs, what it does, setup requirements
+- Keep inline comments brief - explain why, not what
+- Reference related documentation files
+
+**Markdown documentation:**
+- Start with 1-2 sentence summary
+- Use tables for comparing options or listing commands
+- Include "Next Steps" or "See Also" sections for navigation
+- Maximum 200 lines before considering split into multiple files
+
+**Code comments:**
+- Explain intent and context, not mechanics
+- Document assumptions and edge cases
+- Keep method/class javadocs focused on contract and usage
+- Avoid redundant comments that restate the code
+
+### Examples
+
+**❌ Too Verbose:**
+```
+This workflow will automatically run on every single push that you make to any 
+branch in the repository and it will also run on pull requests. It is important 
+to note that this does not deploy anything to AWS.
+```
+
+**✅ Concise and Clear:**
+```
+Runs automatically on every push and pull request. Does not deploy to AWS.
+```
+
+**❌ Missing Key Info:**
+```
+The build script compiles everything.
+```
+
+**✅ Clear and Complete:**
+```
+Builds application with Gradle, runs all tests, creates JAR at build/libs/
+```
+
+### Review Checklist
+
+Before finalizing documentation:
+- [ ] Can each sentence be shortened without losing meaning?
+- [ ] Is the most important info in the first paragraph?
+- [ ] Are file/command references accurate and tested?
+- [ ] Would a new developer understand this without asking questions?
+- [ ] Are setup instructions complete and in order?
+- [ ] Is navigation clear (links to related docs)?
 
 ---
 
