@@ -246,12 +246,10 @@ function formatCard(card) {
     const rank = rankMap[card.rank] || card.rank;
     const suitCode = suitMap[card.suit] || card.suit.charAt(0).toUpperCase();
     
-    // Deck of Cards API format: rank + suit code (e.g., "AS" for Ace of Spades)
-    const cardUrl = `https://deckofcardsapi.com/static/img/${rank}${suitCode}.png`;
+    // Use locally hosted card images for instant loading
+    const cardUrl = `/cards/${rank}${suitCode}.png`;
     
-    console.log('Card:', card.rank, card.suit, '-> URL:', cardUrl);
-    
-    return `<img src="${cardUrl}" alt="${card.display}" class="playing-card" loading="lazy">`;
+    return `<img src="${cardUrl}" alt="${card.display}" class="playing-card">`;
 }
 
 // Update round history
