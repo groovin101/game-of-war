@@ -98,9 +98,9 @@ game-of-war/
 ### Main Method
 - Location: `War.main(String[] args)`
 - Command-line arguments:
-  - Format: `numberOfPlayers numberOfSuits numberOfRanks [-e]`
-  - `-e` flag: Enable exception reporting
-  - Defaults: 2 players, 4 suits, 13 ranks (standard deck)
+  - Named options: `--players/-p`, `--suits/-s`, `--ranks/-r` (defaults: 2 players, 4 suits, 13 ranks)
+  - Flags: `-e`/`--exception-reporting` for verbose errors, `--help`/`--usage` to print usage
+  - Legacy positional order (`players suits ranks`) is still accepted but optional
 
 ### Game Flow
 1. Parse command-line arguments via `InputArguments`
@@ -150,6 +150,7 @@ game-of-war/
 3. Write tests extending `BaseTest` when applicable
 4. Use JUnit 4 and Mockito for testing
 5. Maintain Java naming conventions
+6. Audit changes against the code quality checklist below
 
 ### When Modifying Stack/Tooling
 - Update this `.cursorrules` file to reflect changes
@@ -165,6 +166,17 @@ game-of-war/
 - RuleChain pattern is defined but not fully implemented
 - The project structure suggests a clean separation of concerns
 - Gradle wrapper is included for consistent builds across environments
+
+---
+
+## Code Quality Expectations
+- Enforce high readability (clear names, small methods, intentional comments).
+- Always prefer explicit imports; avoid wildcards and unused symbols.
+- Keep classes/methods single-purpose; extract helpers as logic grows.
+- Validate inputs early, fail fast with actionable errors.
+- Treat tests as first-class citizens: add/adjust tests with every code change and keep `gradlew test` green.
+- Match existing formatting, logging, and exception-handling conventions.
+- Guard against invalid states and edge cases without premature optimization.
 
 ---
 

@@ -74,8 +74,13 @@ public class War {
 
         try {
 
-            War game = new War();
             InputArguments arguments = new InputArguments(args);
+            if (arguments.shouldShowUsage()) {
+                System.out.println(InputArguments.buildUsageMessage());
+                return;
+            }
+
+            War game = new War();
             System.out.println(arguments.buildGameIsStartingMessage());
 
             game.play(arguments.getNumberOfSuits(), arguments.getNumberOfRanks(), arguments.getNumberOfPlayers());

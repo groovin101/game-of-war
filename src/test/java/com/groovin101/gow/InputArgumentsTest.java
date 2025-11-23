@@ -53,6 +53,22 @@ public class InputArgumentsTest {
         assertEquals(3, args.getNumberOfRanks());
     }
 
+    @Test
+    public void test_namedArgumentsOverrideDefaults() throws Exception {
+        InputArguments args = new InputArguments(new String[]{"--players", "3", "--suits=2", "--ranks", "5"});
+        assertEquals(3, args.getNumberOfPlayers());
+        assertEquals(2, args.getNumberOfSuits());
+        assertEquals(5, args.getNumberOfRanks());
+    }
+
+    @Test
+    public void test_namedArgumentsWithShortOptions() throws Exception {
+        InputArguments args = new InputArguments(new String[]{"-p4", "-s", "1", "-r12"});
+        assertEquals(4, args.getNumberOfPlayers());
+        assertEquals(1, args.getNumberOfSuits());
+        assertEquals(12, args.getNumberOfRanks());
+    }
+
     //todo: this would be a nice to have
     @Ignore
     @Test
@@ -64,14 +80,11 @@ public class InputArgumentsTest {
     }
 
     @Test
-    public void test_notCorrectNumberOfParamsWhenOnlyTwoAreProvided() throws Exception {
-
-        try {
-            InputArguments args = new InputArguments(new String[]{"5", "1"});
-            fail("Should have thrown exception since not enough arguments were provided");
-        }
-        catch (IncorrectNumberOfArgumentsException e) {
-        }
+    public void test_positionalArgumentsCanOmitTrailingValues() throws Exception {
+        InputArguments args = new InputArguments(new String[]{"5", "1"});
+        assertEquals(5, args.getNumberOfPlayers());
+        assertEquals(1, args.getNumberOfSuits());
+        assertEquals(13, args.getNumberOfRanks());
     }
 
     @Test
@@ -89,6 +102,11 @@ public class InputArgumentsTest {
     public void testIsExceptionReportingOn() throws Exception {
         assertTrue("We provied a -e so exception reporting should turn on",
                 InputArguments.isTheExceptionReportingFlagPresent(new String[]{"-e", "2", "2", "2"}));
+    }
+
+    @Test
+    public void testIsExceptionReportingOn_longForm() throws Exception {
+        assertTrue(InputArguments.isTheExceptionReportingFlagPresent(new String[]{"--exception-reporting"}));
     }
 
     @Test
@@ -113,6 +131,17 @@ public class InputArgumentsTest {
     }
 
     @Test
+    public void testRemoveLongExceptionArgument() throws Exception {
+        String[] argsToModify = new String[]{"--exception-reporting", "2", "2", "2"};
+        InputArguments args = new InputArguments(new String[]{"2", "2", "2"});
+
+        String[] modifiedArguments = args.removeDashEArgument(argsToModify);
+        List<String> modifiedArgumentsAsList = new ArrayList<String>();
+        Collections.addAll(modifiedArgumentsAsList, modifiedArguments);
+        assertFalse("Should have removed the --exception-reporting flag", modifiedArgumentsAsList.contains("--exception-reporting"));
+    }
+
+    @Test
     public void test_dashEArgDoesNotCountTowardsArgCount() throws Exception {
         try {
             InputArguments args = new InputArguments(new String[]{"-e", "2", "2", "2"});
@@ -120,6 +149,24 @@ public class InputArgumentsTest {
         catch (IncorrectNumberOfArgumentsException e) {
             fail("Should not have thrown an exception");
         }
+    }
+
+    @Test
+    public void test_helpFlagTriggersUsage() throws Exception {
+        InputArguments args = new InputArguments(new String[]{"--help"});
+        assertTrue(args.shouldShowUsage());
+    }
+
+    @Test
+    public void test_usageFlagTriggersUsage() throws Exception {
+        InputArguments args = new InputArguments(new String[]{"-usage"});
+        assertTrue(args.shouldShowUsage());
+    }
+
+    @Test
+    public void test_usageMessageListsNamedOptions() {
+        String usage = InputArguments.buildUsageMessage();
+        assertTrue("Usage should mention --players", usage.contains("--players"));
     }
 
     @Test
