@@ -95,6 +95,11 @@ async function playRound() {
 
         const gameState = await response.json();
         updateGameDisplay(gameState);
+        
+        // Auto-reveal war cards if in auto-play mode
+        if (autoPlayInterval) {
+            autoRevealWarCards();
+        }
 
         if (gameState.gameOver) {
             showWinnerModal(gameState);
@@ -203,20 +208,58 @@ function createPlayerCard(player, gameState) {
     cardsDiv.className = 'cards-played';
 
     if (player.cardsPlayedThisRound && player.cardsPlayedThisRound.length > 0) {
-        player.cardsPlayedThisRound.forEach(playedCard => {
+        const cards = [...player.cardsPlayedThisRound];
+        const significantCard = player.significantCard;
+        const isWar = cards.length > 1;
+        
+        if (isWar) {
+            // WAR scenario: Show first card (that caused tie) + hidden war cards
+            const firstCard = cards[0];
+            
+            // First card (battle card that caused war)
+            const firstCardElement = document.createElement('div');
+            firstCardElement.className = 'card';
+            firstCardElement.innerHTML = formatCard(firstCard);
+            cardsDiv.appendChild(firstCardElement);
+            
+            // War cards container (hidden initially)
+            const warCardsContainer = document.createElement('div');
+            warCardsContainer.className = 'war-cards-hidden';
+            warCardsContainer.dataset.playerName = player.name;
+            
+            // Add remaining war cards (hidden)
+            cards.slice(1).forEach(playedCard => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+                
+                // Check if this is the significant card
+                if (significantCard && 
+                    playedCard.rank === significantCard.rank && 
+                    playedCard.suit === significantCard.suit) {
+                    cardElement.classList.add('significant');
+                }
+                
+                cardElement.innerHTML = formatCard(playedCard);
+                warCardsContainer.appendChild(cardElement);
+            });
+            
+            cardsDiv.appendChild(warCardsContainer);
+            
+            // Add reveal button for war cards
+            const revealBtn = document.createElement('button');
+            revealBtn.className = 'reveal-war-btn';
+            revealBtn.textContent = '⚔️ WAR!';
+            revealBtn.onclick = () => revealWarCards(player.name);
+            cardsDiv.appendChild(revealBtn);
+            
+        } else {
+            // Normal battle: Single card
             const cardElement = document.createElement('div');
             cardElement.className = 'card';
-            
-            // Check if this is the significant card
-            if (player.significantCard && 
-                playedCard.rank === player.significantCard.rank && 
-                playedCard.suit === player.significantCard.suit) {
-                cardElement.classList.add('significant');
-            }
-            
-            cardElement.innerHTML = formatCard(playedCard);
+            cardElement.classList.add('significant');
+            cardElement.innerHTML = formatCard(cards[0]);
             cardsDiv.appendChild(cardElement);
-        });
+        }
     }
 
     card.appendChild(nameDiv);
@@ -322,6 +365,32 @@ function resetToSetup() {
     historyContainer.innerHTML = '<p class="empty-message">No rounds played yet</p>';
     roundNumberSpan.textContent = '0';
     gameStatusSpan.textContent = 'Ready';
+}
+
+// Reveal war cards for a player
+function revealWarCards(playerName) {
+    const warContainers = document.querySelectorAll('.war-cards-hidden');
+    const revealButtons = document.querySelectorAll('.reveal-war-btn');
+    
+    // Reveal all players' war cards simultaneously
+    warContainers.forEach(container => {
+        container.classList.remove('war-cards-hidden');
+        container.classList.add('war-cards-revealed');
+    });
+    
+    // Remove all reveal buttons
+    revealButtons.forEach(btn => btn.remove());
+}
+
+// Auto-reveal war cards in auto-play mode
+function autoRevealWarCards() {
+    const warContainers = document.querySelectorAll('.war-cards-hidden');
+    if (warContainers.length > 0) {
+        // Wait a moment for drama, then reveal
+        setTimeout(() => {
+            revealWarCards(null);
+        }, 500);
+    }
 }
 
 // Initialize the app

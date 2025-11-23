@@ -293,9 +293,61 @@ header h1 {
 .cards-played {
     display: flex;
     gap: 12px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     min-height: 100px;
     align-items: center;
+}
+
+/* War cards - hidden initially */
+.war-cards-hidden {
+    display: none;
+}
+
+/* War cards - revealed */
+.war-cards-revealed {
+    display: flex;
+    gap: 12px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Reveal war button */
+.reveal-war-btn {
+    padding: 8px 16px;
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 12px;
+    animation: pulse 1s infinite;
+}
+
+.reveal-war-btn:hover {
+    background: #dc2626;
+    transform: scale(1.05);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+    }
 }
 
 .card {
@@ -310,7 +362,18 @@ header h1 {
     border-color: var(--primary-color);
     background: #eff6ff;
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.5);
-    transform: scale(1.05);
+    transform: scale(1.1);
+    position: relative;
+}
+
+.card.significant::before {
+    content: '⚔️';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    z-index: 10;
 }
 
 /* Playing card images */
