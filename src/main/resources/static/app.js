@@ -59,7 +59,7 @@ async function createNewGame() {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to create game');
+            throw new Error(`Server returned ${response.status}`);
         }
 
         const gameState = await response.json();
@@ -71,7 +71,7 @@ async function createNewGame() {
         updateGameDisplay(gameState);
     } catch (error) {
         console.error('Error creating game:', error);
-        alert('Failed to create game. Please try again.');
+        alert('Failed to create game.\n\nPlease make sure the server is running:\n.\gradlew.bat bootRun');
     } finally {
         startGameBtn.disabled = false;
         startGameBtn.textContent = 'Start New Game';
@@ -90,7 +90,7 @@ async function playRound() {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to play round');
+            throw new Error(`Server returned ${response.status}`);
         }
 
         const gameState = await response.json();
@@ -98,7 +98,7 @@ async function playRound() {
         
         // Auto-reveal war cards if in auto-play mode
         if (autoPlayInterval) {
-            autoRevealWarCards();
+            await autoRevealWarCards();
         }
 
         if (gameState.gameOver) {
@@ -107,7 +107,14 @@ async function playRound() {
         }
     } catch (error) {
         console.error('Error playing round:', error);
-        alert('Failed to play round. Please try again.');
+        
+        // Stop auto-play if there's a server error
+        if (autoPlayInterval) {
+            stopAutoPlay();
+            alert('Server connection lost. Auto-play stopped.\n\nPlease restart the server and start a new game.');
+        } else {
+            alert('Failed to play round. Please check if the server is running.');
+        }
     } finally {
         playRoundBtn.disabled = false;
     }
@@ -133,14 +140,39 @@ function startAutoPlay() {
     // Disable speed selector while auto-playing
     speedSelect.disabled = true;
     
-    autoPlayInterval = setInterval(async () => {
-        await playRound();
-    }, speed);
+    // Use recursive setTimeout instead of setInterval to ensure
+    // each round completes (including war delays) before starting next
+    async function playNextRound() {
+        if (!autoPlayInterval) return; // Stop if auto-play was cancelled
+        
+        await playRoundWithDelay();
+        
+        // Schedule next round only after current round completes
+        if (autoPlayInterval) {
+            autoPlayInterval = setTimeout(playNextRound, speed);
+        }
+    }
+    
+    // Start the first round
+    autoPlayInterval = setTimeout(playNextRound, 0);
+}
+
+// Play round with delay for war reveals in auto-play
+async function playRoundWithDelay() {
+    await playRound();
+    
+    // Check if war cards are present (need reveal time)
+    const warContainers = document.querySelectorAll('.war-cards-hidden, .war-cards-revealed');
+    if (warContainers.length > 0) {
+        // Additional delay to see war results (3.5 seconds total)
+        // 300ms for initial reveal + 3200ms to view = 3.5 seconds
+        await new Promise(resolve => setTimeout(resolve, 3200));
+    }
 }
 
 function stopAutoPlay() {
     if (autoPlayInterval) {
-        clearInterval(autoPlayInterval);
+        clearTimeout(autoPlayInterval);
         autoPlayInterval = null;
         autoPlayBtn.textContent = 'Auto Play';
         autoPlayBtn.classList.remove('btn-primary');
@@ -369,27 +401,65 @@ function resetToSetup() {
 
 // Reveal war cards for a player
 function revealWarCards(playerName) {
+    console.log('revealWarCards called');
     const warContainers = document.querySelectorAll('.war-cards-hidden');
     const revealButtons = document.querySelectorAll('.reveal-war-btn');
     
+    console.log('Found', warContainers.length, 'war containers to reveal');
+    console.log('Found', revealButtons.length, 'war buttons to remove');
+    
     // Reveal all players' war cards simultaneously
     warContainers.forEach(container => {
+        console.log('Revealing container for:', container.dataset.playerName);
         container.classList.remove('war-cards-hidden');
         container.classList.add('war-cards-revealed');
     });
     
     // Remove all reveal buttons
     revealButtons.forEach(btn => btn.remove());
+    
+    console.log('Reveal complete. Now checking...');
+    const revealed = document.querySelectorAll('.war-cards-revealed');
+    console.log('Confirmed revealed:', revealed.length, 'containers');
 }
 
 // Auto-reveal war cards in auto-play mode
-function autoRevealWarCards() {
+async function autoRevealWarCards() {
+    // Use setTimeout to ensure DOM has updated
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     const warContainers = document.querySelectorAll('.war-cards-hidden');
+    console.log('Auto-reveal: Found', warContainers.length, 'war containers');
+    
     if (warContainers.length > 0) {
         // Wait a moment for drama, then reveal
-        setTimeout(() => {
-            revealWarCards(null);
-        }, 500);
+        return new Promise(resolve => {
+            setTimeout(() => {
+                console.log('Revealing war cards...');
+                revealWarCards(null);
+                
+                // Verify reveal worked
+                setTimeout(() => {
+                    const revealed = document.querySelectorAll('.war-cards-revealed');
+                    console.log('After reveal:', revealed.length, 'containers revealed');
+                }, 50);
+                
+                // Highlight the round winner boxes to draw attention
+                setTimeout(() => {
+                    const roundWinners = document.querySelectorAll('.player-card.round-winner');
+                    roundWinners.forEach(winner => {
+                        winner.style.animation = 'none';
+                        setTimeout(() => {
+                            winner.style.animation = 'highlightWinner 0.8s ease-in-out 2';
+                        }, 10);
+                    });
+                }, 100);
+                
+                resolve();
+            }, 500);
+        });
+    } else {
+        console.log('No war containers found to reveal');
     }
 }
 

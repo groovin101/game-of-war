@@ -321,6 +321,18 @@ header h1 {
     }
 }
 
+/* Highlight animation for war winner */
+@keyframes highlightWinner {
+    0%, 100% {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    50% {
+        transform: scale(1.06);
+        box-shadow: 0 8px 24px rgba(16, 185, 129, 0.6);
+    }
+}
+
 /* Reveal war button */
 .reveal-war-btn {
     padding: 8px 16px;
