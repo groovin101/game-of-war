@@ -1,7 +1,12 @@
 package com.groovin101.gow.test.utils;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
-import com.groovin101.gow.model.*;
+import com.groovin101.gow.model.Card;
+import com.groovin101.gow.model.DeckExtended;
+import com.groovin101.gow.model.DeckImpl;
+import com.groovin101.gow.model.Player;
+import com.groovin101.gow.model.Rank;
+import com.groovin101.gow.model.Suit;
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Before;
 

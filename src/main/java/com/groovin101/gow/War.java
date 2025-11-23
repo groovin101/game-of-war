@@ -2,9 +2,21 @@ package com.groovin101.gow;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
 import com.groovin101.gow.exception.WarInitializationException;
-import com.groovin101.gow.model.*;
+import com.groovin101.gow.model.Card;
+import com.groovin101.gow.model.Dealer;
+import com.groovin101.gow.model.DeckExtended;
+import com.groovin101.gow.model.DeckImpl;
+import com.groovin101.gow.model.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 /**
  */

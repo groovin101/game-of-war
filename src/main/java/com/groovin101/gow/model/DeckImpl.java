@@ -1,6 +1,10 @@
 package com.groovin101.gow.model;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.List;
 
 /**
  * Represents a standard 52 card "French Style" deck

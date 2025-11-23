@@ -1,6 +1,10 @@
 package com.groovin101.gow;
 
-import com.groovin101.gow.exception.*;
+import com.groovin101.gow.exception.IncorrectNumberOfArgumentsException;
+import com.groovin101.gow.exception.InvalidNumberOfPlayersException;
+import com.groovin101.gow.exception.InvalidNumberOfRanksException;
+import com.groovin101.gow.exception.InvalidNumberOfSuitsException;
+import com.groovin101.gow.exception.WarInitializationException;
 import com.groovin101.gow.model.DeckImpl;
 
 import java.util.ArrayList;
