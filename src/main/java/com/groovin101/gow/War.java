@@ -2,21 +2,9 @@ package com.groovin101.gow;
 
 import com.groovin101.gow.exception.InvalidUsernameException;
 import com.groovin101.gow.exception.WarInitializationException;
-import com.groovin101.gow.model.Card;
-import com.groovin101.gow.model.Dealer;
-import com.groovin101.gow.model.DeckExtended;
-import com.groovin101.gow.model.DeckImpl;
-import com.groovin101.gow.model.Player;
+import com.groovin101.gow.model.*;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
  */
@@ -28,7 +16,7 @@ public class War {
     private Set<Player> players;
     private Player winnerOfTheLastHandPlayed;
     private Player winnerOfTheGame;
-    private boolean gameIsADraw;
+    public boolean gameIsADraw;
 
     public Player getWinnerOfTheLastHandPlayed() {
         return winnerOfTheLastHandPlayed;
@@ -36,12 +24,12 @@ public class War {
     public void setWinnerOfTheLastHandPlayed(Player winnerOfTheLastHandPlayed) {
         this.winnerOfTheLastHandPlayed = winnerOfTheLastHandPlayed;
     }
-    boolean isWarCalledFor() {
+    public boolean isWarCalledFor() {
 //        return winnerOfTheLastHandPlayed == null;
                                                     //todo: make a test for the draw scenario with no winner of war
         return winnerOfTheLastHandPlayed == null && atLeastOnePlayerHasCardsLeftToPlay();
     }
-    void setGameIsADraw(boolean gameIsADraw) {
+    public void setGameIsADraw(boolean gameIsADraw) {
         this.gameIsADraw = gameIsADraw;
     }
     boolean atLeastOnePlayerHasCardsLeftToPlay() {
@@ -74,13 +62,8 @@ public class War {
 
         try {
 
-            InputArguments arguments = new InputArguments(args);
-            if (arguments.shouldShowUsage()) {
-                System.out.println(InputArguments.buildUsageMessage());
-                return;
-            }
-
             War game = new War();
+            InputArguments arguments = new InputArguments(args);
             System.out.println(arguments.buildGameIsStartingMessage());
 
             game.play(arguments.getNumberOfSuits(), arguments.getNumberOfRanks(), arguments.getNumberOfPlayers());
@@ -117,7 +100,7 @@ public class War {
         System.out.println("*************************************/n");
     }
 
-    void startTheGame(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
+    public void startTheGame(int numberOfSuits, int numberOfRanks, int numberOfPlayers) {
 
         winnerOfTheGame = null;
         setPlayers(buildPlayerList(numberOfPlayers));
@@ -148,7 +131,7 @@ public class War {
         clearCardsFromPreviousRound();
     }
 
-    void clearCardsFromPreviousRound() {
+    public void clearCardsFromPreviousRound() {
         for (Player player : getPlayers()) {
             player.clearCardsFromPreviousRound();
         }
@@ -208,7 +191,7 @@ public class War {
         return cardsPlayedThisRound;
     }
 
-    protected void divySpoilsToWinner(Player winner) {
+    public void divySpoilsToWinner(Player winner) {
         if (winner != null) {
             List<Card> allCardsPlayedThisRound = fetchAllCardsPlayedThisRound();
             Collections.shuffle(allCardsPlayedThisRound, new Random(Calendar.getInstance().getTimeInMillis()));
@@ -242,7 +225,7 @@ public class War {
         return false;
     }
 
-    boolean gameOver() {
+    public boolean gameOver() {
         return doesOnePlayerHaveAllTheCards(deck, getPlayers()) || gameIsADraw;
     }
 

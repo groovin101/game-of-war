@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game of War</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎴 Game of War</h1>
+            <p class="subtitle">A classic card battle game</p>
+        </header>
+
+        <!-- Game Setup Section -->
+        <section id="setup-section" class="section">
+            <h2>New Game Setup</h2>
+            <div class="setup-form">
+                <div class="form-group">
+                    <label for="num-players">Number of Players:</label>
+                    <input type="number" id="num-players" min="2" max="10" value="2">
+                </div>
+                <div class="form-group">
+                    <label for="num-suits">Number of Suits:</label>
+                    <input type="number" id="num-suits" min="1" max="8" value="4">
+                </div>
+                <div class="form-group">
+                    <label for="num-ranks">Number of Ranks:</label>
+                    <input type="number" id="num-ranks" min="2" max="20" value="13">
+                </div>
+                <button id="start-game-btn" class="btn btn-primary">Start New Game</button>
+            </div>
+        </section>
+
+        <!-- Game Board Section -->
+        <section id="game-section" class="section hidden">
+            <div class="game-controls">
+                <h2>Game in Progress</h2>
+                <div class="control-buttons">
+                    <button id="play-round-btn" class="btn btn-primary">Play Round</button>
+                    <button id="auto-play-btn" class="btn btn-secondary">Auto Play</button>
+                    <button id="new-game-btn" class="btn btn-secondary">New Game</button>
+                </div>
+            </div>
+
+            <!-- Game Status -->
+            <div class="game-status">
+                <div class="status-item">
+                    <span class="status-label">Round:</span>
+                    <span id="round-number" class="status-value">0</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Status:</span>
+                    <span id="game-status" class="status-value">Ready</span>
+                </div>
+            </div>
+
+            <!-- Players Display -->
+            <div id="players-container" class="players-container">
+                <!-- Players will be dynamically added here -->
+            </div>
+
+            <!-- Round History -->
+            <div class="round-history">
+                <h3>Round History</h3>
+                <div id="history-container" class="history-container">
+                    <p class="empty-message">No rounds played yet</p>
+                </div>
+            </div>
+
+            <!-- Winner Announcement -->
+            <div id="winner-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h2>🏆 Game Over!</h2>
+                    <p id="winner-message"></p>
+                    <button id="close-modal-btn" class="btn btn-primary">Play Again</button>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Built with Java, Spring Boot, and ❤️</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
