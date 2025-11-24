@@ -134,23 +134,15 @@ function startAutoPlay() {
     autoPlayBtn.classList.remove('btn-secondary');
     autoPlayBtn.classList.add('btn-primary');
     
-    // Use recursive setTimeout instead of setInterval to ensure
-    // each round completes (including war delays) before starting next
-    async function playNextRound() {
-        if (!autoPlayInterval) return; // Stop if auto-play was cancelled
-        
-        await playRoundWithDelay();
-        
-        // Schedule next round only after current round completes
-        // Read speed each time so user can change it mid-game
-        if (autoPlayInterval) {
-            const speed = parseInt(speedSelect.value);
-            autoPlayInterval = setTimeout(playNextRound, speed);
-        }
-    }
+    // Get selected speed in milliseconds
+    const speed = parseInt(speedSelect.value);
     
-    // Start the first round
-    autoPlayInterval = setTimeout(playNextRound, 0);
+    // Disable speed selector while auto-playing
+    speedSelect.disabled = true;
+    
+    autoPlayInterval = setInterval(async () => {
+        await playRoundWithDelay();
+    }, speed);
 }
 
 // Play round with delay for war reveals in auto-play
@@ -161,18 +153,21 @@ async function playRoundWithDelay() {
     const warContainers = document.querySelectorAll('.war-cards-hidden, .war-cards-revealed');
     if (warContainers.length > 0) {
         // Additional delay to see war results (3.5 seconds total)
-        // 300ms for initial reveal + 3000ms to view = 3.3 seconds
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        // 300ms for initial reveal + 3200ms to view = 3.5 seconds
+        await new Promise(resolve => setTimeout(resolve, 3200));
     }
 }
 
 function stopAutoPlay() {
     if (autoPlayInterval) {
-        clearTimeout(autoPlayInterval);
+        clearInterval(autoPlayInterval);
         autoPlayInterval = null;
         autoPlayBtn.textContent = 'Auto Play';
         autoPlayBtn.classList.remove('btn-primary');
         autoPlayBtn.classList.add('btn-secondary');
+        
+        // Re-enable speed selector
+        speedSelect.disabled = false;
     }
 }
 
