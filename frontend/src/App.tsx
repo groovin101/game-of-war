@@ -61,13 +61,13 @@ function App() {
     const baseDelays = {
       slow: 2000,
       medium: 1000,
-      ludicrous: 300,
+      ludicrous: 200,
     };
     
     const warDelays = {
       slow: 5000,
       medium: 3700,
-      ludicrous: 1500,
+      ludicrous: 2500,
     };
     
     return isWar ? warDelays[speed] : baseDelays[speed];
